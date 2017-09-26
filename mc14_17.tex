@@ -1,0 +1,646 @@
+\documentclass{beamer}
+
+%\usepackage[table]{xcolor}
+\mode<presentation> {
+  \usetheme{Boadilla}
+%  \usetheme{Pittsburgh}
+%\usefonttheme[2]{sans}
+\renewcommand{\familydefault}{cmss}
+%\usepackage{lmodern}
+%\usepackage[T1]{fontenc}
+%\usepackage{palatino}
+%\usepackage{cmbright}
+  \setbeamercovered{transparent}
+\useinnertheme{rectangles}
+}
+%\usepackage{normalem}{ulem}
+%\usepackage{colortbl, textcomp}
+\setbeamercolor{normal text}{fg=black}
+\setbeamercolor{structure}{fg= black}
+\definecolor{trial}{cmyk}{1,0,0, 0}
+\definecolor{trial2}{cmyk}{0.00,0,1, 0}
+\definecolor{darkgreen}{rgb}{0,.4, 0.1}
+\newtheorem{com}{Comment}
+\newtheorem{lem} {Lemma}
+\newtheorem{prop}{Proposition}
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{cor}{Corollary}
+\newtheorem{obs}{Observation}
+ \numberwithin{equation}{section}
+
+
+\newcommand\indep{\protect\mathpalette{\protect\independenT}{\perp}}
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
+
+\usefonttheme{professionalfonts} % using non standard fonts for beamer
+\usefonttheme{serif}
+
+\beamertemplatesolidbackgroundcolor{white}  \setbeamercolor{alerted
+text}{fg=red}
+\usepackage{multirow}
+
+\setbeamertemplate{caption}[numbered]\newcounter{mylastframe}
+
+%\begin{beamerboxesrounded}[upper=uppercol,lower=lowercol,shadow=true]{Block}
+%$A = B$.
+%\end{beamerboxesrounded}}
+\renewcommand{\familydefault}{cmss}
+\usepackage[all]{xy}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+%\usepackage{palatino}
+%\usepackage{eulervm}
+\usecolortheme{lily}
+%\usepackage[latin1]{inputenc}
+
+\title[Methodology III] % (optional, nur bei langen Titeln nötig)
+{Political Methodology III: Model Based Inference}
+
+\author{Justin Grimmer}
+\institute[Stanford University]{Associate Professor\\Department of Political Science \\  Stanford University}
+\vspace{0.3in}
+
+\date{May 16th, 2017}
+
+\begin{document}
+\begin{frame}
+\titlepage
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Model Based Inference}
+
+\begin{itemize}
+\item[1)] Likelihood inference
+\item[2)] Machine Learning
+\begin{itemize}
+\item[a)] Model Selection
+\item[b)] Unsupervised Latent Features
+\item[c)] Classification/Prediction/Regression
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Supervised Learning Methods}
+
+\begin{itemize}
+\item[1)] Task
+\begin{itemize}
+\item[-] Classify objects into pre existing categories
+\item[-] Predict some future outcome
+\item[-] Learn a \alert{response surface} for causal inference
+\end{itemize}
+\item[2)] Objective function
+\begin{itemize}
+\item[1)] Penalized Regressions
+\begin{itemize}
+\item[-] Ridge regression
+\item[-] LASSO regression
+\end{itemize}
+\end{itemize}
+\item[3)] Optimization
+\begin{itemize}
+\item[1)] Ridge regression $\leadsto$ Straightforward modification of OLS
+\item[2)] LASSO regression $\leadsto$ Coordinate Descent
+\end{itemize}
+\item[4)] Validation
+\begin{itemize}
+\item[-] Obtain predicted fit for new data $f(\boldsymbol{X}_{i}, \widehat{\boldsymbol{\theta}})$
+\item[-] Examine prediction performance $\leadsto$ compare prediction/classification to \alert{gold standard}
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Regression models}
+
+Suppose we have $N$ documents, with each document $i$ having label $y_{i} \in \{-1, 1\}\leadsto\{$not, credit claiming$\}$ \pause \\
+\invisible<1>{We represent each document $i$ is $\boldsymbol{x}_{i} = (x_{i1}, x_{i2}, \hdots, x_{iJ})$. } \pause  \\
+
+\begin{eqnarray}
+\invisible<1-2>{f(\boldsymbol{\beta}, \boldsymbol{X}, \boldsymbol{Y})  & = & \sum_{i=1}^{N}\left( y_{i} - \boldsymbol{\beta}^{'} \boldsymbol{x}_{i} \right)^{2}  \nonumber \\} \pause
+\invisible<1-3>{\widehat{\boldsymbol{\beta} } & = & \text{arg min}_{\boldsymbol{\beta}} \left\{\sum_{i=1}^{N}\left( y_{i} - \boldsymbol{\beta}^{'} \boldsymbol{x}_{i} \right)^{2}\right\} \nonumber \\} \pause
+ \invisible<1-4>{& = & \left( \boldsymbol{X}^{'}\boldsymbol{X}   \right)^{-1}\boldsymbol{X}^{'}\boldsymbol{Y} \nonumber } \pause
+\end{eqnarray}
+
+\invisible<1-5>{Problem: \\} \pause
+\begin{itemize}
+\invisible<1-6>{\item[-] $J$ will likely be large (perhaps $J> N$)} \pause
+\invisible<1-7>{\item[-] There many correlated variables} \pause
+\end{itemize}
+
+\invisible<1-8>{Predictions will be \alert{variable}}
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Mean Square Error}
+Suppose $\theta$ is some value of the true parameter \pause \\
+\invisible<1>{Bias: \\} \pause
+\begin{eqnarray}
+\invisible<1-2>{\text{Bias} & = & E[\widehat{\theta} - \theta]\nonumber } \pause
+\end{eqnarray}
+
+\invisible<1-3>{We may care about average distance from truth} \pause
+
+\begin{eqnarray}
+\invisible<1-4>{\text{E}[(\hat{\theta} - \theta)^{2}]}\pause\invisible<1-5>{ & = & E[\hat{\theta}^{2}]  - 2 \theta E[\hat{\theta}] + \theta^2 } \pause \nonumber \\
+ \invisible<1-6>{& = &  E[\hat{\theta}^{2}] - E[\hat{\theta}]^{2} + E[\hat{\theta}]^{2}- 2 \theta E[\hat{\theta}] + \theta^2} \pause  \nonumber \\
+\invisible<1-7>{& = & E[\hat{\theta}^{2}] - E[\hat{\theta}]^{2} +  (E[\widehat{\theta} - \theta])^2 } \pause \nonumber \\
+  \invisible<1-8>{& = & \text{Var}(\theta) + \text{Bias}^{2} } \pause \nonumber
+\end{eqnarray}
+
+\invisible<1-9>{To reduce MSE, we are willing to induce bias to decrease variance$\leadsto$ methods that \alert{shrink} coefficeints toward zero}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Ridge Regression}
+
+Penalty for model complexity \pause
+
+\begin{eqnarray}
+\invisible<1>{f(\boldsymbol{\beta}, \boldsymbol{X}, \boldsymbol{Y} ) }\pause \invisible<1-2>{& = & \sum_{i=1}^{N} \left(y_{i} - \
+\beta_{0} - \sum_{j=1}^{J}\beta_{j} x_{ij}\right)^{2} } \pause \invisible<1-3>{ + \underbrace{\lambda \sum_{j=1}^{J} \beta_{j}^{2}}_{\text{Penalty}} } \pause \nonumber
+\end{eqnarray}
+
+\invisible<1-4>{where:} \pause
+
+\begin{itemize}
+\invisible<1-5>{\item[-] $\beta_{0}\leadsto$ intercept} \pause
+\invisible<1-6>{\item[-] $\lambda\leadsto$ penalty parameter} \pause
+\invisible<1-7>{\item[-] Standardized $\boldsymbol{X}$ (coefficients on same scale)}
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Ridge Regression$\leadsto$ Optimization}
+
+\begin{eqnarray}
+\boldsymbol{\beta}^{\text{Ridge}} & = & \text{arg min}_{\boldsymbol{\beta}} \left\{f(\boldsymbol{\beta}, \boldsymbol{X}, \boldsymbol{Y})\right\} \nonumber  \pause \\
+\invisible<1>{& = & \text{arg min}_{\boldsymbol{\beta}} \left\{\sum_{i=1}^{N} \left(y_{i} - \beta_{0} - \sum_{j=1}^{J}\beta_{j} x_{ij}\right)^{2}  + \lambda \sum_{j=1}^{J} \beta_{j}^{2}\right\} } \pause \nonumber \\
+ \invisible<1-2>{& = & \text{arg min}_{\boldsymbol{\beta}} \left\{ (\boldsymbol{Y} - \boldsymbol{X}^{'} \boldsymbol{\beta})^{'}(\boldsymbol{Y} - \boldsymbol{X}^{'} \boldsymbol{\beta}) + \lambda \boldsymbol{\beta}^{'}\boldsymbol{\beta} \right\} } \nonumber \\
+\invisible<1-3>{& = & \left(\boldsymbol{X}^{'}\boldsymbol{X} + \lambda \boldsymbol{I}_{J}     \right)^{-1} \boldsymbol{X}^{'} \boldsymbol{Y} } \nonumber
+\end{eqnarray}
+
+\invisible<1-2>{Demean the data and set $\beta_{0} = \bar{y} = \sum_{i=1}^{N} \frac{y_{i}}{N}$ }
+\pause \pause
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Ridge Regression$\leadsto$ Intuition (1)}
+
+
+Suppose $\boldsymbol{X}^{'}\boldsymbol{X} = \boldsymbol{I}_{J}$.  \pause
+\begin{eqnarray}
+\invisible<1>{\widehat{\boldsymbol{\beta}} & = & \left(\boldsymbol{X}^{'}\boldsymbol{X}\right)^{-1} \boldsymbol{X}^{'}\boldsymbol{Y} \nonumber} \pause  \\
+ \invisible<1-2>{& = & \boldsymbol{X}^{'}\boldsymbol{Y} } \pause \nonumber \\
+ \invisible<1-3>{\boldsymbol{\beta}^{\text{ridge}} & = & \left(\boldsymbol{X}^{'}\boldsymbol{X} + \lambda \boldsymbol{I}_{J}     \right)^{-1} \boldsymbol{X}^{'} \boldsymbol{Y} \nonumber } \pause \\
+  \invisible<1-4>{&= & \left(\boldsymbol{I}_{j} + \lambda \boldsymbol{I}_{j} \right)^{-1} \boldsymbol{X}^{'}\boldsymbol{Y} \nonumber} \pause  \\
+   \invisible<1-5>{&= & \left(\boldsymbol{I}_{j} + \lambda \boldsymbol{I}_{j} \right)^{-1} \widehat{\boldsymbol{\beta}} \nonumber } \pause \\
+ \invisible<1-6>{\beta_{j}^{\text{Ridge}} & =  & \frac{\widehat{\beta}_{j}}{1 + \lambda} \nonumber }
+\end{eqnarray}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Ridge Regression$\leadsto$ Intuition (2)}
+
+\begin{eqnarray}
+\boldsymbol{\beta}_{j} & \sim & \text{Normal}(0, \tau^{2}) \nonumber \\
+y_{i} & \sim & \text{Normal}(\beta_{0} + \boldsymbol{x}_{i}^{'}\boldsymbol{\beta}, \sigma^{2}) \nonumber
+\end{eqnarray}
+
+
+\pause
+\begin{small}
+\begin{eqnarray}
+\invisible<1>{p(\boldsymbol{\beta}| \boldsymbol{X}, \boldsymbol{Y})  & \propto & \prod_{j=1}^{J} p(\beta_{j}) \prod_{i=1}^{N} p(y_{i}| \boldsymbol{x}_{i}, \boldsymbol{\beta}) \nonumber} \pause  \\
+\invisible<1-2>{& \propto &   \prod_{j=1}^{J}\frac{1}{\sqrt{2 \pi} \tau } \exp\left( - \frac{\beta_{j}^2}{2 \tau^2 }  \right) \prod_{i=1}^{N} \frac{1}{\sqrt{2\pi} \sigma} \exp\left( - \frac{ (y_{i} - \beta_{0} - \boldsymbol{x}^{'}_{i} \boldsymbol{\beta})^{2}  }{2 \sigma^2 }   \right) } \nonumber
+\end{eqnarray}
+\end{small}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Ridge Regression$\leadsto$ Intuition (2)}
+
+\begin{eqnarray}
+\log p(\boldsymbol{\beta}| \boldsymbol{X}, \boldsymbol{Y}) & = &  - \sum_{j=1}^{J} \frac{\beta_{j}^2}{2 \tau^2 } - \sum_{i=1}^{N} \frac{ (y_{i} - \beta_{0} - \boldsymbol{x}^{'} \boldsymbol{\beta})^{2}  }{2 \sigma^2 } \nonumber \pause \\
+\invisible<1>{- 2 \sigma^2\log p(\boldsymbol{\beta}| \boldsymbol{X}, \boldsymbol{Y}) & = &   \sum_{i=1}^{N} (y_{i} - \beta_{0} - \boldsymbol{x}^{'} \boldsymbol{\beta})^{2} + \sum_{j=1}^{J} \frac{\sigma^2}{\tau^2} \beta_{j}^2  } \pause  \nonumber
+\end{eqnarray}
+
+\invisible<1-2>{where:} \pause
+\begin{itemize}
+\invisible<1-3>{\item[-] $\lambda = \frac{\sigma^2}{\tau^2} $}
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Ridge Regression $\leadsto$ Intuition (3) }
+
+\begin{defn}
+Suppose $\boldsymbol{X}$ is an $N \times J$ matrix.  Then $\boldsymbol{X}$ can be written as:
+
+\begin{eqnarray}
+\boldsymbol{X} & =& \underbrace{\boldsymbol{U}}_{N \times N} \underbrace{\boldsymbol{S}}_{N \times J} \underbrace{\boldsymbol{V}^{'}}_{J \times J} \nonumber
+\end{eqnarray}
+
+Where:
+\begin{eqnarray}
+\boldsymbol{U}^{'}\boldsymbol{U} & = & \boldsymbol{I}_{N} \nonumber \\
+\boldsymbol{V}^{'}\boldsymbol{V} & = & \boldsymbol{V}\boldsymbol{V}^{'} = \boldsymbol{I}_{J} \nonumber
+\end{eqnarray}
+$\boldsymbol{S}$ contains $\min(N, J)$ singular values, $\sqrt{\lambda_{j}}\geq 0$ down the diagonal and then 0's for the remaining entries
+\end{defn}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Ridge Regression $\leadsto$ Intuition (3) }
+
+\begin{small}
+Recall: PCA:
+\begin{eqnarray}
+\frac{1}{N} \boldsymbol{X}^{'}\boldsymbol{X} = \underbrace{\boldsymbol{W}}_{\text{eigenvectors}} \begin{pmatrix} \lambda_{1} & 0 & \hdots & 0 \\
+			0 		& \lambda_{2} & \hdots & 0 \\
+			\vdots	& \vdots     & \ddots & \vdots \\
+			0       & 0 		& \hdots   & \lambda_{J}\\
+			\end{pmatrix}
+			\underbrace{ \boldsymbol{W}^{'}}_{\text{eigenvectors}}   \nonumber
+			\end{eqnarray} \pause
+
+\invisible<1>{Using SVD:} \pause
+
+\begin{eqnarray}
+\invisible<1-2>{\frac{1}{N} \boldsymbol{X}^{'}\boldsymbol{X} & = & \boldsymbol{V} \boldsymbol{S}^{'}\underbrace{\left(\boldsymbol{U}^{'}\boldsymbol{U}\right)}_{\boldsymbol{I}_{J}} \boldsymbol{S} \boldsymbol{V}^{'} \nonumber } \pause \\
+\invisible<1-3>{&  = & \frac{1}{N} \boldsymbol{V} \boldsymbol{S}^{'} \boldsymbol{S} \boldsymbol{V}^{'} \nonumber } \pause \\
+\invisible<1-4>{& = &   \underbrace{\boldsymbol{V}}_{\text{eigenvectors}} \begin{pmatrix} \lambda_{1} & 0 & \hdots & 0 \\
+			0 		& \lambda_{2} & \hdots & 0 \\
+			\vdots	& \vdots     & \ddots & \vdots \\
+			0       & 0 		& \hdots   & \lambda_{J}\\
+			\end{pmatrix} \underbrace{\boldsymbol{V}^{'}}_{\text{eigenvectors}} \nonumber }
+\end{eqnarray}
+
+\end{small}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Ridge Regression $\leadsto$ Intuition (3) }
+\begin{footnotesize}
+We can write the predicted values for a regular regression as
+\begin{eqnarray}
+\hat{Y} & = & \boldsymbol{X} \hat{\boldsymbol{\beta}} \nonumber \\
+		& = & \boldsymbol{X} \left(\boldsymbol{X}^{'}\boldsymbol{X} \right)^{-1}\boldsymbol{X}^{'} \boldsymbol{Y} \nonumber \\
+		& = & \boldsymbol{U} \boldsymbol{U}^{'}\boldsymbol{Y}  = \sum_{j=1}^{J} \boldsymbol{u}_{j} \boldsymbol{u}_{j}^{'} \boldsymbol{Y} \nonumber
+\end{eqnarray}
+\pause
+
+\invisible<1>{We can write $\boldsymbol{\beta}^{\text{ridge}}$ as} \pause
+\begin{eqnarray}
+\invisible<1-2>{\hat{Y}^{\text{ridge}}& = & \boldsymbol{X}\left(\boldsymbol{X}^{'}\boldsymbol{X} + \lambda \boldsymbol{I}_{J}    \right)^{-1}\boldsymbol{X}^{'}\boldsymbol{Y} \nonumber } \pause \\
+\invisible<1-3>{& = & \boldsymbol{U} \tilde{\boldsymbol{S}} \boldsymbol{U}^{'}\boldsymbol{Y} \nonumber }
+\end{eqnarray}
+
+
+
+\invisible<1-3>{Where
+\begin{eqnarray}
+\tilde{\boldsymbol{S}} &= & \left[\boldsymbol{S}(\boldsymbol{S}^{'}\boldsymbol{S} + \lambda \boldsymbol{I}_{J})^{-1} \boldsymbol{S} \right] \nonumber
+\end{eqnarray}}
+
+\pause
+
+\invisible<1-4>{Which we can write as:
+\begin{eqnarray}
+\hat{Y}^{\text{ridge}}& = & \sum_{j=1}^{J} \boldsymbol{u}_{j} \frac{\lambda_{j}}{\lambda_{j} + \lambda} \boldsymbol{u}_{j}^{'} \boldsymbol{Y} \nonumber
+\end{eqnarray}}
+
+
+\end{footnotesize}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Degrees of Freedom for Ridge}
+
+We will say that the degrees of freedom for Ridge regression with penalty $\lambda$ is
+\begin{eqnarray}
+\text{dof}(\lambda ) & = & \sum_{j=1}^{J} \frac{\lambda_{j}}{\lambda_{j} + \lambda} \nonumber
+\end{eqnarray}
+
+
+\end{frame}
+
+
+
+
+
+\begin{frame}
+\frametitle{Lasso Regression Objective Function}
+
+Different Penalty for Model Complexity
+
+\begin{eqnarray}
+f(\boldsymbol{\beta}, \boldsymbol{X}, \boldsymbol{Y} ) & = & \sum_{i=1}^{N} \left(y_{i} - \beta_{0} - \sum_{j=1}^{J} \beta_{j} x_{ij}  \right)^{2} + \lambda \sum_{j=1}^{J} \underbrace{|\beta_{j}|}_{\text{Penalty}} \nonumber \pause
+\end{eqnarray}
+
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Lasso Regression Optimization}
+
+\begin{defn}
+\alert{Coordinate Descent Algorithms: } \\
+Consider $g:\Re^{J} \rightarrow \Re$.  Our goal is to find $\boldsymbol{x}^{*} \in \Re^{J}$ such that $g(\boldsymbol{x}^{*}) \leq g(\boldsymbol{x})$ for all $\boldsymbol{x} \in \Re$. \\
+
+To find $\boldsymbol{x}^{*}$:
+
+
+Until convergence: for each iteration $t$ and each coordinate $j$
+
+\begin{eqnarray}
+x_{j}^{t + 1} & = & \text{arg min}_{x_{j} \in \Re}g(x_{1}^{t +1}, x_{2}^{t + 1}, \hdots, x_{j-1}^{t+1}, x_{j}, x_{j+1}^{t}, \hdots, x_{J}^{t}) \nonumber
+\end{eqnarray}
+
+\end{defn}
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Lasso Regression Optimization: Coordinate Descent}
+
+
+\begin{eqnarray}
+ \tilde{f}(\boldsymbol{\beta}, \boldsymbol{X}, \boldsymbol{Y} ) & = & \frac{1}{2N} \sum_{i=1}^{N} \left(y_{i} - \beta_{0} - \sum_{j=1}^{J} \beta_{j} x_{ij}  \right)^{2} + \lambda \sum_{j=1}^{J} |\beta_{j}| \nonumber \pause
+\end{eqnarray}
+
+\begin{itemize}
+\invisible<1>{\item[-] \alert{Case 1}: If $\beta_{j} = 0 \leadsto $ not differentiable. But $\beta_{j} = 0$} \pause
+\invisible<1-2>{\item[-] \alert{Case 2}: If $ \beta_{j}>(<) 0 \leadsto$ differentiable $\leadsto$ differentiate and solve for $\beta_{j}$ } \pause
+\end{itemize}
+
+\invisible<1-3>{Define $\tilde{y}_{i}^{j} = \beta_{0} + \sum_{l \neq j} x_{il} \beta_{l} $ \\} \pause
+
+\invisible<1-4>{$r^{j} \equiv  \frac{1}{N} \sum_{i=1}^{N} x_{ij}(y_{i} - \tilde{y}_{i}^{j} )$} \pause
+
+
+\invisible<1-5>{Update step for $\beta_{j}$ is } \pause
+
+\begin{eqnarray}
+\invisible<1-6>{\beta_{j} & \leftarrow  & \text{sign}(r^{j})\text{max}(|r^{j}| - \lambda, 0 ) \nonumber }
+\end{eqnarray}
+
+
+
+
+\end{frame}
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Lasso Regression$\leadsto$ Intuition 1, Soft Thresholding}
+
+Suppose again $\boldsymbol{X}^{'}\boldsymbol{X} = \boldsymbol{I}_{J}$ \pause
+
+\begin{eqnarray}
+\invisible<1>{f(\boldsymbol{\beta}, \boldsymbol{X}, \boldsymbol{Y} ) & = & \left(Y - \boldsymbol{X}\boldsymbol{\beta} \right)^{'}\left(Y - \boldsymbol{X}\boldsymbol{\beta} \right)  + \lambda \sum_{j=1}^{J}| \beta_{j}| \nonumber \\} \pause
+ \invisible<1-2>{& = & - 2 \boldsymbol{X}^{'}\boldsymbol{Y} \boldsymbol{\beta} + \boldsymbol{\beta}^{'}\boldsymbol{\beta} + \lambda  \sum_{j=1}^{J}| \beta_{j}| } \pause  \nonumber
+\end{eqnarray}
+
+\invisible<1-3>{The coefficient is } \pause
+\begin{eqnarray}
+\invisible<1-4>{\beta_{j}^{\text{LASSO}} & = & \text{sign}\left(\widehat{\beta}_{j}\right) \left(|\widehat{\beta}_{j}| - \lambda  \right)_{+} \nonumber } \pause
+\end{eqnarray}
+
+\begin{itemize}
+\invisible<1-5>{\item[-] $\text{sign}(\cdot) \leadsto$ $1$ or $-1$} \pause
+\invisible<1-6>{\item[-] $\left( |\widehat{\beta}_{j}| - \lambda \right)_{+} = \text{max}( |\widehat{\beta}_{j}| - \lambda, 0 )$}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Lasso Regression$\leadsto$ Intuition 1, Soft Thresholding}
+
+
+Compare soft assignment \pause
+\begin{eqnarray}
+\invisible<1>{\beta_{j}^{\text{LASSO}} & = & \text{sign}\left(\widehat{\beta}_{j}\right) \left(|\widehat{\beta}_{j}| - \lambda  \right)_{+} } \pause \nonumber
+\end{eqnarray}
+
+\invisible<1-2>{With hard assignment, selecting $M$ biggest components} \pause
+\begin{eqnarray}
+\invisible<1-3>{\beta_{j}^{\text{subset}} & = & \widehat{\beta}_{j} \cdot I\left(|\widehat{\beta}_{j}| \geq | \widehat{\beta}_{(M)} |     \right) \nonumber } \pause
+\end{eqnarray}
+
+
+\invisible<1-4>{Intuition 2: Prior on coefficients $\leadsto$ Laplace ``The Bayesian LASSO" } \pause
+
+\invisible<1-5>{Why does LASSO induce sparsity?}
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Comparing Ridge and LASSO}
+
+
+\only<1>{\scalebox{0.8}{\includegraphics{RidgeExamp1.pdf}}}
+\only<2>{\scalebox{0.8}{\includegraphics{LassoExamp1.pdf}}}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Comparing Ridge and LASSO}
+
+Contrast $\beta = (\frac{1}{\sqrt{2}},\frac{1}{\sqrt{2}} )$ and $\tilde{\beta} = (1, 0)$ \pause
+
+\invisible<1>{Under ridge:}\pause
+\begin{eqnarray}
+\invisible<1-2>{\sum_{j=1}^{2} \beta_{j}^{2} & = & \frac{1}{2} + \frac{1}{2} = 1\nonumber \\} \pause
+\invisible<1-3>{\sum_{j=1}^{2} \tilde{\beta}_{j}^{2}  & = &  1 + 0 = 1 } \pause \nonumber
+\end{eqnarray}
+
+\invisible<1-4>{Under LASSO } \pause
+\begin{eqnarray}
+\invisible<1-5>{\sum_{j=1}^{2} |\beta_{j}| & = & \frac{1}{\sqrt{2}} + \frac{1}{\sqrt{2}}  = \sqrt{2} \nonumber \\} \pause
+\invisible<1-6>{\sum_{j=1}^{2} |\tilde{\beta}_{j}| & = & 1 +0 = 1 \nonumber }
+\end{eqnarray}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Ridge and LASSO: The Elastic-Net}
+
+Combining the two criteria $\leadsto$ Elastic-Net
+
+\begin{small}
+\begin{eqnarray}
+f(\boldsymbol{\beta}, \boldsymbol{X}, \boldsymbol{Y} ) & = & \frac{1}{2N} \sum_{i=1}^{N}\left(y_{i} - \beta_{0} - \sum_{j=1}^{J} \beta_{j} x_{ij} \right)^2 + \lambda \sum_{j=1}^{J} \left(\frac{1}{2} (1-\alpha)\beta_{j}^2 + \alpha|\beta_{j}|    \right) \nonumber
+\end{eqnarray}
+\end{small}
+
+\pause
+
+\invisible<1>{The new update step (for coordinate descent:)} \pause
+
+\invisible<1-2>{\begin{eqnarray}
+\beta_{j} & \leftarrow & \frac{\text{sign}(r^{j})\text{max}(|r^{j}| - \lambda \alpha, 0)}{1 + \lambda (1- \alpha) } \nonumber
+\end{eqnarray}
+}
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Selecting $\lambda$}
+
+How do we determine $\lambda$? $\leadsto$ Cross validation (Recall code from Monday) \pause \\
+\invisible<1>{Applying models gives score (probability) of document belong to class$\leadsto$ threshold to classify} \pause \\
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Credit Claiming (Grimmer, Westwood, and Messing 2014)}
+
+\begin{footnotesize}
+%\#\#credit is a 797 element long binary vector
+
+%\#\#dtm is a 797 x 7587 document term matrix
+\begin{semiverbatim}
+\only<1>{library(glmnet)
+
+set.seed(8675309) \#\#setting seed
+
+folds<- sample(1:10, nrow(dtm), replace=T) \#\#assigning to fold
+
+out\_of\_samp<- c()  \#\#collecting the predictions}
+
+
+\only<2>{for(z in 1:10)\{
+
+	train<- which(folds!=z) \#\#the observations we will use to train the model
+
+	test<- which(folds==z) \#\#the observations we will use to test the model
+
+	part1<- cv.glmnet(x = dtm[train,], y = credit[train], alpha = 1, family = \'binomial\') \#\#fitting the LASSO model on the data.
+
+	\#\# alpha = 1 -> LASSO
+
+	\#\# alpha = 0 -> RIDGE
+
+	\#\# 0<alpha<1 -> Elastic-Net
+
+	out\_of\_samp[test]<- predict(part1, newx= dtm[test,], s = part1\$lambda.min, type =\'class\') \#\#predicting the labels
+
+	print(z) \#\#printing the labels
+
+	\}
+
+conf\_table<- table(out\_of\_samp, credit)	\#\#calculating the confusion table
+
+> round(sum(diag(conf\_table))/len(credit), 3)
+
+[1] \alert{0.844}
+}
+\end{semiverbatim}
+\end{footnotesize}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Generalized Cross Validation and Ridge Regression}
+
+In some special cases there are analytic solutions: \\ \pause
+
+\begin{eqnarray}
+\invisible<1>{\boldsymbol{\beta}^{\text{Ridge}} & = & \left(\boldsymbol{X}^{'}\boldsymbol{X} + \lambda \boldsymbol{I}_{J} \right)^{-1} \boldsymbol{X}^{'} \boldsymbol{Y} \nonumber } \pause \\
+\invisible<1-2>{\widehat{\boldsymbol{Y}} & = & \boldsymbol{X}(\boldsymbol{\beta})^{\text{Ridge}} \nonumber\\} \pause
+\invisible<1-3>{& = & \underbrace{\boldsymbol{X}\left(\boldsymbol{X}^{'}\boldsymbol{X} + \lambda \boldsymbol{I}_{J} \right)^{-1} \boldsymbol{X}^{'}}_{\text{Hat Matrix}} \boldsymbol{Y} \nonumber\\} \pause
+\invisible<1-4>{\widehat{\boldsymbol{Y}} & = & \underbrace{\boldsymbol{H}}_{\text{Smoother Matrix}} \boldsymbol{Y}  \nonumber } \pause
+\end{eqnarray}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Generalized Cross Validation and Ridge Regression}
+
+
+Why do we care?  \pause \\
+\invisible<1>{Leave one out cross validation\\} \pause
+\begin{eqnarray}
+\invisible<1-2>{\text{Cross Validation}(1) & = & \frac{1}{N} \sum_{i=1}^{N} (Y_{i} - f (\boldsymbol{X}_{-i}, \boldsymbol{Y}_{-i}, \lambda, \hat{\boldsymbol{\beta}} ))^{2} \nonumber \\} \pause
+\invisible<1-3>{& = & \frac{1}{N} \sum_{i=1}^{N}  \left(\frac{Y_{i} - f (\boldsymbol{X}, \boldsymbol{Y}, \lambda, \hat{\boldsymbol{\beta} }) }{1 - H_{ii}} \right)^2 \nonumber}
+\end{eqnarray}
+
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Generalized Cross Validation and Ridge Regression}
+
+Calculating $\boldsymbol{H}$ can be computationally expensive \pause \\
+\begin{itemize}
+\invisible<1>{\item[-] $\text{Trace}(\boldsymbol{H}) \equiv \text{Tr}(\boldsymbol{H})  = \sum_{i=1}^{N} H_{ii} $ } \pause
+\invisible<1-2>{\item[-] $\text{Tr}(\boldsymbol{H})$ = Effective number of parameters (class regression = number of independent variables + 1)} \pause
+\invisible<1-3>{\item[-] For Ridge regression:} \pause
+\begin{eqnarray}
+\invisible<1-4>{\text{Tr}(\boldsymbol{H}) & = & \sum_{j=1}^{J} \frac{\lambda_{j}}{\lambda_{j} + \underbrace{\lambda}_{\text{Penalty}}} \nonumber } \pause
+\end{eqnarray}
+\invisible<1-5>{where $\lambda_{j}$ is the $j^{\text{th}}$ Eigenvalue from $\boldsymbol{\Sigma} = \boldsymbol{X}^{'}\boldsymbol{X}$} \pause \invisible<1-6>{ (!!!!!)} \pause
+\end{itemize}
+
+
+\invisible<1-7>{Define generalized cross validation:} \pause
+\begin{eqnarray}
+\invisible<1-8>{\text{GCV} &  = & \frac{1}{N} \sum_{i=1}^{N} \left( \frac{Y_{i} - \hat{Y}_{i}}{1 - \frac{\text{Tr}(\boldsymbol{H})}{N} }    \right)^2 \nonumber } \pause
+\end{eqnarray}
+
+\invisible<1-9>{Applicable in any setting where we can write \alert{Smoother} matrix} \pause
+
+\end{frame}
+
+
+
+
+\end{document}

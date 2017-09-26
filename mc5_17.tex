@@ -1,0 +1,945 @@
+\documentclass{beamer}
+
+%\usepackage[table]{xcolor}
+\mode<presentation> {
+  \usetheme{Boadilla}
+%  \usetheme{Pittsburgh}
+%\usefonttheme[2]{sans}
+\renewcommand{\familydefault}{cmss}
+%\usepackage{lmodern}
+%\usepackage[T1]{fontenc}
+%\usepackage{palatino}
+%\usepackage{cmbright}
+  \setbeamercovered{transparent}
+\useinnertheme{rectangles}
+}
+%\usepackage{normalem}{ulem}
+%\usepackage{colortbl, textcomp}
+\setbeamercolor{normal text}{fg=black}
+\setbeamercolor{structure}{fg= black}
+\definecolor{trial}{cmyk}{1,0,0, 0}
+\definecolor{trial2}{cmyk}{0.00,0,1, 0}
+\definecolor{darkgreen}{rgb}{0,.4, 0.1}
+\newtheorem{prop}{Proposition}
+\newtheorem{defn}{Definition}
+\newtheorem{cor}{Corollary}
+\newtheorem{lem}{Lemma} 
+
+\usefonttheme{professionalfonts} % using non standard fonts for beamer
+\usefonttheme{serif}
+
+\beamertemplatesolidbackgroundcolor{white}  \setbeamercolor{alerted
+text}{fg=red}
+\usepackage{multirow}
+
+\setbeamertemplate{caption}[numbered]\newcounter{mylastframe}
+
+%\begin{beamerboxesrounded}[upper=uppercol,lower=lowercol,shadow=true]{Block}
+%$A = B$.
+%\end{beamerboxesrounded}}
+\renewcommand{\familydefault}{cmss}
+\usepackage[all]{xy}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+%\usepackage{palatino}
+%\usepackage{eulervm}
+\usecolortheme{lily}
+%\usepackage[latin1]{inputenc}
+
+\title[Methodology III] % (optional, nur bei langen Titeln nötig)
+{Political Methodology III: Model Based Inference}
+
+\author{Justin Grimmer}
+\institute[Stanford University]{Associate Professor\\Department of Political Science \\  Stanford University}
+\vspace{0.3in}
+
+\date{April 17th, 2017}
+
+\begin{document}
+\begin{frame}
+\titlepage
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Most Important Problems}
+Effects of presidents going public\\
+\begin{itemize}
+\item[-] $Y_{i} $ = 1 if respondent identifies MIP as topic of president's speech 
+\item[-] $\boldsymbol{X}_{i}  = $ (1, Treatment, Republican)
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Review: Probit}
+
+\begin{eqnarray}
+\underbrace{Y_{i}}_{\text{Random}} & \sim & \text{Bernoulli}(\pi_{i}) \nonumber \pause \\
+\invisible<1>{\pi_{i} & = & \Phi(\boldsymbol{X}_{i}^{'}\underbrace{\boldsymbol{\beta}}_{\text{Infer (Fixed)}}) \nonumber } \pause 
+\end{eqnarray}
+
+
+\begin{eqnarray}
+\invisible<1-2>{L(\boldsymbol{\beta} | \boldsymbol{X}, \boldsymbol{Y} ) & = & f(\boldsymbol{Y}| \boldsymbol{\beta}, \boldsymbol{X}) \nonumber \\} \pause 
+\invisible<1-3>{& =& \prod_{i=1}^{N} \Phi(\boldsymbol{X}_{i}^{'} \boldsymbol{\beta})^{Y_{i}} (1- \Phi(\boldsymbol{X}_{i}^{'}\boldsymbol{\beta} ))^{1- Y_{i}} \nonumber \\} \pause 
+\invisible<1-4>{\log L(\boldsymbol{\beta} | \boldsymbol{X}, \boldsymbol{Y} ) &= & \sum_{i=1}^{N} \left(Y_{i} \log \Phi(\boldsymbol{X}_{i}^{'} \boldsymbol{\beta}) + (1- Y_{i} )\log (1- \Phi(\boldsymbol{X}_{i}^{'} \boldsymbol{\beta}) ) \right) \nonumber \\} \pause 
+\invisible<1-5>{\boldsymbol{\beta}^{*} & = & \boldsymbol{\beta}^{*}(\boldsymbol{X}, \boldsymbol{Y}) =  \text{Maximum Likelihood Estimator} \nonumber \\ } \pause 
+\invisible<1-6>{\widehat{\boldsymbol{\beta}  } & = & \boldsymbol{\beta}^{*}(\boldsymbol{X}, \boldsymbol{y} )} \nonumber 
+\end{eqnarray}
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Review: Probit}
+
+\begin{eqnarray}
+\boldsymbol{\beta}^{*} & \rightarrow^{D}&  \text{Multivariate Normal}\left(\boldsymbol{\beta}, I_{N} (\widehat{\boldsymbol{\beta }})^{-1} \right) \nonumber \pause  \\
+\invisible<1>{\boldsymbol{\beta}^{*} & \rightarrow^{D}&  \text{Multivariate Normal}\left(\boldsymbol{\beta}, -E[\text{Hessian}_{i}(\widehat{\boldsymbol{\beta}})]^{-1} \right) \nonumber } \pause 
+\end{eqnarray}
+
+\begin{eqnarray}
+\invisible<1-2>{I_{N} (\widehat{\boldsymbol{\beta }})^{-1} & = & 
+\begin{pmatrix}
+\text{var}(\beta_{0})&  \text{cov}(\beta_{0},\beta_{1}) & \hdots & \text{cov}(\beta_{0}, \beta_{K}) \\
+\text{cov}(\beta_{1}, \beta_{0}) & \text{var}(\beta_{1}) & \hdots & \text{cov}(\beta_{1}, \beta_{K}) \\ 
+\vdots & \vdots & \ddots & \vdots \\
+\text{cov}(\beta_{K}, \beta_{0}) & \text{cov}(\beta_{K}, \beta_{1}) & \hdots & \text{var}(\beta_{K})
+ \end{pmatrix} \nonumber }
+\end{eqnarray}
+
+
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Review Probit}
+
+\pause 
+
+\invisible<1>{For a probit regression coefficient: } \pause 
+\begin{eqnarray}
+\invisible<1-2>{\text{CI}_{95} & = & [\widehat{\beta}_{k} -  1.96 \times \sqrt{\text{var}(\beta_{k})}, \widehat{\beta}_{k} + 1.96 \times \sqrt{\text{var}(\beta_{k})}]  \nonumber \\} \pause 
+\invisible<1-3>{\text{CI}_{1-\alpha} & = & [\widehat{\beta}_{k} -  z_{\alpha/2} \times \sqrt{\text{var}(\beta_{k})}, \widehat{\beta}_{k} + z_{\alpha/2} \times \sqrt{\text{var}(\beta_{k})}] \nonumber } \pause 
+\end{eqnarray}
+\invisible<1-4>{Recall: If $Z\sim \text{Normal}(0,1)$, $z_{\alpha/2}$ is the number such that 
+
+\begin{eqnarray}
+P(|Z\geq z_{\alpha/2}|) & = & \alpha  \nonumber 
+\end{eqnarray}}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Review Probit}
+
+\begin{semiverbatim}
+
+>colnames(mips)
+
+
+[1] "mip"   "treat" "gop"  
+
+
+
+>reg1<- glm(mip$\sim$treat + gop, family = binomial(link='probit'), data = as.data.frame(mips))
+
+
+> reg1\$coef
+
+ (Intercept)        treat          gop 
+
+-0.259173644 -0.009598938 -0.198126517 
+
+
+
+> sqrt(diag(vcov(reg1)))
+
+(Intercept)       treat         gop 
+
+ 0.03297588  0.05268254  0.05115777 
+
+\end{semiverbatim}
+
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Review Probit}
+
+95-percent confidence interval:
+\begin{semiverbatim}
+> ci\_treat<- c(reg1\$coef[2] - 1.96\*sqrt(diag(vcov(reg1)))[2], reg1\$coef[2] + 1.96\*sqrt(diag(vcov(reg1)))[2])
+
+
+> ci\_treat
+
+
+
+
+-0.11285672  0.09365884 
+
+\end{semiverbatim}
+
+
+
+
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Review Probit}
+
+Quantities of interest: \pause 
+\begin{eqnarray}
+\invisible<1>{E[Y_{i}| \boldsymbol{X}_{i}] & = & \Phi(\boldsymbol{X}^{'}_{i} \boldsymbol{\beta}) \nonumber }\pause  \\
+\invisible<1-2>{E[Y_{i}| X_{i1} = 1, \boldsymbol{X}_{i}] - E[Y_{i}| \tilde{X}_{i1} = 0, \tilde{\boldsymbol{X}}_{i}] &= & \Phi(\boldsymbol{X}^{'}_{i} \boldsymbol{\beta}) - \Phi(\tilde{\boldsymbol{X}}^{'}_{i} \boldsymbol{\beta}) \nonumber}\pause  \\
+\invisible<1-3>{\frac{ \partial E[Y_{i}| X_{i1} = 1, \boldsymbol{X}_{i}]}{\partial X_{i1} } & = & \phi(\boldsymbol{X}^{'}_{i} \boldsymbol{\beta}) \beta_{1} \nonumber }
+\end{eqnarray}
+
+
+
+\end{frame}
+
+
+\begin{frame}
+
+\begin{semiverbatim}
+
+> X\_synth<- c(1, 0, 1)
+
+
+> y.tilde<- reg1\$coef\%*\%X\_synth
+
+
+> y.prob<- pnorm(y.tilde)
+
+
+> y.prob
+
+
+          
+[1,] 0.3237277
+
+
+\end{semiverbatim}
+
+
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Uncertainty for Maximum Likelihood Estimation}
+
+\pause 
+\begin{itemize}
+\invisible<1>{\item[1)] Coefficients: \alert{Asymptotic result} $\leadsto$ YMMV in small samples} \pause 
+\invisible<1-2>{\item[2)] And even if asymptotic distribution holds:} \pause 
+\begin{itemize}
+\invisible<1-3>{\item[1)] Difficult substantive interpretation of coefficients} \pause 
+\invisible<1-4>{\item[2)] Uncertainty for \alert{functions} of coefficients} 
+\end{itemize}
+
+
+
+\end{itemize}
+
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Inference Three Ways}
+
+How do obtain uncertainty estimates for Quantities of Interest?
+
+
+\begin{itemize}
+\item[1)] Bootstrap $\leadsto$ (no asymptotics, simulation)
+\item[2)] Delta Method $\leadsto$ (asymptotic normality, analytic)
+\item[3)] Simulation from Multivariate Normal $\leadsto$ (asymptotic normality, simulation)
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{The Bootstrap (Procedure, Then Justification)}
+
+Suppose we have maximum likelihood estimator $\boldsymbol{\beta}^{*}(\boldsymbol{X}, \boldsymbol{Y})$ for $N$ observations
+
+
+For each of $M$ simulations $(m = 1,2, \hdots, M)$: \pause 
+\begin{itemize}
+\invisible<1>{\item[1)] Sample \alert{with replacement} $N$ times: } \pause 
+\begin{eqnarray}
+\invisible<1-2>{(\tilde{Y}_{1}, \tilde{\boldsymbol{X}}_{1}), (\tilde{Y}_{2}, \tilde{\boldsymbol{X}}_{2}) & \hdots & (\tilde{Y}_{N}, \tilde{\boldsymbol{X}}_{N}) = (\tilde{Y}, \tilde{\boldsymbol{X}}) \nonumber } \pause 
+\end{eqnarray}
+\invisible<1-3>{\item[2)] Calculate $\boldsymbol{\beta}^{*}(\boldsymbol{X}, \boldsymbol{Y})$ and/or \alert{any other function} of the estimator (expected value, first difference) on bootstrapped sample} \pause 
+\begin{eqnarray}
+\invisible<1-4>{\boldsymbol{\beta}^{m} & = & \boldsymbol{\beta}^{*}(\tilde{Y}, \tilde{\boldsymbol{X}}) \nonumber\\} \pause 
+\invisible<1-5>{h(\boldsymbol{\beta})^{m} & = & h(\boldsymbol{\beta}^{*}(\tilde{Y}, \tilde{\boldsymbol{X}})) \nonumber } \pause 
+\end{eqnarray}
+\invisible<1-6>{\item[3)] Do following: } \pause 
+\begin{eqnarray}
+\only<1-8>{\invisible<1-7>{E[\boldsymbol{\beta}^{*}] & \approx &  \sum_{m=1}^{M} \frac{\boldsymbol{\beta}^{m} }{M} \nonumber }}
+\only<9>{\text{Var}(\boldsymbol{\beta}^{*}) & \approx & \sum_{m=1}^{M} \frac{\left(\boldsymbol{\beta}^{m} -      (\sum_{m=1}^{M} \frac{\boldsymbol{\beta}^{m} }{M}) \right)^{2}}{M} \nonumber }
+\only<10>{E[h(\boldsymbol{\beta}^{*})] & \approx & \sum_{m=1}^{M} \frac{ h(\boldsymbol{\beta})^{m}  }{M} \nonumber }
+\end{eqnarray}
+
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Example: }
+
+\begin{semiverbatim}
+store\_expected<- c()
+
+for(z in 1:1000)\{
+
+\hspace{0.2in}	subset<- sample(1:nrow(mips), nrow(mips), replace=T)
+
+\hspace{0.2in}	use\_mips<- mips[subset,]
+
+\hspace{0.2in}	temp\_reg<- glm(mip$\sim$treat + gop, 
+
+\hspace{0.4in}		family = binomial(link='probit'), 
+
+\hspace{0.4in}		data = as.data.frame(use\_mips))
+
+\hspace{0.2in}	store\_expected[z]<- pnorm(temp\_reg\$coef\%*\%X\_synth)
+
+	\}
+
+> mean(store\_expected) \#\# estimate of expected value
+
+[1] 0.3245165
+
+> sd(store\_expected) \#\# estimate of standard error
+
+[1] 0.0157724
+\end{semiverbatim}
+
+
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{The Bootstrap: Justification} 
+Two key ideas:
+\begin{itemize}
+\item[1)] Simulation
+\item[2)] Approximation of cumulative distribution function $F$ with empirical distribution function $\hat{F}_{n}$
+\end{itemize}
+
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Simulation}
+
+\begin{itemize}
+\item[-] Sample $M$ draws,  $Y_{m} \sim F$ 
+\item[-] For example $Y_{m} \sim \text{Normal}(\mu, \sigma^2) $
+\end{itemize}
+\pause 
+
+\begin{eqnarray}
+\invisible<1>{\frac{1}{M}\sum_{m=1}^{M}Y_{m} & \longrightarrow^{P} & E[Y] = \int y f(y) dy =  \int y dF(y) \nonumber \\} \pause 
+\invisible<1-2>{\frac{1}{M}\sum_{m=1}^{M}h(Y_{m}) & \longrightarrow^{P} &E[h(Y)] = \int h(y)f(y) dy  \nonumber \\} \pause 
+\invisible<1-3>{\frac{1}{M}\sum_{m=1}^{M} \left(Y_{m} - \sum_{m=1}^{M} \frac{Y_{m}}{M} \right)^2 & \longrightarrow^{P} & \int (y-\mu)^2 f(y)dy \nonumber } 
+\end{eqnarray}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Empirical Distribution Function}
+
+
+\pause 
+
+\invisible<1>{Univariate version: $X_{i}$ is a scalar
+\begin{eqnarray}
+\hat{F}_{n}(x) & = & \sum_{i=1}^{N} \frac{I(X_{i} \leq x)  }{ N } \nonumber 
+\end{eqnarray}}
+\pause 
+
+\invisible<1-2>{Multivariate Version: $\boldsymbol{X}_{i}$ is a vector 
+\begin{eqnarray}
+\hat{F}_{n}(\boldsymbol{x}) & = & \sum_{i=1}^{N} \frac{I(\boldsymbol{X}_{i} \leq  \boldsymbol{x} ) }{ N} \nonumber 
+\end{eqnarray}
+}
+\pause 
+\invisible<1-3>{Empirical density function: every observation has density height (probability) $\frac{1}{N}$.  }
+
+
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Approximation of Cumulative Distribution Function $F$}
+
+Expected value depends on \alert{$F$}  \pause 
+\begin{eqnarray}
+\invisible<1>{\text{Mean}_{F}(Y) & = & E[Y] = \int y dF(y) \nonumber \\} \pause 
+\invisible<1-2>{\text{Var}_{F}(Y) & = & E[(Y- \mu)^2] = \int (y- \mu)^2 dF(y) \nonumber \\} \pause 
+\invisible<1-3>{\text{h}_{F}(Y) &= & E[h(Y)] = \int h(y)dF(y) \nonumber \\} \pause 
+\invisible<1-4>{\text{Mean}_{F}(Y) & \approx & \text{Mean}_{\hat{F}}(Y)) = \int y d\hat{F}(y) \nonumber \\} \pause
+\invisible<1-5>{\text{Var}_{F}(Y) & \approx & \text{Var}_{\hat{F}}(Y) = \int (y- \mu)^2 d\hat{F}(y) \nonumber \\} \pause
+\invisible<1-6>{\text{h}_{F}(Y) & \approx & \text{h}_{\hat{F}}(Y) = \int h(y) d\hat{F}(y) \nonumber } 
+\end{eqnarray}
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{How to Take Expected Values Using $\hat{F}_{N}$?}
+\pause \invisible<1>{Simulation!} \\ \pause 
+
+\invisible<1-2>{Bootstrap is a double approximation:} \pause 
+\begin{eqnarray}
+\invisible<1-3>{\text{h}_{F}(Y) }\pause\invisible<1-4>{& \approx & \text{h}_{\hat{F}}(Y)}\pause\invisible<1-5>{ \approx \sum_{m=1}^{M} \frac{ h(Y_{m} )  }{ M } } \pause \nonumber \\
+\invisible<1-6>{h_{F}(\boldsymbol{\beta}^{*}) & \approx & h_{\hat{F}}(\boldsymbol{\beta}^{*}) \approx \sum_{m=1}^{M} \frac{h(\boldsymbol{\beta}^{*}_{m})}{M} \nonumber }
+\end{eqnarray}
+
+\end{frame}
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Percentile Bootstrap Confidence Intervals}
+
+\begin{itemize}
+\item[-] Suppose we have $M$ Bootstrap iterations of our maximum likelihood estimator $\boldsymbol{\beta}^{*}$. 
+\item[-] Suppose $h(\boldsymbol{\beta}^{*})$ is a scalar.    
+\item[-] Call $h(\boldsymbol{\beta}^{*})_{\alpha}$ the value such that $\alpha$ of values less than or equal to it.  (For example $h(\boldsymbol{\beta}^{*})_{0.5}$ is the \alert{median} (value such that 50\% lower)
+\item[-] A $1 - \alpha$ confidence interval (under some additional assumptions) is 
+\end{itemize}
+
+\begin{eqnarray}
+\text{CI}_{1-\alpha} & = & \left(h(\boldsymbol{\beta}^{*})_{\alpha/2}, h(\boldsymbol{\beta}^{*})_{1- \alpha/2}\right) \nonumber
+\end{eqnarray}
+
+
+\end{frame}
+
+
+\begin{frame}
+Recall:
+\begin{semiverbatim}
+store\_expected<- c()
+
+for(z in 1:1000)\{
+
+\hspace{0.2in}	subset<- sample(1:nrow(mips), nrow(mips), replace=T)
+
+\hspace{0.2in}	use\_mips<- mips[subset,]
+
+\hspace{0.2in}	temp\_reg<- glm(mip$\sim$treat + gop, 
+
+\hspace{0.4in}		family = binomial(link='probit'), 
+
+\hspace{0.4in}		data = as.data.frame(use\_mips))
+
+\hspace{0.2in}	store\_expected[z]<- pnorm(temp\_reg\$coef\%*\%X\_synth)
+
+	\}
+
+>conf\_int\_95<- quantile(store\_expected, c(0.025, 0.975))
+
+> conf\_int\_95
+
+     2.5\%       97.5\%
+
+0.2953548 0.3546646 
+
+\end{semiverbatim}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Bootstrapping is not a Panacea}
+
+\pause 
+\begin{itemize}
+\invisible<1>{\item[1)] If you have dependence in your data, you need to sample to preserve it (time series, nested data) (but you can do a block bootstrap)}\pause 
+\invisible<1-3>{\item[2)] Bootstrap doesn't always work: (but you can fix it, usually)
+\begin{itemize}
+\item[-] Matching
+\item[-] LASSO
+\item[-] Maximum (e.g. MLE for uniform)
+\end{itemize}}\pause 
+\invisible<1-4>{\item[-] Final lecture: talk more about non-vanilla bootstrap } 
+\end{itemize}
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Inference Three Ways}
+
+\begin{itemize}
+\item[1)] Bootstrap $\leadsto$ (no asymptotics, simulation)
+\alert{\item[2)] Delta Method $\leadsto$ (asymptotic normality, analytic)}
+\item[3)] Simulation from Multivariate Normal $\leadsto$ (asymptotic normality, simulation)
+\end{itemize}
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Delta Method (Procedure, Then Justification)}
+
+Suppose we have maximum likelihood estimator $\boldsymbol{\beta}^{*}$. \pause  \\
+\invisible<1>{We are interested in $h(\boldsymbol{\beta}^*)$.  (Assuming a large sample):} \pause 
+
+\begin{eqnarray}
+\invisible<1-2>{h(\boldsymbol{\beta}^{*}) & \longrightarrow^{D} & \text{Multivariate Normal} \left(h(\boldsymbol{\beta}), \nabla h(\boldsymbol{\beta}^{*})^{'}I_{N}(\boldsymbol{\beta}^{*})^{-1} \nabla h(\boldsymbol{\beta}^{*}) \right) \nonumber } \pause 
+\end{eqnarray} 
+
+\invisible<1-3>{Inference for $h(\boldsymbol{\beta}^{*}) $} \pause 
+\begin{itemize}
+\invisible<1-4>{\item[1)] Apply function $h$ to maximum likelihood estimates:} \pause 
+\begin{eqnarray}
+\invisible<1-5>{h(\boldsymbol{\beta}^{*}) & = & \Phi(\boldsymbol{X}_{i}^{'}\boldsymbol{\beta}^{*}) \nonumber } \pause 
+\end{eqnarray} 
+\invisible<1-6>{\item[2)] To calculate variance-covariance matrix:} \pause 
+\begin{itemize}
+\invisible<1-7>{\item[a)] Calculate $\nabla h(\boldsymbol{\beta}^{*}) $ at maximum likelihood estimates:} \pause 
+\begin{eqnarray}
+\invisible<1-8>{\nabla h(\boldsymbol{\beta}^{*})& = & \left(\frac{\partial h(\boldsymbol{\beta})}{\partial \beta_{1} }|_{\boldsymbol{\beta}^{*} }, \frac{\partial h(\boldsymbol{\beta})}{\partial \beta_{2} }|_{\boldsymbol{\beta}^{*} }, \hdots, \frac{\partial h(\boldsymbol{\beta})}{\partial \beta_{K} }|_{\boldsymbol{\beta}^{*} } \right) \nonumber } \pause 
+\end{eqnarray}
+\invisible<1-9>{\item[b)] Calculate Variance covariance matrix: } \pause 
+\begin{eqnarray}
+\only<11>{\invisible<1-10>{\nabla h(\boldsymbol{\beta}^{*})^{'}I_{N}(\boldsymbol{\beta}^{*})^{-1} \nabla h(\boldsymbol{\beta}^{*}) && \nonumber }} 
+\only<12>{\nabla h(\boldsymbol{\beta}^{*})^{'}(-E[\text{Hessian}]^{-1}) \nabla h(\boldsymbol{\beta}^{*}) && \nonumber}
+\end{eqnarray}
+
+\end{itemize}
+
+
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Example:}
+
+\begin{eqnarray}
+\frac{\partial E[Y| \boldsymbol{X}_{i}, \boldsymbol{\beta}]}{ \partial \boldsymbol{\beta}_{k}} & = & \phi(\boldsymbol{X}_{i} \boldsymbol{\beta})X_{k} \nonumber 
+\end{eqnarray}
+
+\begin{semiverbatim}
+
+prob\_grad<- function(X, coef)\{
+
+\hspace{0.3in}	base<- dnorm(coef\%*\%X)
+
+\hspace{0.3in}	out<- base*X
+
+\hspace{0.3in}	return(out)
+	
+\hspace{0.2in}\}
+
+> mle\_grad<- prob\_grad(X\_synth, reg1\$coef)
+
+
+> mle\_grad
+
+[1] 0.359335 0.000000 0.359335
+
+ 
+> ses<- sqrt(t(mle\_grad)\%*\%vcov(reg1)\%*\%mle\_grad)
+
+ 
+> ses
+           
+[1,] 0.01618305
+
+
+\end{semiverbatim}
+
+
+
+
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Comparison}
+
+\begin{tabular}{ccc}
+\hline
+	& Bootstrap & Delta Method \\
+\hline	
+Standard Error &  0.016		& 	0.016	\\
+Confidence Interval & [0.295, 0.355]	  & 		\\
+\hline
+\end{tabular}
+
+
+
+
+\end{frame}
+
+
+
+
+
+\begin{frame}
+\frametitle{Delta Method (Justification)}
+
+Recall that 
+
+\pause 
+\invisible<1>{\begin{eqnarray}
+\boldsymbol{\beta}^{*} & \longrightarrow^{D} & \text{Multivariate Normal}\left(\boldsymbol{\beta}, I(\boldsymbol{\beta}^{*})^{-1}\right) \nonumber 
+\end{eqnarray}}\pause 
+
+\invisible<1-2>{Multivariate Taylor Series: } \pause 
+
+\invisible<1-3>{\begin{eqnarray}
+h(\boldsymbol{\beta}^{*} ) & = & h(\boldsymbol{\beta}) + \nabla h(\boldsymbol{\beta})^{'}(\boldsymbol{\beta}^{*} - \boldsymbol{\beta})  + \text{ Remainder } \nonumber 
+\end{eqnarray}} \pause 
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Delta Method (Justification)}
+
+
+Take the limit: 
+
+\begin{eqnarray}
+\lim_{n \rightarrow \infty} h(\boldsymbol{\beta}^{*} ) & = & \lim_{n \rightarrow \infty} \left(h(\boldsymbol{\beta}) + \nabla h(\boldsymbol{\beta})^{'}(\boldsymbol{\beta}^{*} - \boldsymbol{\beta})  + \text{ Remainder } \right) \nonumber \\
+\lim_{n \rightarrow \infty} h(\boldsymbol{\beta}^{*} )& \longrightarrow^{P} & h(\boldsymbol{\beta}) \nonumber \\
+\lim_{n \rightarrow \infty} h(\boldsymbol{\beta}^{*} )& \longrightarrow^{D} & h(\boldsymbol{\beta}) + \lim_{n \rightarrow \infty} \left(\nabla 
+h(\boldsymbol{\beta})^{'}
+\underbrace{(\boldsymbol{\beta}^{*} - \boldsymbol{\beta})}_{\text{MVN}(0, I(\boldsymbol{\beta})^{-1}} \right)  \nonumber 
+\end{eqnarray}
+\pause 
+
+\invisible<1>{
+Then by Slutsky's Theorem:
+
+
+\begin{eqnarray}
+h(\boldsymbol{\beta}^{*} ) & \longrightarrow^{D} & \text{MVN}(h(\boldsymbol{\beta}), \nabla h(\boldsymbol{\beta}^{*})^{'}I_{N}(\boldsymbol{\beta}^{*})^{-1} \nabla h(\boldsymbol{\beta}^{*})) \nonumber 
+\end{eqnarray}
+}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Delta Method Confidence Intervals}
+
+\begin{itemize}
+\item[-] Suppose $h(\boldsymbol{\beta}^{*}) $ is a scalar\\
+\item[-] SE($h(\boldsymbol{\beta}^{*} )) = \sqrt{\left(\nabla h(\boldsymbol{\beta}^{*})^{'}I_{N}(\boldsymbol{\beta}^{*})^{-1} \nabla h(\boldsymbol{\beta}^{*})\right) }$
+\item[-] Then a $1- \alpha$ confidence interval is:
+\end{itemize}
+
+\begin{eqnarray}
+\text{CI}_{1-\alpha} & = & \left[h(\boldsymbol{\beta}^{*} )- 1.96 \times \text{SE}(h(\boldsymbol{\beta}^{*} )) , h(\boldsymbol{\beta}^{*} ) + 1.96 \times \text{SE}(h(\boldsymbol{\beta}^{*} ) ) \right] \nonumber 
+\end{eqnarray}
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Delta Method: Example}
+
+
+\begin{semiverbatim}
+
+> y.prob<- pnorm(y.tilde)
+
+> X\_synth<- c(1, 0, 1)
+
+> y.tilde<- reg1\$coef\%*\%X\_synth
+
+> y.prob<- pnorm(y.tilde)
+
+> y.prob
+          
+[1,] 0.3237277
+
+
+> ses<- sqrt(t(mle\_grad)\%*\%vcov(reg1)\%*\%mle\_grad)
+
+> ses
+         
+[1,] 0.01618305
+
+> delta\_95<- c(y.prob - 1.96*ses, y.prob + 1.96*ses)
+
+> delta\_95
+
+[1] 0.2920089 0.3554464
+
+\end{semiverbatim}
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Comparison}
+
+\begin{tabular}{ccc}
+\hline
+	& Bootstrap & Delta Method \\
+\hline	
+Standard Error &  0.016		& 	0.016	\\
+Confidence Interval & [0.295, 0.355]	 & [0.292, 0.355] \\
+\hline
+\end{tabular}
+
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Inference Three Ways}
+
+\begin{itemize}
+\item[1)] Bootstrap $\leadsto$ (no asymptotics, simulation)
+\item[2)] Delta Method $\leadsto$ (asymptotic normality, analytic)
+\alert{\item[3)] Simulation from Multivariate Normal $\leadsto$ (asymptotic normality, simulation)} 
+\end{itemize}
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Simultation from Multivariate Normal (Procedure)}
+
+$\boldsymbol{\beta}^{*} \longrightarrow^{D} \text{MVN}(\boldsymbol{\beta}, I(\boldsymbol{\beta})^{-1}) $
+
+\pause 
+
+
+
+\invisible<1>{Inference about $h(\boldsymbol{\beta}^{*})$: } \pause \\
+\invisible<1-2>{For each simulation $m$ of $M$ simulations:} \pause 
+\begin{eqnarray}
+\invisible<1-3>{\boldsymbol{\beta}^{m} & \sim & \text{MVN}\left(\boldsymbol{\beta}^{*}, I(\boldsymbol{\beta})^{-1} \right) \nonumber\\} \pause 
+\invisible<1-4>{h(\boldsymbol{\beta})^{m} & = & h(\boldsymbol{\beta}^{m}) \nonumber } \pause 
+\end{eqnarray}
+
+\invisible<1-5>{Use collection of simulated values $\left(h(\boldsymbol{\beta})^{1}, h(\boldsymbol{\beta})^{2}, \hdots, h(\boldsymbol{\beta})^{M}\right)$ to approximate distribution of $h(\boldsymbol{\beta}^{*})$.  } \pause 
+
+\begin{eqnarray}
+\only<1-7>{\invisible<1-6>{E[h(\boldsymbol{\beta}^{*})] & = & \sum_{m=1}^{M} \frac{h(\boldsymbol{\beta})^{m} }{M} \nonumber } } 
+\only<8>{\text{var}[h(\boldsymbol{\beta}^{*})] & = & \sum_{m=1}^{M} \frac{\left(h(\boldsymbol{\beta})^{m} -  \sum_{m=1}^{M} \frac{h(\boldsymbol{\beta})^{m} }{M}  \right)^{2} }{M} \nonumber } 
+\only<9>{f[h(\boldsymbol{\beta}^{*})] & = & \sum_{m=1}^{M} \frac{ f(h(\boldsymbol{\beta})^{m}) }{ M } \nonumber }
+\end{eqnarray}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Simulation: Example}
+
+
+\begin{semiverbatim}
+libary(MASS)
+
+draw\_coef<- mvrnorm(1000, mu = reg1\$coef, Sigma = vcov(reg1))
+
+> dim(draw\_coef)
+
+[1] 1000    3
+
+
+dist\_exp<- pnorm(draw\_coef\%*\%X\_synth)
+
+> length(dist\_exp)
+
+[1] 1000
+
+
+sd(dist\_exp)
+
+[1] 0.01572543
+
+\end{semiverbatim}
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Comparison}
+
+\begin{tabular}{cccc}
+\hline
+	& Bootstrap & Delta Method & MVN Simulation \\
+\hline	
+Standard Error      &  0.016			 & 	0.016	      &  0.016\\
+Confidence Interval & [0.295, 0.355]	 & [0.292, 0.355] &   \\
+\hline
+\end{tabular}
+
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Simultation from Multivariate Normal (Justification)}
+
+
+Simulation is a (stronger assumption) double approximation
+
+\begin{eqnarray}
+E_{f}[h(\boldsymbol{\beta})^{*} ] & = & \int h(\boldsymbol{\beta})^{*} f(\boldsymbol{\beta}^{*})d\boldsymbol{\beta}^{*} \nonumber \\
+& \approx & \int h(\boldsymbol{\beta}^{*}) \underbrace{\tilde{f}(\boldsymbol{\beta}^{*})}_{\text{MVN}}d\boldsymbol{\beta}^{*} \approx \sum_{m=1}^{M} \frac{h(\boldsymbol{\beta})^{m} }{M} \nonumber 
+\end{eqnarray}
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Percentile Simulation Confidence Intervals}
+
+\begin{itemize}
+\item[-] Suppose we have $M$ draws 
+\item[-] Suppose $h(\boldsymbol{\beta}^{*})$ is a scalar
+\item[-] Then a $1-\alpha$ confidence interval is:
+\begin{eqnarray}
+\text{CI}_{1-\alpha} & = & \left[h(\boldsymbol{\beta}^{*})_{\alpha/2}, h(\boldsymbol{\beta}^{*})_{1 - \alpha/2}\right] \nonumber 
+\end{eqnarray}
+\item[-] In practice: order the values, select quantile values at $\alpha/2$ and $1- \alpha/2$.  
+\end{itemize}
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Simulation Confidence Intervals}
+
+
+
+\begin{semiverbatim}
+
+sim\_95<- quantile(dist\_exp, c(0.025, 0.975))
+
+> sim\_95
+
+     2.5\%     97.5\% 
+
+0.2953568 0.3559635 
+
+\end{semiverbatim}
+
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Comparison}
+
+\begin{tabular}{cccc}
+\hline
+	& Bootstrap & Delta Method & MVN Simulation \\
+\hline	
+Standard Error      &  0.016			 & 	0.016	      &  0.016\\
+Confidence Interval & [0.295, 0.355]	 & [0.292, 0.355] & [0.295, 0.356]   \\
+\hline
+\end{tabular}
+
+
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{So Which Should I Use?}
+
+Lots of data
+\begin{itemize}
+\item[-] Then all three methods will be close
+\item[-] Delta Method + MVN Simulation $\leadsto$ faster (but what else are you doing?)
+\end{itemize}
+
+Not lots of data
+
+\begin{itemize}
+\item[-] Then only bootstrap will perform well 
+\item[-] And will be comparable in speed to Delta + MVN
+\end{itemize}
+
+
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Wendesday}
+
+
+Ordered Probit
+
+
+\end{frame}
+
+
+
+\end{document} 

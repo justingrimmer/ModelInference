@@ -1,0 +1,158 @@
+\documentclass[letterpaper,12pt]{article}
+%\usepackage{amsmath,epsfig,setspace,multirow,url,fancyhdr}
+%\usepackage{graphicx}
+%\usepackage{setspace}
+\usepackage{lscape,enumitem}
+\usepackage{arabtex}
+\usepackage{rotating}
+%%\usepackage{times}
+%\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}
+%\usepackage{endnotes}
+%\clubpenalty=10000 \widowpenalty=10000
+%\hyphenation{}
+%\renewcommand{\bibitem}{\vskip6pt\par\hangindent\parindent\hskip-\parindent}
+% === graphic packages ===
+\usepackage{graphicx,textcomp}
+% === bibliography package ===
+\usepackage{natbib}
+% === margin and formatting ===
+%\usepackage[compact]{titlesec}
+%\usepackage{fullpage}
+\usepackage{vmargin}
+\setpapersize{USletter}
+\topmargin=0in
+\usepackage{color}
+% === math packages ===
+\usepackage[reqno]{amsmath}
+%\usepackage[pdftex]{hyperref}
+\usepackage{amsthm}
+\usepackage{amssymb,enumerate}
+\usepackage[all]{xy}
+\usepackage{lscape}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\newtheorem{com}{Comment}
+\newtheorem{lem} {Lemma}
+\newtheorem{prop}{Proposition}
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{cor}{Corollary}
+\newtheorem{obs}{Observation}
+\newtheorem{ass}{Assumption}
+ \numberwithin{equation}{section}
+ \numberwithin{equation}{section}
+% === dcolumn package ===
+\usepackage{dcolumn}
+\newcolumntype{.}{D{.}{.}{-1}}
+\newcolumntype{d}[1]{D{.}{.}{#1}}
+% === additional packages ===
+\usepackage{url}
+\newcommand{\Sref}[1]{Section~\ref{#1}}
+\newcommand{\mean}{\text{mean}}
+\usepackage{color,setspace}
+\definecolor{spot}{rgb}{0.6,0,0}
+
+\title{POL 350C, Homework 5}
+
+\date{May 9th, 2017}
+\begin{document}
+\maketitle
+
+\noindent Assigned: 5/9/2017\\
+Due: 5/18/2017\\
+
+In this problem set we're going to continue to analyze political speech and a new data set of cabinet duration.
+
+\section{Analysis of Political Language}
+Using the language data from the previous problem set, we're going to use a Poisson Regression and Negative Binomial regression to model the incidence of the phrase ``government takeover".
+
+
+As a reminder, in the data set {\tt SpeechDat.RData} we have the following variables:
+\begin{itemize}
+\item[1)] Year : year of press release (either 2009 or 2010, be sure to include this as a factor)
+\item[2)] ICPSR: a unique identifier for the legislator
+\item[3)] obamcare: number of times ``obamacare" appears in legislators' press releases
+\item[4)] govTakeover: number of times ``government takeover" appears in legislators' press releases
+\item[5)] dem: An indicator vector that equals 1 if the legislator is a Democrat
+\item[6)] dw\_nom: a one-dimensional measure of legislator ideology.  Negative values are more liberal, positive values are conservative.
+\end{itemize}
+
+
+
+\begin{itemize}
+\item[a)] Suppose that we assume the number of times ``government takeover" appeares in legislators' press releases is distributed according to a Negative Binomial distribution. $\text{govTakeover}_{i} \sim \text{Negative Binomial}(\lambda_{i}, \sigma^2)$.   Where $\lambda_{i} = \exp(X_{i}^{'}\boldsymbol{\beta})$
+\begin{itemize}
+\item[i)] Write a function to calculate the log-likelihood for a vector of parameters $\boldsymbol{\beta}$ and a value of the dispersion parameter $\sigma^2$.  {\tt Hint:} We need to find the values of $\boldsymbol{\beta}$ and $\sigma^2$ that maximize the log-likelihood, but we need to make sure that $\sigma^2>1$.  To do this, I recommend the first few lines of your function look like the following:
+
+\begin{verbatim}
+log_lik<- function(params, X, Y){
+	beta<- params[1:ncol(X)] ##extracts the coefficients
+	sigma2<- params[ncol(X) + 1] ##extracts the sigma2
+	sigma2<- exp(sigma2)  + 1 ##ensures that sigma2>1
+	.
+	.
+	.
+}
+\end{verbatim}
+
+\item[ii)] Using the function from (a) (ii), use {\tt optim} to obtain Maximum likelihood estimates for the following negative binomial regression:
+\begin{eqnarray}
+Y_{i} & \sim & \text{Negative Binomial}(\lambda_{i}, \sigma^2) \nonumber \\
+\lambda_{i} & = & \exp(\boldsymbol{X}_{i}^{'}\boldsymbol{\beta}) \nonumber
+\end{eqnarray}
+Where $\boldsymbol{X}_{i} = (1, \text{dem}, \text{2010}, \text{dw\_nom})$ and 2010 is an indicator equal to 1 if the year is 2010.  Report the coefficients and the estimate of dispersion parameter.  (Hint: remember that if {\tt optim} reports dispersion parameter value $\alpha$ the estimate is $\exp(\alpha)$).  Use {\tt glm.nb} in the {\tt MASS} library to confirm your answer.  (Note: that the value $\theta$ reported from {\tt glm.nb} is the value such that Var$(Y_{i}|X_{i} ) = \lambda_{i} + \frac{\lambda_{i}^2}{\theta}$, while the parameterization used in the lecture slides has Var$(Y_{i}|X_{i} ) = \lambda_{i} \sigma^2$.  )
+
+\item[iii)] Using {\tt glm} estimate the analogous Poisson regression.  Report those coefficients in a table.
+\end{itemize}
+
+\item[c)] Using the Negative Binomial and Poisson regressions, we're going to examine model fit and infer differences between Republicans and Democrats.
+\begin{itemize}
+\item[1)] Assessing model fit.
+\begin{itemize}
+\item[i)] In a histogram, provide the observed data.
+\item[ii)] Taking care to maintain the same horizontal axis, provide predictions from the Poisson and Negative Binomial regression in a histogram.  Compare and contrast the three histograms: which model seems to ``fit" the data better?
+\end{itemize}
+\item[2)] Differences between Democrats and Republicans
+\begin{itemize}
+\item[i)] Obtain the median DW-Nominate score among Democrats and the median DW-Nominate score among Republicans.
+\item[ii)] Using those obtained values, compare the rate the median Democrat uses the phrase Obamcare to the rate the median Republican uses the phrase ``government takeover" using the maximum likelihood estimates from the negative binomial and poisson regressions.  Calculate a separate difference in 2009 and 2010.  Are there noticeable differences between the two regressions?
+\item[iii)] Using the multivariate normal based-simulation, calculate uncertainty for this difference.  How much larger is the rate for Republicans?
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+
+\section{Cabinet Duration}
+
+In this problem we're going to examine the cabinet duration data from King, Alt, Burns, and Laver (1990).  To obtain the data, install the {\tt Zelig} library and run the command {\tt data(coalition)} at the prompt. We're going to analyze how the legal requirement of ``investiture" affects the expected duration.
+
+
+\begin{itemize}
+\item[a)] Using {\tt R's} density function, create a density plot of {\tt duration}.  Provide the plot with clearly labeled axes and an informative title.
+\item[b)] Using {\tt Zelig} fit an exponential and weibull regression of {\tt duration} on {\tt fract} (a measure of fractionalization of parties) and {\tt invest} (an indicator if there is a legal requirement for investiture.)  We will follow the original authors and use {\tt ciep12} as a censoring variable, equal to 0 if the government is censored because of the electoral period.  \\
+
+To fit the models in {\tt Zelig} use the following syntax:
+
+\begin{footnotesize}
+\begin{verbatim}
+exp_model <- zelig(Surv(duration, ciep12)~ invest + fract, model = 'exp', data = coalition)
+weib_model<- zelig(Surv(duration, ciep12)~ invest + fract, model = 'weibull', data = coalition)
+\end{verbatim}
+\end{footnotesize}
+
+\item[c)] We're going to examine the Average Treatment Effect of investiture on expected duration.
+\begin{itemize}
+\item[i)] Calculate each observation's expected duration.  Note, that for the parameterizations used in {\tt zelig} if $Y\sim \text{Exponential}(\lambda_{i})$ then $E[Y] = \frac{1}{\lambda_{i}}$ and if $Y \sim \text{Weibull}(\lambda_{i}, \alpha)$ then $E[Y]  = \lambda_{i} \Gamma( 1 + \frac{1}{\alpha})$.
+\item[ii)] Calculate each observation's counterfactual expected duration, if the value of investiture was changed.
+\item[iii)] Using the quantities from $i$ and $ii$ report the point estimate for the ATE of investiture on expected duration for both the Exponential and Weibull regression.
+\item[iv)] Using the multivariate normal simulation, obtain 95 percent confidence intervals for the ATE.  Does the choice of model substantially affect your estimate?
+\item[v)] Compare the result in (iv) to the estimated effect of investiture on duration using a linear regression of duration on investiture.  What do you notice?
+\end{itemize}
+\end{itemize}
+
+
+
+
+
+
+\end{document}

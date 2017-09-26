@@ -1,0 +1,699 @@
+\documentclass{beamer}
+
+%\usepackage[table]{xcolor}
+\mode<presentation> {
+  \usetheme{Boadilla}
+%  \usetheme{Pittsburgh}
+%\usefonttheme[2]{sans}
+\renewcommand{\familydefault}{cmss}
+%\usepackage{lmodern}
+%\usepackage[T1]{fontenc}
+%\usepackage{palatino}
+%\usepackage{cmbright}
+  \setbeamercovered{transparent}
+\useinnertheme{rectangles}
+}
+%\usepackage{normalem}{ulem}
+%\usepackage{colortbl, textcomp}
+\setbeamercolor{normal text}{fg=black}
+\setbeamercolor{structure}{fg= black}
+\definecolor{trial}{cmyk}{1,0,0, 0}
+\definecolor{trial2}{cmyk}{0.00,0,1, 0}
+\definecolor{darkgreen}{rgb}{0,.4, 0.1}
+\newtheorem{prop}{Proposition}
+\newtheorem{defn}{Definition}
+\newtheorem{cor}{Corollary}
+\newtheorem{lem}{Lemma}
+
+\usefonttheme{professionalfonts} % using non standard fonts for beamer
+\usefonttheme{serif}
+
+\beamertemplatesolidbackgroundcolor{white}  \setbeamercolor{alerted
+text}{fg=red}
+\usepackage{multirow}
+
+\setbeamertemplate{caption}[numbered]\newcounter{mylastframe}
+
+%\begin{beamerboxesrounded}[upper=uppercol,lower=lowercol,shadow=true]{Block}
+%$A = B$.
+%\end{beamerboxesrounded}}
+\renewcommand{\familydefault}{cmss}
+\usepackage[all]{xy}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+%\usepackage{palatino}
+%\usepackage{eulervm}
+\usecolortheme{lily}
+%\usepackage[latin1]{inputenc}
+
+\title[Methodology III] % (optional, nur bei langen Titeln nötig)
+{Political Methodology III: Model Based Inference}
+
+\author{Justin Grimmer}
+\institute[Stanford University]{Associate Professor\\Department of Political Science \\  Stanford University}
+\vspace{0.3in}
+
+\date{April 11th, 2017}
+
+\begin{document}
+\begin{frame}
+\titlepage
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Statistical Inference}
+
+
+\begin{itemize}
+\item[-] Model based inference:
+\item[-] \alert{Assume}: data generated via distributional process
+\item[-] Wednesday: Derived a likelihood for single/bivariate problems
+\item[-] Today: Interested in conditional relationships
+\item[-] Today: Build Linear Model Using Likelihood
+\end{itemize}
+Bivariate \alert{$\leadsto$} Multivariate $\leadsto$ Computational Model
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Regression Model$\leadsto$ Time for Change}
+
+Model incumbent vote share, $Y_{i}$
+\begin{itemize}
+\item[1)] $X_{i1} = $Incumbent Presidential Popularity (Net Approval/Disapproval)
+\item[2)] $X_{i2} = $GDP Growth
+\item[3)] $X_{i3} = $First-term Incumbent In Race
+\end{itemize}
+$\boldsymbol{X}_{i} = (X_{i1}, X_{i2}, X_{i3})$
+
+
+
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Bivariate Regression Model via Maximum Likelihood}
+
+Linear regression model:
+\begin{eqnarray}
+Y_{i} & = & \beta_{0} + \beta_{1}X_{i1} + \epsilon_{i} \nonumber \\
+\epsilon_{i} & \sim & \text{Normal}(0, \sigma^{2}) \nonumber
+\end{eqnarray}
+\pause
+\invisible<1>{Equivalently:
+
+\begin{eqnarray}
+Y_{i} & \sim & \text{Normal}(\mu_{i}, \sigma^{2}) \nonumber \\
+E[Y_{i}| X_{i1} ] = \mu_{i} & = & \beta_{0}  + \beta_{1} X_{i1} \nonumber
+\end{eqnarray}} \pause
+
+\invisible<1-2>{Parameters:
+\begin{eqnarray}
+\boldsymbol{\beta} & = & (\beta_{0} , \beta_{1}) \nonumber \\
+\sigma^2 && \nonumber
+\end{eqnarray}}
+
+
+%%The key here is get them to recognize the assumptions that they are making
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Bivariate Regression Model via Maximum Likelihood}
+
+
+\begin{eqnarray}
+L(\boldsymbol{\beta}, \sigma^2 | \boldsymbol{Y}, \boldsymbol{X}) & = &  f(\boldsymbol{Y} | \boldsymbol{\beta}, \sigma^2,  \boldsymbol{X}) \nonumber \\ \pause
+\invisible<1>{&= & \prod_{i=1}^{N} f(Y_{i} | \boldsymbol{\beta}, \sigma^2, X_{i1}) \nonumber \\} \pause
+\invisible<1-2>{& = & \prod_{i=1}^{N} \frac{1}{\sqrt{2\pi \sigma^2} } \exp\left( \frac{-(Y_{i} - \beta_{0} - \beta_{1}X_{i1} )^2}{2 \sigma^2} \right) \nonumber \\} \pause
+\invisible<1-3>{& = & \frac{1}{\left( 2 \pi \sigma^2 \right)^{N/2}} \exp\left( - \sum_{i=1}^{N} \frac{ (Y_{i} - \beta_{0} - \beta_{1}X_{i1} )^2}{2 \sigma^2} \right) \nonumber }
+\end{eqnarray}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Bivariate Regression Model via Maximum Likelihood}
+
+\begin{eqnarray}
+L(\boldsymbol{\beta}, \sigma^2 | \boldsymbol{Y}, \boldsymbol{X}) & = & \frac{1}{\left( 2 \pi \sigma^2 \right)^{N/2}} \exp\left( - \sum_{i=1}^{N} \frac{ (Y_{i} - \beta_{0} - \beta_{1}X_{i1} )^2}{2 \sigma^2} \right) \nonumber \\ \pause
+\invisible<1>{\log L(\boldsymbol{\beta}, \sigma^2 | \boldsymbol{Y}, \boldsymbol{X}) & = &  - \underbrace{\frac{N}{2} \log (2 \pi )}_{\text{constant}} - \frac{N}{2} \log (\sigma^2) - \sum_{i=1}^{N} \frac{ (Y_{i} - \beta_{0} - \beta_{1}X_{i1} )^2}{2 \sigma^2} \nonumber \\} \pause
+\invisible<1-2>{l(\boldsymbol{\beta}, \sigma^2 | \boldsymbol{Y}, \boldsymbol{X}) & = & - \frac{N}{2} \log (\sigma^2) - \sum_{i=1}^{N} \frac{ (Y_{i} - \beta_{0} - \beta_{1}X_{i1} )^2}{2 \sigma^2} + c \nonumber }\pause
+\end{eqnarray}
+
+\invisible<1-3>{Optimize with respect to:
+\begin{itemize}
+\item[] $\boldsymbol{\beta}$
+\item[] $\sigma^2$
+\end{itemize}
+} \pause
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Bivariate Regression Model via Maximum Likelihood}
+
+\begin{eqnarray}
+\frac{\partial l(\boldsymbol{\beta}, \sigma^2 | \boldsymbol{Y}, \boldsymbol{X})}{\partial \beta_{0}} & = &   \sum_{i=1}^{N} \frac{Y_{i} - \beta_{0} - \beta_{1} X_{i1} }{ \sigma^2} \nonumber \\
+\frac{\partial l(\boldsymbol{\beta}, \sigma^2 | \boldsymbol{Y}, \boldsymbol{X})}{\partial \beta_{1}} & = &
+   \sum_{i=1}^{N} \frac{Y_{i} - \beta_{0} - \beta_{1} X_{i1} }{ \sigma^2} X_{i1}  \nonumber \\
+ \frac{\partial l(\boldsymbol{\beta}, \sigma^2 | \boldsymbol{Y}, \boldsymbol{X})}{\partial \sigma^2} & = & -\frac{N}{2 \sigma^2}  +    \sum_{i=1}^{N}  \frac{\left(Y_{i} - \beta_{0} - \beta_{1} X_{i1} \right)^2 }{ 2(\sigma^2) ^2 } \nonumber
+\end{eqnarray}
+
+\pause
+
+\invisible<1>{Score function: $ s(\boldsymbol{\beta}, \sigma^2 ) = \nabla l(\boldsymbol{\beta}, \sigma^2 | Y_{i}, X_{i} ) = $
+\begin{eqnarray}
+\left(\frac{Y_{i} - \beta_{0} - \beta_{1} X_{i1} }{ \sigma^2},\frac{Y_{i} - \beta_{0} - \beta_{1} X_{i1} }{ \sigma^2}X_{i1}  , -\frac{1}{2 \sigma^2}  +      \frac{\left(Y_{i} - \beta_{0} - \beta_{1} X_{i1} \right)^2 }{ 2(\sigma^2) ^2 }  \right)  && \nonumber
+\end{eqnarray}
+}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Bivariate Regression Model via Maximum Likelihood}
+
+\only<1>{\begin{eqnarray}
+  0 & = & \sum_{i=1}^{N} \frac{Y_{i} - \beta_{0}^{*}  - \beta_{1}^{*} X_{i1} }{ \sigma^{2,*} } \nonumber \\
+  0 & = &  \sum_{i=1}^{N} \frac{Y_{i} - \beta_{0}^{*} - \beta_{1}^{*} X_{i1} }{ \sigma^{2,*}}X_{i1} \nonumber \\
+  0 &= & -\frac{N}{2 \sigma^{2,*}}  +    \sum_{i=1}^{N}  \frac{\left(Y_{i} - \beta_{0}^{*} - \beta_{1}^{*} X_{i1} \right)^2 }{ 2(\sigma^{2,*}) ^2 }\nonumber
+\end{eqnarray}}
+
+
+\only<2>{
+
+	\huge
+Algebra
+
+}
+
+
+\only<3>{
+
+\begin{eqnarray}
+\beta_{1}^{*} & = & \frac{\sum_{i=1}^{N} (X_{i} - \bar{X} )(Y_{i} - \bar{Y} ) }{\sum_{i=1}^{N} (X_{i}-  \bar{X})^2   } \nonumber  \\
+\beta_{0}^{*} & = & \bar{Y} - \beta_{1}^{*} \bar{X} \nonumber \\
+\sigma^{2,*} & = & \frac{1}{N} \sum_{i=1}^{N} (Y_{i} - \beta_{0}^{*} - \beta_1^{*}X_{i} )^2 \nonumber
+\end{eqnarray}
+
+}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Bivariate Regression and Maximum Likelihood}
+
+Fisher Information matrix
+\begin{eqnarray}
+I(\boldsymbol{\beta}, \sigma^2) & = & E[ s( \boldsymbol{\beta}, \sigma^2 ) s(\boldsymbol{\beta}, \sigma^2 )^{'}] \nonumber \\
+I(\boldsymbol{\beta}, \sigma^2) & = & -E[ H_{i} (\boldsymbol{\beta}, \sigma^2)]  \text{ (under regularity conditions) }\nonumber \\
+I_{ij}(\boldsymbol{\beta}, \sigma^2) & = & -E[\frac{\partial^2 l(\boldsymbol{\beta}, \sigma^2| Y_{i} , \boldsymbol{X}_{i})}{\partial \beta_{i} \beta_{j} }| \boldsymbol{\beta}, \sigma^2] \nonumber \\
+I_{ij}(\boldsymbol{\beta}, \sigma^2) & = & -\int \frac{\partial^2 l(\boldsymbol{\beta}, \sigma^2| Y_{i}, \boldsymbol{X}_{i})}{\partial \beta_{i} \beta_{j} } f(Y_{i}|\boldsymbol{\beta}, \sigma^2, \boldsymbol{X} )d\boldsymbol{Y} \nonumber
+\end{eqnarray}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Three Ways to Estimate Variance}
+
+\begin{eqnarray}
+\widehat{\text{Var}(\boldsymbol{\beta}, \sigma^2)_{OS}} & = & \left[\sum_{i=1}^{N}  s(\boldsymbol{\beta}, \sigma^2 ) s( \boldsymbol{\beta}, \sigma^2 )^{'}\right]^{-1} \nonumber \\
+\widehat{\text{Var}(\boldsymbol{\beta}, \sigma^2)_{OH}} & = & - \left[\sum_{i=1}^{N} H_{i}(\boldsymbol{\beta}, \sigma^2)\right]^{-1}  \nonumber \\
+\widehat{\text{Var}(\boldsymbol{\beta}, \sigma^2)_{EH}} & = & - \left[\sum_{i=1}^{N} E[H_{i}(\boldsymbol{\beta}, \sigma^2) ]\right]^{-1}\nonumber
+\end{eqnarray}
+
+
+
+\end{frame}
+
+
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Bivariate Regression Model via Maximum Likelihood}
+
+
+\begin{eqnarray}
+\frac{\partial^2 l(\boldsymbol{\beta}, \sigma^2 | \boldsymbol{Y}, \boldsymbol{X})}{\partial \beta_{0} \partial \beta_{0} } & = & - \sum_{i=1}^{N} \frac{1}{\sigma^{2} } \nonumber \\
+\frac{\partial^2 l(\boldsymbol{\beta}, \sigma^2 | \boldsymbol{Y}, \boldsymbol{X})}{\partial \beta_{1} \partial \beta_{1} } &= & - \sum_{i=1}^{N} \frac{X_{i}^{2}}{\sigma^2} \nonumber \\
+\frac{\partial^2 l(\boldsymbol{\beta}, \sigma^2 | \boldsymbol{Y}, \boldsymbol{X})}{\partial \sigma^2 \partial \sigma^2 } & = &  \frac{ N}{2 (\sigma^{2})^{2} } - \sum_{i=1}^{N} \frac{(Y_i - \beta_{0} - \beta_{1} X_{i1})^2 }{ (\sigma^2)^4 } \nonumber \\
+\frac{\partial^2 l(\boldsymbol{\beta}, \sigma^2 | \boldsymbol{Y}, \boldsymbol{X})}{\partial \beta_{0} \partial \beta_{1} } & = & - \sum_{i=1}^{N} \frac{X_{i}}{\sigma^2}\nonumber \\
+\frac{\partial^2 l(\boldsymbol{\beta}, \sigma^2 | \boldsymbol{Y}, \boldsymbol{X})}{\partial \sigma^2 \partial \beta_{1} } & = & - \sum_{i=1}^{N}\frac{(Y_{i} - \beta_{0} - \beta_{1} X_{i1})X_{i} }{(\sigma^2)^{2}} \nonumber
+\end{eqnarray}
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Bivariate Regression Model via Maximum Likelihood}
+
+\begin{eqnarray}
+-E\left[\frac{\partial^2 l(\boldsymbol{\beta}, \sigma^2 | \boldsymbol{Y}, \boldsymbol{X})}{\partial \beta_{0} \partial \beta_{0} }\right ]  & = &  -E\left[- \frac{1}{\sigma^2} \right] \nonumber \\ \pause
+\invisible<1>{& = & - \sum_{i=1}^{N} \int_{-\infty}^{\infty} -\frac{1}{\sigma^{2} } f(Y_{i} | \boldsymbol{\beta}, \sigma^2, X_{i}) dY_{i} \nonumber \\} \pause
+\invisible<1-2>{& = & \sum_{i=1}^{N} \frac{1}{\sigma^2}\int_{-\infty}^{\infty} f(Y_{i} | \boldsymbol{\beta}, \sigma^2, X_{i}) dY_{i}\nonumber \\} \pause
+\invisible<1-3>{& = & \sum_{i=1}^{N} \frac{1}{\sigma^2} \times 1  = \frac{N}{\sigma^2} \nonumber }
+\end{eqnarray}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Bivariate Regression Model via Maximum Likelihood}
+
+\begin{eqnarray}
+-E[\frac{\partial^2 l(\boldsymbol{\beta}, \sigma^2 | \boldsymbol{Y}, \boldsymbol{X})}{\partial \beta_{1} \partial \beta_{1} }]  &= &- E[ - \sum_{i=1}^{N} \frac{X_{i}^{2}}{\sigma^2}] \nonumber \\
+					   & = & \sum_{i=1}^{N} \frac{X_{i}^2}{\sigma^2} \nonumber  \pause \\
+\invisible<1>{-E[\frac{\partial^2 l(\boldsymbol{\beta}, \sigma^2 | \boldsymbol{Y}, \boldsymbol{X})}{\partial \beta_{0} \partial \beta_{1} }] & = & -E[- \sum_{i=1}^{N} \frac{X_{i}}{\sigma^2}]  \nonumber \\
+					 & = & \sum_{i=1}^{N} \frac{X_{i}}{\sigma^2} \nonumber }
+\end{eqnarray}
+
+
+\end{frame}
+
+
+\begin{frame}
+
+\begin{eqnarray}
+-E[\frac{\partial^2 l(\boldsymbol{\beta}, \sigma^2 | \boldsymbol{Y}, \boldsymbol{X})}{\partial \sigma^2 \partial \sigma^2 }] & = &  E[\frac{ N}{2 (\sigma^{2})^{2} } - \sum_{i=1}^{N} \frac{(Y_i - \beta_{0} - \beta_{1} X_{i1})^2 }{ (\sigma^2)^4 }] \nonumber  \pause \\
+					\invisible<1>{& = & - \frac{N}{2 (\sigma^2)^2} +  \sum_{i=1}^{N} E\left[ \frac{(Y_i - \beta_{0} - \beta_{1} X_{i1})^2 }{ (\sigma^2)^4 }\right] \nonumber\\} \pause
+					\invisible<1-2>{& = & - \frac{N}{2 (\sigma^2)^2} + \sum_{i=1}^{N} \frac{\sigma^2 }{ (\sigma^2)^4 } \nonumber \\} \pause
+					\invisible<1-3>{& = & - \frac{N}{2 (\sigma^2)^2} + \frac{2 N }{ 2 (\sigma^2)^2 } \nonumber \\} \pause
+					 \invisible<1-4>{& = & \frac{N}{ 2 (\sigma^2)^2 } \nonumber }
+\end{eqnarray}
+
+\end{frame}
+
+
+\begin{frame}
+
+\begin{eqnarray}
+-E\left[\frac{\partial^2 l(\boldsymbol{\beta}, \sigma^2 | \boldsymbol{Y}, \boldsymbol{X})}{\partial \sigma^2 \partial \beta_{1} } \right] & = & -E\left[- \sum_{i=1}^{N}\frac{(Y_{i} - \beta_{0} - \beta_{1} X_{i1})X_{i} }{(\sigma^2)^{2}}\right]  \nonumber \pause \\
+\invisible<1>{& = & \frac{X_{i} }{(\sigma^2)^2} \left(\sum_{i=1}^{N} E[Y_{i}] - \beta_{0} - \beta_{1} X_{i1}  \right) \nonumber \\} \pause
+\invisible<1-2>{& = & \frac{X_{i} }{(\sigma^2)^2}\left(\sum_{i=1}^{N} \beta_{0} + \beta_{1} X_{i1}  - \beta_{0} - \beta_{1} X_{i1}  \right) = 0  \nonumber }
+\end{eqnarray}
+
+
+
+\end{frame}
+
+
+
+
+
+\begin{frame}
+\frametitle{Bivariate Regression Model via Maximum Likelihood}
+
+\begin{eqnarray}
+I(\boldsymbol{\beta}, \sigma^{2})_{N} & = & \begin{pmatrix}
+\frac{N}{\sigma^2} &  \sum_{i=1}^{N} \frac{X_{i}}{\sigma^2} & 0 \\
+ \sum_{i=1}^{N} \frac{X_{i}}{\sigma^2} & \sum_{i=1}^{N} \frac{X_{i}^2}{\sigma^2} & 0 \\
+0 &   0 &  \frac{ N}{2 (\sigma^{2})^{2} } \\
+\end{pmatrix} \nonumber \\
+& = & \begin{pmatrix}
+\frac{1}{\sigma^2}\boldsymbol{X}^{'}\boldsymbol{X} & \boldsymbol{0} \\
+\boldsymbol{0} & \frac{ N}{2 (\sigma^{2})^{2} } \\
+\end{pmatrix} \nonumber
+\end{eqnarray}
+Inverting yields:
+\begin{eqnarray}
+\widehat{\text{Var}(\boldsymbol{\beta}, \sigma^{2})} & = & \begin{pmatrix}
+\sigma^2 \left(\boldsymbol{X}^{'}\boldsymbol{X}\right)^{-1} & 0 \\
+0 & \frac{2 (\sigma^2)^2}{N} \\
+\end{pmatrix} \nonumber
+\end{eqnarray}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Bivariate Regression with Maximum Likelihood: Numerical Simulation}
+
+
+\only<1>{
+\scalebox{0.5}{\includegraphics{SimDists_1.pdf}}	}
+\only<2>{\scalebox{0.5}{\includegraphics{SimDists_2.pdf}}	}
+\only<3>{\scalebox{0.5}{\includegraphics{SimDists_3.pdf}}	}
+\only<4>{\scalebox{0.5}{\includegraphics{SimDists_4.pdf}}	}
+\only<5>{\scalebox{0.5}{\includegraphics{SimDists_5.pdf}}	}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Bivariate Regression via Maximum Likelihood}
+
+\pause
+\begin{eqnarray}
+\invisible<1>{\text{Incumbent}_{i} & = & \beta^{*}_{0}  + \beta^{*}_{1} \text{Approval}_{i} + \epsilon_{i} \nonumber } \pause \\
+\invisible<1-2>{\text{Incumbent}_{i} & = & \underbrace{50.76 + 0.16\times \text{Approval}_{i}}_{\widehat{\text{Incumbent}_{i}}}  + \epsilon_{i} \nonumber } \pause
+\end{eqnarray}
+
+\begin{center}
+\scalebox{0.31}{\includegraphics{Bivariate2.pdf}}
+\end{center}
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Multivariate Regression via Maximum Likelihood}
+
+Define:
+\begin{eqnarray}
+\boldsymbol{X}_{i} & = & (1, X_{i1}, X_{i2}, X_{i3}) \nonumber \\
+\boldsymbol{\beta} & = & (\beta_{0}, \beta_{1}, \beta_{2}) \nonumber
+\end{eqnarray}
+
+Then our maximum likelihood estimators are:
+\begin{eqnarray}
+\boldsymbol{\beta}^{*} & = & \left(\boldsymbol{X}^{'}\boldsymbol{X}   \right)^{-1} \boldsymbol{X}^{'}\boldsymbol{Y} \nonumber \\
+\sigma^{2, *} & = & \frac{1}{N} (Y - \boldsymbol{X}\boldsymbol{\beta})^{'}(Y - \boldsymbol{X}\boldsymbol{\beta}) \nonumber \\
+ & = & \frac{1}{N} \sum_{i=1}^{N} (Y_{i} - \beta_{0} - \beta_{1} X_{i1} - \beta_{2}X_{i2} - \beta_{3}X_{i3})^2\nonumber
+\end{eqnarray}
+
+
+
+\end{frame}
+
+\begin{frame}
+
+
+Then,
+
+ \begin{eqnarray}
+ \boldsymbol{\beta}^{*},\sigma^{2, *} & \rightarrow^{D} & \text{MVN}((\boldsymbol{\beta}^{*}, \sigma^{2,*}), I(\boldsymbol{\beta}^{*}, \sigma^{2,*})^{-1} ) \nonumber
+ \end{eqnarray}
+
+Where
+
+\begin{eqnarray}
+\widehat{\text{Var}(\boldsymbol{\beta}^{*}, \sigma^{2,*}) )} & = & \begin{pmatrix} \sigma^2 (\boldsymbol{X}^{'}\boldsymbol{X})^{-1} & 0 \\
+0 & \frac{2 (\sigma^2)^2}{N} \\
+\end{pmatrix} \nonumber
+\end{eqnarray}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Analytic vs Computational}
+
+Analytic optimization:
+\begin{itemize}
+\item[-] Calculus + pencil and paper
+\item[-] Search for closed form solutions
+\item[-] Big guarantees, but solutions can be hard (impossible) to obtain
+\end{itemize}
+
+Computational Optimization:
+\begin{itemize}
+\item[-] Iterative procedure
+\item[-] Search for \alert{approximate} solution
+\item[-] Fewer guarantees, but you'll obtain solutions
+\end{itemize}
+
+Overall strategy:\\
+One-parameter Newton Raphson$\leadsto$ Multi-parameter Newton Raphson $\leadsto$ BFGS (Wednesday)
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Newton-Raphson Method}
+
+Iterative procedure to find a \alert{root} \\ \pause
+\invisible<1>{Often solving for $x$ when $f(x) = 0$ is hard$\leadsto$ complicated function} \pause \\
+\invisible<1-2>{Solving for $x$ when $f(x)$ is linear$\leadsto$ easy} \pause \\
+\invisible<1-3>{Approximate with \alert{tangent line}, iteratively update}
+
+
+%%put an example here that shows how this might work
+
+%\scalebox{0.5}{\includegraphics{TangentExample.pdf}}
+
+%use tangent line to find root
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Tangent Line}
+
+
+\only<1>{\scalebox{0.6}{\includegraphics{TanLine26.pdf}}}
+\only<2>{\scalebox{0.6}{\includegraphics{TanLine1.pdf}}}
+\only<3>{\scalebox{0.6}{\includegraphics{TanLine2.pdf}}}
+\only<4>{\scalebox{0.6}{\includegraphics{TanLine3.pdf}}}
+\only<5>{\scalebox{0.6}{\includegraphics{TanLine4.pdf}}}
+\only<6>{\scalebox{0.6}{\includegraphics{TanLine5.pdf}}}
+\only<7>{\scalebox{0.6}{\includegraphics{TanLine6.pdf}}}
+\only<8>{\scalebox{0.6}{\includegraphics{TanLine7.pdf}}}
+\only<9>{\scalebox{0.6}{\includegraphics{TanLine8.pdf}}}
+\only<10>{\scalebox{0.6}{\includegraphics{TanLine9.pdf}}}
+\only<11>{\scalebox{0.6}{\includegraphics{TanLine10.pdf}}}
+\only<12>{\scalebox{0.6}{\includegraphics{TanLine11.pdf}}}
+\only<13>{\scalebox{0.6}{\includegraphics{TanLine12.pdf}}}
+\only<14>{\scalebox{0.6}{\includegraphics{TanLine13.pdf}}}
+\only<15>{\scalebox{0.6}{\includegraphics{TanLine14.pdf}}}
+\only<16>{\scalebox{0.6}{\includegraphics{TanLine15.pdf}}}
+\only<17>{\scalebox{0.6}{\includegraphics{TanLine16.pdf}}}
+\only<18>{\scalebox{0.6}{\includegraphics{TanLine17.pdf}}}
+\only<19>{\scalebox{0.6}{\includegraphics{TanLine18.pdf}}}
+\only<20>{\scalebox{0.6}{\includegraphics{TanLine19.pdf}}}
+\only<21>{\scalebox{0.6}{\includegraphics{TanLine20.pdf}}}
+\only<22>{\scalebox{0.6}{\includegraphics{TanLine21.pdf}}}
+\only<23>{\scalebox{0.6}{\includegraphics{TanLine22.pdf}}}
+\only<24>{\scalebox{0.6}{\includegraphics{TanLine23.pdf}}}
+\only<25>{\scalebox{0.6}{\includegraphics{TanLine24.pdf}}}
+\only<26>{\scalebox{0.6}{\includegraphics{TanLine25.pdf}}}
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Tangent Line}
+
+Formula for Tangent line at $x_{0}$:
+
+
+\begin{eqnarray}
+\invisible<1>{g(x) =  \alert<4>{f^{'}(x_{0})} \alert<5>{(x - x_{0} )} + \alert<3>{f(x_{0} )} \nonumber }
+\end{eqnarray}
+
+
+\invisible<1-5>{We'll use formula for tangent line to generate updates}
+
+
+\pause \pause \pause \pause
+
+
+\end{frame}
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Newton-Raphson Method}
+
+Suppose we have some initial guess $x_{0}$.  We're going to approximate $f^{'}(x)$ with the tangent line to generate a new guess
+
+
+ \pause
+
+\begin{eqnarray}
+\invisible<1>{g(x) & = & f^{''}(x_{0})(x - x_{0} ) + f^{'}(x_{0} ) \nonumber \\}
+\invisible<1-2>{0 & = & f^{''}(x_{0}) (x_{1} - x_{0}) + f^{'}(x_{0} ) \nonumber \\} %because at the root the function has to equal zero, so we're moving closer to it.
+\invisible<1-3>{x_{1} & = &  x_{0} - \frac{f^{'}(x_{0}) }{f^{''}(x_{0})} \nonumber }
+\end{eqnarray}
+
+\invisible<1-4>{Perform iteratively until change in $|x_{t+1} - x_{t}|<$ threshold }
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Example Function }
+
+$f(x) = x^3 + 2x^2 - 1$
+find $x$ that maximizes $f(x) $ with $x \in [-3, 0]$
+
+
+\scalebox{0.5}{\includegraphics{NRExample.pdf}}
+
+
+
+\end{frame}
+
+
+
+\begin{frame}
+
+\begin{eqnarray}
+f^{'}(x) & = & 3 x^2 + 4 x \nonumber \\
+f^{''}(x) & = & 6x + 4 \nonumber
+\end{eqnarray}
+
+Suppose we have guess $x_{t}$ then the next step is:
+\begin{eqnarray}
+x_{t+1} & = & x_t - \frac{3 x_{t}^2 + 4 x_{t}}{6 x_{t} + 4} \nonumber
+\end{eqnarray}
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle<7->{$x^{*} = -1.3333$}
+
+\only<1>{\scalebox{0.5}{\includegraphics{NRExamp1.pdf}}}
+\only<2>{\scalebox{0.5}{\includegraphics{NRExamp2.pdf}}}
+\only<3>{\scalebox{0.5}{\includegraphics{NRExamp3.pdf}}}
+\only<4>{\scalebox{0.5}{\includegraphics{NRExamp4.pdf}}}
+\only<5>{\scalebox{0.5}{\includegraphics{NRExamp5.pdf}}}
+\only<6>{\scalebox{0.5}{\includegraphics{NRExamp6.pdf}}}
+\only<7>{\scalebox{0.5}{\includegraphics{NRExamp7.pdf}}}
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{What is Happening with the Roots}
+
+\only<1>{\scalebox{0.5}{\includegraphics{NewtRaphDeriv20.pdf}}}
+\only<2>{\scalebox{0.5}{\includegraphics{NewtRaphDeriv1.pdf}}}
+\only<3>{\scalebox{0.5}{\includegraphics{NewtRaphDeriv2.pdf}}}
+\only<4>{\scalebox{0.5}{\includegraphics{NewtRaphDeriv3.pdf}}}
+\only<5>{\scalebox{0.5}{\includegraphics{NewtRaphDeriv4.pdf}}}
+\only<6>{\scalebox{0.5}{\includegraphics{NewtRaphDeriv5.pdf}}}
+\only<7>{\scalebox{0.5}{\includegraphics{NewtRaphDeriv6.pdf}}}
+\only<8>{\scalebox{0.5}{\includegraphics{NewtRaphDeriv7.pdf}}}
+\only<9>{\scalebox{0.5}{\includegraphics{NewtRaphDeriv8.pdf}}}
+\only<10>{\scalebox{0.5}{\includegraphics{NewtRaphDeriv9.pdf}}}
+\only<11>{\scalebox{0.5}{\includegraphics{NewtRaphDeriv10.pdf}}}
+\only<12>{\scalebox{0.5}{\includegraphics{NewtRaphDeriv11.pdf}}}
+\only<13>{\scalebox{0.5}{\includegraphics{NewtRaphDeriv12.pdf}}}
+
+
+
+
+
+\end{frame}
+
+
+
+\begin{frame}
+
+
+\only<1>{\scalebox{0.5}{\includegraphics{NRExamp8.pdf}}}
+\only<2>{\scalebox{0.5}{\includegraphics{NRExamp9.pdf}}}
+\only<3>{\scalebox{0.5}{\includegraphics{NRExamp10.pdf}}}
+\only<4>{\scalebox{0.5}{\includegraphics{NRExamp11.pdf}}}
+\only<5>{\scalebox{0.5}{\includegraphics{NRExamp12.pdf}}}
+\only<6>{\scalebox{0.5}{\includegraphics{NRExamp13.pdf}}}
+\only<7>{\scalebox{0.5}{\includegraphics{NRExamp14.pdf}}}
+\only<8>{\scalebox{0.5}{\includegraphics{NRExamp15.pdf}}}
+\only<9>{\scalebox{0.5}{\includegraphics{NRExamp16.pdf}}}
+\only<10>{\scalebox{0.5}{\includegraphics{NRExamp17.pdf}}}
+\only<11>{\scalebox{0.5}{\includegraphics{NRExamp18.pdf}}}
+\only<12>{\scalebox{0.5}{\includegraphics{NRExamp19.pdf}}}
+\end{frame}
+
+\begin{frame}
+\frametitle{Multivariate Newton Raphson}
+
+Suppose $f:\Re^{n} \rightarrow \Re$.  Suppose we have guess $\boldsymbol{x}_{t}$. \pause \invisible<1>{  Then our update is:} \pause
+\begin{eqnarray}
+\invisible<1-2>{\boldsymbol{x}_{t+1} & = & \boldsymbol{x}_{t} - \underbrace{\textbf{H}(f)(\boldsymbol{x}_{t})^{-1}}_{\text{Hessian}} \underbrace{\nabla f(\boldsymbol{x}_{t}) }_{\text{gradient}}}\nonumber \pause
+\end{eqnarray}
+
+\invisible<1-3>{Derivation (intuition):}\pause \invisible<1-4>{ Approximate function with \alert{tangent plane}. } \pause \invisible<1-5>{ Find value of $x_{t+1}$ that makes the plane equal to zero.  Update again.  }
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Multivariate Newton Raphson: Multivariate Linear Regression Model}
+
+Suppose that we have guess:
+$\left(\boldsymbol{\beta}_{t}, \sigma^{2}_{t}\right)$
+
+
+\begin{eqnarray}
+(\boldsymbol{\beta}_{t+1}, \sigma^{2}_{t+1} & = & \left(\boldsymbol{\beta}_{t}, \sigma^{2}_{t} \right) \underbrace{- \textbf{H}(f)(\left(\boldsymbol{\beta}_{t}, \sigma^{2}_{t} \right))^{-1}}_{\text{Information}} \underbrace{\nabla f(\left(\boldsymbol{\beta}_{t}, \sigma^{2}_{t} \right)}_{\text{Score}}\nonumber \\
+\left(\boldsymbol{\beta}_{t+1}, \sigma^{2}_{t+1} \right) & = & \left(\boldsymbol{\beta}_{t}, \sigma^{2}_{t} \right) +  I_{N}(\boldsymbol{\beta}_{t}, \sigma^{2}_{t})^{-1} \left(\sum_{i=1}^{N} s(Y_{i}| X_{i}, \boldsymbol{\beta}_{t}, \sigma^{2}_{t})  \right) \nonumber
+\end{eqnarray}
+
+So we have:
+\begin{tiny}
+\begin{eqnarray}
+\left(\boldsymbol{\beta}_{t+1}, \sigma^{2}_{t+1} \right)  =  \left(\boldsymbol{\beta}_{t}, \sigma^{2}_{t} \right)  && \nonumber \\
+ + \begin{pmatrix} \sigma^2 \left(\boldsymbol{X}^{'}\boldsymbol{X}\right)^{-1} & \boldsymbol{0} \\
+\boldsymbol{0} & \frac{2 (\sigma^2)^2}{N} \\
+\end{pmatrix}  \left(\sum_{i=1}^{N} \left( \frac{(\boldsymbol{Y} - \boldsymbol{X}\boldsymbol{\beta}_{t})^{'} \boldsymbol{X} }{\sigma^2}  , -\frac{1}{2 \sigma^2}  +      \frac{1}{2\sigma^4} (\boldsymbol{Y} - \boldsymbol{X}\boldsymbol{\beta} )^{'}(\boldsymbol{Y} - \boldsymbol{X} \boldsymbol{\beta})  \right)    \right)  && \nonumber
+\end{eqnarray}
+\end{tiny}
+
+
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Multivariate Newton Raphson}
+
+\pause
+
+\begin{itemize}
+\invisible<1>{\item[-] Expensive to calculate (requires inverting Hessian)} \pause
+\invisible<1-2>{\item[-] Very sensitive to starting points} \pause
+\invisible<1-3>{\item[-] Ideally: method that exploits Newton-like structure, but is cheaper and more robust} \pause
+\end{itemize}
+
+\invisible<1-4>{{\tt BFGS}: \alert{Quasi-Newton} method\\} \pause
+\invisible<1-5>{{\tt R code}}
+
+
+\end{frame}
+
+
+
+\begin{frame}
+
+\begin{itemize}
+\item[1)] Multivariate regression
+\item[2)] \alert{Information}$\leadsto$ learning about uncertainty from model
+\item[3)] Numerical optimization
+\end{itemize}
+
+Probit/Logit + BFGS next!!
+
+
+
+\end{frame}
+
+
+
+
+
+\end{document}

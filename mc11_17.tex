@@ -1,0 +1,907 @@
+\documentclass{beamer}
+
+%\usepackage[table]{xcolor}
+\mode<presentation> {
+  \usetheme{Boadilla}
+%  \usetheme{Pittsburgh}
+%\usefonttheme[2]{sans}
+\renewcommand{\familydefault}{cmss}
+%\usepackage{lmodern}
+%\usepackage[T1]{fontenc}
+%\usepackage{palatino}
+%\usepackage{cmbright}
+  \setbeamercovered{transparent}
+\useinnertheme{rectangles}
+}
+%\usepackage{normalem}{ulem}
+%\usepackage{colortbl, textcomp}
+\setbeamercolor{normal text}{fg=black}
+\setbeamercolor{structure}{fg= black}
+\definecolor{trial}{cmyk}{1,0,0, 0}
+\definecolor{trial2}{cmyk}{0.00,0,1, 0}
+\definecolor{darkgreen}{rgb}{0,.4, 0.1}
+\newtheorem{prop}{Proposition}
+\newtheorem{defn}{Definition}
+\newtheorem{cor}{Corollary}
+\newtheorem{lem}{Lemma}
+
+\newcommand\indep{\protect\mathpalette{\protect\independenT}{\perp}}
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
+
+\usefonttheme{professionalfonts} % using non standard fonts for beamer
+\usefonttheme{serif}
+
+\beamertemplatesolidbackgroundcolor{white}  \setbeamercolor{alerted
+text}{fg=red}
+\usepackage{multirow}
+
+\setbeamertemplate{caption}[numbered]\newcounter{mylastframe}
+
+%\begin{beamerboxesrounded}[upper=uppercol,lower=lowercol,shadow=true]{Block}
+%$A = B$.
+%\end{beamerboxesrounded}}
+\renewcommand{\familydefault}{cmss}
+\usepackage[all]{xy}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+%\usepackage{palatino}
+%\usepackage{eulervm}
+\usecolortheme{lily}
+%\usepackage[latin1]{inputenc}
+
+\title[Methodology III] % (optional, nur bei langen Titeln nötig)
+{Political Methodology III: Model Based Inference}
+
+\author{Justin Grimmer}
+\institute[Stanford University]{Associate Professor\\Department of Political Science \\  Stanford University}
+\vspace{0.3in}
+
+\date{May 8th, 2017}
+
+\begin{document}
+\begin{frame}
+\titlepage
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Model Based Inference}
+
+\begin{itemize}
+\item[1)] Likelihood inference
+\item[2)] Logit/Probit
+\item[3)] Ordered Probit
+\item[4)] Choice Models:
+\item[5)] Count Models
+\item[6)] Survival Models
+\item[7)] \alert{Hypothesis Tests + Model Checking in Likelihood}
+\begin{itemize}
+\item[-] Likelihood Ratios, Wald, and Score tests
+\item[-] Model Checking: analysis of residuals, hat values, etc.
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Simple Example: Antiobama Speech}
+
+We'll  use the speech data from the problem set, as follows:
+
+\begin{itemize}
+\item[-] $Y_{i} = 1 $ if representative says {\tt obamacare} or {\tt big government} during the year, 0 otherwise
+\item[-] $\boldsymbol{X}_{i} = (1, I(\text{Year} = 2010)_{i}, \text{Democrat}_{i}, \text{DW-Nom}_{i}) $
+\end{itemize}
+
+\begin{eqnarray}
+Y_{i}  &  \sim &   \text{Bernoulli}(\pi_{i}) \nonumber \\
+\pi_{i}     & = & \text{logit}^{-1}(\boldsymbol{X}_{i}^{'} \boldsymbol{\beta})  = \frac{1}{1 + \exp(-\boldsymbol{X}_{i}^{'} \boldsymbol{\beta}) } \nonumber
+\end{eqnarray}
+
+
+Which covariates do we include? $\leadsto$ depends on goal.  \\
+\begin{itemize}
+\item[-] Predictive goal $\leadsto$ replicate task
+\item[-] Model fitting $\leadsto$ do covariates increase likelihood? Can we drop them?
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Hypothesis Testing --- Likelihood Ratio Test}
+\begin{itemize}[<+->]
+\item Null ($H_0$): $h_1(\boldsymbol{\beta}) = \cdots = h_Q(\boldsymbol{\beta}) = 0$ ($Q$ equality constraints)
+\item Alternative ($H_1$): No such constraints
+\medskip
+\item Let $\widehat{\boldsymbol{\beta}}_{R} = \widehat{\boldsymbol{\beta}}_{MLE\mid H_0}$ (restricted MLE) and
+$\widehat{\boldsymbol{\beta}}_{UR} = \widehat{\boldsymbol{\beta}}_{MLE}$ (original MLE)
+\item \alert{Likelihood ratio} (LR) test: If $H_0$ is true, $L(\widehat{\boldsymbol{\beta}}_R)$
+should be equal to $L(\widehat{\boldsymbol{\beta}}_{UR})$ except for sampling variability
+\item LR statistic:
+    $$ LR(Y) \ \equiv \ -2\log\frac{L(\widehat{\boldsymbol{\beta}}_{R})}{L(\widehat{\boldsymbol{\beta}}_{UR})}
+     \ = \ 2\left[\ell(\widehat{\boldsymbol{\beta}}_{UR}) - \ell(\widehat{\boldsymbol{\beta}}_{R})\right] $$
+\item We can show that $LR(Y) \stackrel{d}{\longrightarrow} \chi_Q^2$
+\item Works for testing any nested models \\
+    --- model under $H_0$ has to be a special case of model under $H_1$
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+
+\small
+\begin{semiverbatim}
+
+un\_rest\_reg<- glm(once$\sim$two\_10 + dem + dw\_nom,
+
+\hspace{0.15in} data = speech\_dat, family = binomial(link = logit))
+
+
+rest\_reg<- glm(once$\sim$1, family= binomial(link = logit))
+
+
+\#\#calculating the likelihood ratio
+
+log\_lik<- function(pars, X, Y)\{
+
+  \hspace{0.15in} y.tilde<- X\%*\%pars
+
+  \hspace{0.15in} probs<- plogis(y.tilde)
+
+  \hspace{0.15in} log\_out<- Y\%*\%log(probs) + (1-Y)\%*\%log(1 - probs)
+
+  \hspace{0.15in} return(log\_out)
+
+  \}
+
+ X<- cbind(1, two\_10, dem, speech\_dat\$dw\_nom)
+
+
+ un\_rest<- log\_lik(un\_rest\_reg\$coef, X, once)
+
+
+ rest<- log\_lik(rest\_reg\$coef, as.matrix(rep(1, nrow(X))), once)
+
+
+ > 2 * un\_rest - 2*rest
+
+\hspace{0.15in}        [,1]
+
+[1,] 433.996
+
+
+
+
+
+
+
+
+ \#\#get the same statistic automatically from glm
+
+ diff<- un\_rest\_reg\$null.deviance - un\_rest\_reg\$deviance
+
+ > diff
+[1] 433.996
+
+ 1 - pchisq(diff, 3) \#\#very small!
+
+[1] 0
+
+\end{semiverbatim}
+
+
+
+\end{frame}
+
+\begin{frame}
+
+\begin{semiverbatim}
+ > 2 * un\_rest - 2*rest
+
+\hspace{0.15in}        [,1]
+
+[1,] 433.996
+
+ \#\#get the same statistic automatically from glm
+
+ diff<- un\_rest\_reg\$null.deviance - un\_rest\_reg\$deviance
+
+> diff
+
+[1] 433.996
+
+
+ 1 - pchisq(diff, 3) \#\#very small!
+
+[1] 0
+
+\end{semiverbatim}
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Hypothesis Testing --- Wald Test}
+\begin{itemize}[<+->]
+\item \alert{Wald test}: If true, the null $h_1(\boldsymbol{\beta})=\cdots =h_Q(\boldsymbol{\beta})=0$
+should approximately hold even if we substitute $\widehat{\boldsymbol{\beta}}_{UR}$ for $\boldsymbol{\beta}$.  Call $\boldsymbol{h}(\boldsymbol{\beta}) = \left(h_{1} (\boldsymbol{\beta}), \hdots, h_{Q}(\boldsymbol{\beta}) \right)$
+\item Wald statistic: Use asymptotic distribution of $\widehat{\boldsymbol{\beta}}$ and representation of restrictions, properties of normal distribution to obtain form
+{\small
+    $$ W \ \equiv \ h(\widehat{\boldsymbol{\beta}}_{UR})^{'} \left[\left(\frac{\partial h(\boldsymbol{\beta})}
+    {\partial \boldsymbol{\beta}}\Bigl|_{\boldsymbol{\beta}=\widehat{\boldsymbol{\beta}}_{UR}} \right)^{'}
+    \widehat{\text{Var}(\widehat{\boldsymbol{\beta}}_{UR})}
+    \left(\frac{\partial h(\boldsymbol{\beta})}{\partial\boldsymbol{\beta}}\Bigl|_{\boldsymbol{\beta}=\widehat{\boldsymbol{\beta}}_{UR}}\right)\right]^{-1}
+    h(\widehat{\boldsymbol{\beta}}_{UR})$$
+}
+
+\item The ``meat'' $\simeq \widehat{\text{Var}(h(\widehat{\boldsymbol{\beta}}_{UR}))}$
+(\alert{Delta method} )
+\item Choose any $\widehat{\text{Var}(\widehat{\boldsymbol{\beta}}_{UR})}$ as appropriate (e.g. Huber-White)
+\item We can show that $W \stackrel{d}{\longrightarrow} \chi_Q^2$
+\bigskip
+\item An important special case: $Q=1$ and $H_0: \beta = 0$
+\item In this case, we can use the \alert{$z$ statistic}:
+{\small
+$$ z \ = \ W^{1/2} \ = \ \frac{\widehat{\boldsymbol{\beta}}_{UR}}{\text{s.e.}(\widehat{\boldsymbol{\beta}}_{UR})}
+ \ \stackrel{d}{\longrightarrow} \ \text{N}(0,1)$$
+}
+%where $s.e.(\widehat{\beta}_{UR})$ is the sqrt of the diagonal element of $\widehat{\text{Var}(\widehat{\beta}_{UR})}$
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+
+\small
+\begin{semiverbatim}
+
+> un\_rest\_reg\$coef\%*\%solve(vcov(un\_rest\_reg))\%*\%un\_rest\_reg\$coef
+
+         [,1]
+
+[1,] 225.2437
+
+
+> 1 - pchisq(225.2437, 3)
+
+[1] 0
+
+
+\end{semiverbatim}
+
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Hypothesis Testing --- Score Test}
+\begin{itemize}[<+->]
+\item At the unrestricted MLE $\hat\theta_{UR}$, $\sum_{i=1}^{N} s_{i} (\widehat{\boldsymbol{\beta}}_{UR})=s(\widehat{\boldsymbol{\beta}}) = 0$ by construction
+\item \alert{Score test}: If the null is true, $s(\widehat{\boldsymbol{\beta}}_{R})$
+  should also equal zero except for sampling variability
+\item Score statistic: Use asymptotic distribution and properties of normal distribution to  ``standardize" $s(\widehat{\boldsymbol{\beta}}_{R})$
+$$ LM \ = \ s(\widehat{\boldsymbol{\beta}}_{R})^{'} \widehat{\text{Var}(\widehat{\boldsymbol{\beta}}_{R})} s(\widehat{\boldsymbol{\beta}}_{R})
+\ \stackrel{d}{\longrightarrow} \ \chi_Q^2$$
+
+\item For $\widehat{\boldsymbol{\beta}}_{QMLE}$, the expression is more complicated
+\item Also known as the \alert{Lagrange multiplier} (LM) test due to an alternative derivation
+
+\end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}
+
+\small
+\begin{semiverbatim}
+
+ score\_func<- function(coef, X, Y)\{
+
+  \hspace{0.15in} y.tilde<- X\%*\%coef
+
+  \hspace{0.15in} probs<- plogis(y.tilde)
+
+ \hspace{0.15in}  out<- t(Y - probs)\%*\%X
+
+ \hspace{0.15in}  return(out)
+   \}
+
+
+
+> round(score\_func(un\_rest\_reg\$coef, X, once), 2)
+
+
+[1,] 0      0   0 0
+
+
+rest\_score<- score\_func(c(rest\_reg\$coef, 0, 0, 0), X, once)
+
+
+> round(rest\_score,2)
+
+[1,] 0 -6.30 -128.92 129.51
+
+\end{semiverbatim}
+\end{frame}
+
+
+\begin{frame}
+\small
+\begin{semiverbatim}
+
+ hess\_func<- function(coef, X, Y)\{
+
+   \hspace{0.15in}  y.tilde<- X\%*\%coef
+
+  \hspace{0.15in}   probs<- plogis(y.tilde)
+
+  \hspace{0.15in}   base<- matrix(0, nrow = len(coef), ncol = len(coef))
+
+   \hspace{0.15in}  for(z in 1:nrow(X))\{
+
+   \hspace{0.25in}    base<- base + probs[z]*(1 - probs[z])* X[z,]\%*\%t(X[z,])
+
+     \hspace{0.15in}  \}
+
+     \hspace{0.15in} return(base)
+
+   \}
+
+
+ rest\_hess<- solve(hess\_func(c(rest\_reg\$coef, 0, 0, 0), X, once))
+
+>rest\_score\%*\%rest\_hess\%*\%t(rest\_score)
+
+[1,] 395.0382
+
+> 1- pchisq(395, 3)
+
+[1] 0
+
+\end{semiverbatim}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Comparing The Three Tests}
+\vspace{-.2in}
+\begin{center}
+\includegraphics[width=\textwidth]{threetests.jpg}
+\end{center}
+\vspace{-.2in}
+\begin{itemize}
+\item All asymptotically equivalent
+\item But can be quite different in small samples
+\end{itemize}
+\pause
+{\small
+\begin{tabular}{cll}
+\hline\hline
+   & {\it Pros}                           & {\it Cons} \\
+\hline\hline
+LR & Most powerful (Neyman-Pearson) & Must compute both $\hat\theta_{UR}$ and $\hat\theta_{R}$ \\
+   &                                & Cannot be easily robustified \pause \\
+\hline
+W  & Only need $\hat\theta_{UR}$     & Not invariant to transformation \\
+   & Easily robustified by sandwich & (e.g. $\theta_1/\theta_2 = 1$ vs. $\theta_1=\theta_2$) \pause \\
+\hline
+LM & Only need $\hat\theta_{R}$      & $\hat\theta_{R}$ often difficult to estimate \\
+\hline\hline
+\end{tabular}
+}
+\end{frame}
+
+
+\frame{
+
+  \frametitle{Generalized Linear Models}
+\small
+  \begin{itemize}
+  \item Many of the models we have learned so far all assume that $Y_i$ is a
+    (stochastic) function of the \alert{linear predictor},
+    $X_i^\top\beta$
+  \item They also share many characteristics, e.g. the form of the
+    score and Hessian functions
+    \pause
+  \item In fact, many are special cases of the
+  \alert{generalized linear model (GLM)}
+  \item Here, we provide a general treatment of GLMs to study those models
+  more systematically
+    \pause
+\item 3 components of a GLM
+    \pause
+ \begin{enumerate}
+  \item Systematic component: \ $X_i^\top\beta$
+    \begin{itemize}
+      \item Must be a linear function of $X_i$
+    \end{itemize}
+\medskip
+    \pause
+  \item Random component: \ $f(Y; \theta, \phi)$
+      \begin{itemize}
+      \item Must be in the \alert{exponential family}
+      \item $\theta$ is called the canonical parameter
+      \item $\phi$: is called the dispersion parameter
+
+      \end{itemize}
+\medskip
+    \pause
+ \item Link function:  \ $g(\mu_i) = X_i^\top\beta$ where $\mu_i = \text{E}(Y_i\mid
+   X_i)$
+      \begin{itemize}
+        \item Must be monotonic and differentiable wrt $\mu_i$
+      \end{itemize}
+   \end{enumerate}
+
+% \item Key properties:
+%    \begin{itemize}
+%      \item $\beta$ can be consistently estimated without fully
+%        specifying $f(Y)$ (i.e., via QMLE), as long as $\mu_i$  and
+%        $\V(Y_i)$ is correctly specified
+%      \item Lots of the results for the classical linear model
+%        (e.g. diagnostics) generalize to GLMs
+
+%    \end{itemize}
+ \end{itemize}
+
+
+}
+
+
+\begin{frame}
+\frametitle{Exponential Family of Distributions}
+Any distribution in the exponential family has the density of
+    the following form:
+$$f(y| \theta, \phi) =
+\exp\left\{\frac{y\textcolor<3>{red}{\theta}-\textcolor<4>{blue}{b(}\textcolor<3>{red}{\theta}\textcolor<4>{blue}{)}}{a(\phi)}+c(y,\phi)\right\}$$
+
+    \pause
+Example: Poisson$(\lambda)$:
+      $$ \Pr(Y_i=y\mid\lambda) \ = \ \frac{\exp(-\lambda) \lambda^{y}}{y!}\ = \ \exp\left\{y\textcolor<3>{red}{\log\lambda} - \textcolor<4>{blue}{\exp(}\textcolor<3>{red}{\log\lambda}\textcolor<4>{blue}{)} - \log y!  \right\}$$
+    \pause\pause\pause
+      $\Longrightarrow$ $\theta = \log\lambda$, $\phi=1$,
+      $a(\phi)=\phi, b(\theta)=\exp(\theta)$, and $c=-\log y!$
+
+
+\end{frame}
+
+
+\begin{frame}
+
+
+$$f(y_{i} | \theta_{i}, \phi) =
+\exp\left\{\frac{y\textcolor<3>{red}{\theta_{i}}-\textcolor<4>{blue}{b(}\textcolor<3>{red}{\theta}\textcolor<4>{blue}{)}}{a(\phi)}+c(y,\phi)\right\}$$
+
+
+Example: Bernoulli$(\pi_{i}) $:
+
+\begin{eqnarray}
+\Pr(Y_{i} = y_{i} | \pi_{i}) & = &  \pi_{i}^{y_{i} } (1- \pi_{i})^{1 - y_{i}} \nonumber \\
+                             & = & \exp\left[ \frac{y_{i} \textcolor<3>{red}{\theta_{i}} - \textcolor<4>{blue}{\log[1 + \exp(}\textcolor<3>{red}{\theta_{i}} \textcolor<4>{blue}{)]}}{1} - 0  \right] \nonumber
+\end{eqnarray}
+where:
+\begin{eqnarray}
+\textcolor<3>{red}{\theta_{i} }& = & \text{logit}(\pi_{i} ) \ = \ \log\left(\frac{\pi_{i} }{1 - \pi_{i}}\right) \nonumber \\
+\textcolor<4>{blue}{b(} \textcolor<3>{red}{\theta_{i}} \textcolor<4>{blue}{)} & = & \textcolor<4>{blue}{\log [ 1 + \exp(}\textcolor<3>{red}{\theta_{i}} \textcolor<4>{blue}{)]} \nonumber \\
+a(\phi) & = & 1 ; c(y_{i}, \phi) = 0 \nonumber
+\end{eqnarray}
+
+
+
+
+\end{frame}
+
+
+
+\frame{
+  \frametitle{Properties of the Exponential Family}
+  \begin{itemize}
+  \item Mean is a function of $\theta$ and given by
+    $$\text{E}(Y) \ \equiv \ \mu \ = \ b^\prime(\theta)$$
+    \pause
+    \vspace{-.15in}
+  \item Variance is a function of $\theta$ and $\phi$ and given by
+    $$\text{Var}(Y) \ \equiv \ V \ = \ b^{\prime\prime}(\theta)a(\phi)$$
+
+    \pause
+\smallskip
+  \item Common forms of $a(\phi)$: $1$ (Poisson, Bernoulli), $\phi$ (normal, Gamma), and $\phi/\omega_i$ (binomial)    \pause
+\medskip
+  \item $b^{\prime\prime}(\theta)$ is called the \alert{variance function}
+    \pause
+\medskip
+ \end{itemize}
+
+}
+
+
+
+\begin{frame}
+
+\begin{itemize}
+  \item In the Poisson model, $\theta_i = \log\lambda_i$, $a(\phi)=1$ and
+    $b(\theta_i)=\exp(\theta_i)$ \\
+    \pause \smallskip
+    $\Rightarrow$ $\text{E}(Y_i) = \frac{\partial b(\theta_i)}{\partial \theta_i} = \exp(\theta_i) = \lambda_i$
+    and $\text{Var}(Y_i) = \frac{\partial^2b(\theta_i)}{\partial \theta_i^2} = \exp(\theta_i) = \lambda_i$
+\item In the Bernoulli model, $\theta_{i}  = \text{logit}(\pi_{i})$, $a(\phi) = 1$ and $b(\theta_{i}) = \log[1 + \exp(\theta_{i})] $.  \\
+\pause \smallskip
+$\Rightarrow$   $\text{E}(Y_i) = \frac{\partial b(\theta_i)}{\partial \theta_i} \ =\ \frac{\exp(\theta_{i})}{1 + \exp(\theta_{i})} \ = \ \text{logit}^{-1}(\theta_{i} )\ = \  \text{logit}^{-1}(\text{logit}(\pi_{i}))  = \pi_{i} $ \\
+$\text{Var}(Y_{i}) = \frac{\partial^2b(\theta_i)}{\partial \theta_i^2} = \frac{\exp(\theta_{i})(1 + \exp(\theta_{i}))  - \exp(\theta_{i}) \exp(\theta_{i})}{ (1 + \exp(\theta_{i}))^{2} } = \frac{\exp(\theta_{i})}{1 + \exp(\theta_{i})} \frac{1}{1 + \exp(\theta_{i})}\ = \ \pi_{i} (1- \pi_{i})  $
+
+
+\end{itemize}
+
+
+
+\end{frame}
+
+
+\frame{
+
+  \frametitle{Link Functions}
+
+  \begin{itemize}
+  \item \alert{Link function}: $g(\mu_i) = X_i^\top\beta$
+  \item Defines the relationship between $X_i^\top\beta$ and the mean $\mu_i$
+  \item Must map the real line onto the possible range of $\mu_i$
+
+\medskip
+    \pause
+  \item Recall that $\mu_i = b'(\theta_i)$
+  \item Therefore, $\theta_i$ is always a (often simple) function of $X_i^\top\beta$
+  \item In particular, when $\theta_i = X_i^\top\beta$, the link is called the
+    \alert{canonical link}
+  \smallskip
+  \pause
+     \begin{itemize}
+     \item In Poisson, $\theta_i = \log(\lambda_i) = \pause \log(\exp(X_i^{'}\beta)) = X_i^{'}\beta$ \\ \pause
+     \smallskip
+     $\longrightarrow$ $\exp^{-1} = \log$ is the canonical link function\pause
+     \item In Bernoulli $\theta_{i} = \text{logit}(\pi_{i}); \pi_{i} = \frac{\exp(\boldsymbol{X}_{i}^{'} \boldsymbol{\beta})}{ 1+ \exp(\boldsymbol{X}_{i}^{'} \boldsymbol{\beta})} $ \\ \pause
+     \smallskip
+     $\theta_{i} = \text{logit}(\pi_{i} ) = \log\left( \frac{\pi_{i}}{1 - \pi_{i}}\right)  = \log\left( \frac{\frac{\exp(X_{i} \beta)}{1 + \exp(X_{i} \beta)}}{ \frac{1}{1 + \exp(X_{i} \beta)} }   \right) = \log(\exp(X_{i} \beta ))  = X_{i} \beta $
+   \end{itemize}
+\pause
+\medskip
+
+  \item Must be monotonic and differentiable
+  \item This allows us to express the \alert{mean function} as: $\mu_i = g^{-1}(X_i^\top\beta)$
+
+\end{itemize}
+
+}
+
+\frame{
+
+  \frametitle{Likelihood Function, Score, and Information Matrix}
+  \begin{itemize}
+  \item Log-likelihood function:
+    $$l_n(\theta, \phi; Y) \ = \ \sum_{i=1}^n
+    \left\{\frac{Y_i\theta_i-b(\theta_i)}{a(\phi)} +
+    c(Y_i,\phi)\right\}$$
+\pause
+\vspace{-.5\baselineskip}
+  \item Recall our notation: $\mu_i = \text{E}[Y_i\mid X_i]$ and $V_i = \text{Var}[Y_i\mid X_i]$
+\pause
+  \item Score:
+{\small
+    \begin{equation*}
+      s(\beta) \ = \ \frac{\partial l_n(\theta, \phi;Y)}{\partial \beta}
+      \ = \ \sum_{i=1}^n \frac{Y_i - b^\prime(\theta_i)}{a(\phi)b^{\prime\prime}(\theta_i)}
+         \frac{\partial \mu_i}{\partial \beta}
+      \ = \ \sum_{i=1}^n \frac{Y_i - \mu_i}{V_i}\left(\frac{\partial\mu_i}{\partial X_i^\top\beta}\right)X_i
+    \end{equation*}
+}
+\pause
+\vspace{-.5\baselineskip}
+ \item Information:
+{\small
+   $$I(\beta) \ = \ -\text{E}\left[H(\beta)\right] \ = \ -\text{E}\left(\frac{\partial^2 l_n(\theta, \phi; Y)}{\partial\beta\partial\beta^\top}\right) \ = \ \sum_{i=1}^n \frac{1}{V_i}\left(\frac{\partial\mu_i}{\partial X_i^\top\beta}\right)^2 X_i X_i^\top$$
+}
+ % \item Canonical link (i.e., $X_i^\top\beta = \theta_i$): the expected information
+ %   $=$ the observed information
+\pause
+\vspace{-.5\baselineskip}
+ \item Exercise: Check these hold for logit, probit, Poisson, etc.!
+ \end{itemize}
+
+}
+
+
+%\frame{
+%  \frametitle{Iterated Weighted Least Squares}
+%\small
+%  \begin{itemize}
+
+%  \item Numerically maximize $l_n(\theta,\phi; Y)$ by Fisher scoring:
+%  {\footnotesize
+%    \begin{eqnarray*}
+%       \beta^{(t+1)}
+%      & = & \beta^{(t)} + \Omega(\beta^{(t)})^{-1} s_n(\beta^{(t)})\\
+%\pause
+%      & = & \beta^{(t)} + \Bigg(\sum_{i=1}^n
+%      \underbrace{\frac{1}{V_ig^\prime(\mu_i^{(t)})^2}}_{\equiv \ w_i^{(t)}} X_i X_i^\top\Bigg)^{-1}
+%       \sum_{i=1}^n (Y_i-\mu_i^{(t)})\underbrace{\frac{1}{V_ig^\prime(\mu_i^{(t)})^2}}_{\equiv \ w_i^{(t)}}
+%       g^\prime(\mu_i^{(t)}) X_i \\
+%      & = & \l(\sum_{i=1}^n w_i^{(t)} X_i X_i^\top\r)^{-1} \sum_{i=1}^n w_i^{(t)} X_i
+%      \underbrace{\l\{(Y_i-\mu_i^{(t)})g^\prime(\mu_i^{(t)}) + X_i^\top\beta^{(t)}\r\}}_{\equiv \ Z_i^{(t)}} \\
+%      & = &  \l(\sum_{i=1}^n w_i^{(t)} X_iX_i^\top \r)^{-1}
+%           \l(\sum_{i=1}^n w_i^{(t)} X_i Z_i^{(t)}   \r)
+%    \end{eqnarray*}
+%  }
+%  which resembles the weighted least squares!
+%\pause
+%  \item This implies any GLM can be estimated by a modified OLS routine \\
+%  (a big computational advantage, esp. a few decades ago)
+%  \item We can also obtain useful statistics analogous to OLS, e.g. \alert{hat values}
+%  \end{itemize}
+
+
+%}
+
+
+\begin{frame}
+\frametitle{Assessing Goodness of Fit for GLMs}
+  \begin{itemize}
+    \item Null model: Predict every observation by sample mean $\bar Y$ \\
+      $\Rightarrow$ one parameter, maximum data reduction
+    \item \alert{Saturated model}: Predict every observation by its own value $Y_i$ \\
+      $\Rightarrow$ $n$ parameters, no data reduction
+    \item A useful model sits somewhere in between
+\medskip
+\begin{displaymath}\ShowOutlines
+    \xymatrix{ \fbox{\small  $\begin{array}{c} \text{Null Model} \\
+                                  (\hat\mu_i = \bar{Y}) \\
+                                  K = 1 \end{array}$} \ar@{<-}[r]
+                    & \ar@{-}[r]
+                    & \ar@{-}[r]^{\text{{\small Useful Models}}}_{1 < K < n}
+                    & \ar@{-}[r]
+                    & \ar@{->}[r]
+                    & \fbox{\small  $\begin{array}{c} \text{Saturated Model} \\
+                                         (\hat\mu_i = Y_i) \\
+                                         K = n \end{array}$} }
+\end{displaymath}
+\medskip
+\pause
+   \item Goodness of fit can be measured by comparing the model likelihood
+      to the saturated model likelihood
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Analysis of Deviance}
+\begin{itemize}
+   \item \alert{Scaled Deviance} (Unscaled: $\phi \times $ Deviance $D(Y, \hat{\theta})$):
+     \begin{eqnarray*}
+     D^\ast(Y; \hat\theta) & \equiv & 2 \{l_n(\tilde\theta;Y,\phi) - l_n(\hat\theta;Y,\phi)\} \\
+      & = & 2\sum_{i=1}^n
+      \left\{Y_i(\tilde\theta_i - \hat\theta_i) - (b(\tilde\theta_i) - b(\hat\theta_i)) \right\}\big/a(\phi)
+      \end{eqnarray*}
+{\small
+     where $\left\{ \begin{array}{ll}
+        \hat\theta_i \ = \ \theta(\hat\mu_i) & \text{(estimate from the model of interest)} \\
+      \tilde\theta_i \ = \ \theta(Y_i) & \text{(``estimate'' from the saturated model)}
+        \end{array} \right.$
+}
+\pause
+\medskip
+    \item Note that $D^\ast$ is a likelihood-ratio statistic
+    \item This implies $D^\ast(Y; \hat\theta) \stackrel{approx.}{\sim} \chi^2_{n-k}$
+      if the model fits the data well
+\pause
+    \item We can also compare models: $D^\ast_1 - D^\ast_2 \sim \chi^2_{k_1 - k_2}$ (LR test)
+\medskip
+\pause
+    \item McFadden's \alert{pseudo-$R^2$}:
+      $$\tilde R^2 = \frac{l_n(\hat\theta; Y,\phi) - l_n(\theta(\bar Y); Y,\phi)}
+                    {l_n(\tilde\theta; Y,\phi) - l_n(\theta(\bar Y); Y,\phi)}
+             = 1 - \frac{D^\ast(Y; \hat\theta)}{D^\ast(Y; \theta(\bar Y))} $$
+where $\bar\theta_i \ = \ \theta(\bar Y)$ for all $i$
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Unscaled Deviance for Normal GLMs}
+
+\begin{eqnarray}
+\hat{\theta}_{i} & = & \boldsymbol{X}_{i}^{'} \boldsymbol{\beta} \nonumber \\
+b(\hat{\theta}_{i}) & = & \hat{\theta}^2/2 \nonumber \\
+\text{Saturated model} & \Rightarrow & \tilde{\theta}_{i} = y_{i} ; b(\tilde{\theta}_{i}) = y_{i}^2/2 \nonumber \\
+\text{Deviance} & = & 2 \sum_{i=1}^{N}\left[y_{i}(y_{i} - \hat{\mu}_{i}) - y_{i}^2/2 + \hat{\mu}_{i}^2/2)   \right] = \sum_{i=1}^{N} (y_{i} - \hat{\mu}_{i})^2 \nonumber
+\end{eqnarray}
+
+
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Deviance for Poisson}
+
+Saturated model $\tilde{\lambda}_{i} = y_{i}$.  This implies a log-likelihood of:
+
+\begin{eqnarray}
+\tilde{\theta}_{i} & =& \log y_{i} \nonumber \\
+b(\tilde{\theta})_{i} & = & \exp(\log y_{i}) = y_{i} \nonumber \\
+\text{Deviance} & = & 2 \sum_{i=1}^{N}\left[y_{i} \log \frac{y_{i}}{\hat{\lambda}_{i}} - y_{i} + \hat{\lambda}_{i}  \right] \nonumber
+\end{eqnarray}
+
+
+
+
+
+
+\end{frame}
+
+
+
+
+\frame{
+
+\frametitle{Residuals and Model Checking}
+\small
+\vspace{-.25\baselineskip}
+\begin{itemize}
+\item In normal linear regression, $D = \mathcal{X}^2 = \sum_{i=1}^n \hat\epsilon_i^2 = RSS$
+\pause
+\item This suggests the following generalization of residuals for GLM:
+
+\begin{enumerate}
+
+\item \alert{Deviance residual}:
+  $$ \hat\epsilon_i^D \ \equiv \ \text{sign}(Y_i - \hat\mu_i)\sqrt{d_i}$$
+  where $d_i$ is the deviance for the $i$th observation
+
+\medskip
+
+\item \alert{Pearson residual}:
+  $$ \hat\epsilon_i^P \ \equiv \ \frac{\sqrt{\omega_i}(Y_i - \hat\mu_i)}{\sqrt{b^{\prime\prime}(\hat\theta_i)}}$$
+
+\end{enumerate}
+\medskip
+
+\pause
+\item These residuals have approximately the same properties as OLS residuals when $N$ is large
+%\item Moreover, numerical maximization of likelihood produces something equivalent to \alert{hat values} as a byproduct
+
+\pause
+\item Thus, most \alert{regression diagnostics} for linear models also work for GLMs:
+  \begin{itemize}
+  \item Plotting standardized and studentized residuals
+  \item Analyze influence points and outliers
+  \item Added-variable plots, component-residual plots, etc.
+  \end{itemize}
+
+\end{itemize}
+
+
+}
+
+
+
+\begin{frame}[fragile]
+\frametitle{Example: Democracy and War Involvement}
+Benoit (1996):
+\begin{itemize}
+ \item $Y_i$: \# of involvement in international wars, 1960--80
+ \item $X_i$: democracy (Freedom House score), population, military capacity, economic interdependence
+\end{itemize}
+\pause
+\vspace{-1.75\baselineskip}
+\begin{columns}
+\column{0.25\textwidth}
+\begin{center}
+\includegraphics[height=.7\textheight]{war-hist.pdf}
+\end{center}
+\pause
+\column{0.375\textwidth}
+{\scriptsize
+\quad \qquad Coefficients:
+\begin{verbatim}
+               Est. s.e.
+    (Int.)    -3.97 1.62 *
+    fh73      -0.06 0.04
+    lpopln70   0.62 0.30 *
+    lmilwp70   1.29 0.45 **
+    ecintdep  -1.28 1.11
+
+               z    p
+              -2.45 0.014
+              -1.49 0.136
+               2.07 0.039
+               2.85 0.004
+              -1.16 0.247
+\end{verbatim}
+}
+\pause
+\column{0.4\textwidth}
+\begin{center}
+\includegraphics[height=.7\textheight]{war-pred-po.pdf}
+\end{center}
+
+\end{columns}
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Example: Democracy and War Involvement}
+Plotting $\hat\epsilon_i^P$ against $X_{ij}$ and $X_i^\top\hat\beta$:
+\begin{center}
+\includegraphics[width=\textwidth]{war-residplots.pdf}
+\end{center}
+\pause
+\begin{itemize}
+\item Evidence of mild nonlinearity (quadratic) for log population
+\item Heavy skew to the right:
+  \begin{itemize}
+  \item Nonnegativity of the outcome variable $+$ small sample size
+  \item Potentially alleviated by a ``zero inflation'' model
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Example: Democracy and War Involvement}
+Studentized residuals and hat values:
+\begin{center}
+\includegraphics[width=.5\textwidth]{war-rstudentdens.pdf}
+\includegraphics[width=.5\textwidth]{war-influence.pdf}
+\end{center}
+\pause
+\begin{itemize}
+\item The density of studentized residuals confirms the right skew
+\item No obvious outliers (except perhaps Israel)
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+\huge
+
+Model fit
+
+
+\end{frame}
+
+
+
+
+
+\end{document}
+
+
+\item Suppose we have $Q$ restrictions for $p$ covariates.  Include this in matrix $\boldsymbol{R}$.  Under $H_{0}$ we have:
+
+\begin{eqnarray}
+H_{0} & : &  \boldsymbol{R} \boldsymbol{\beta}  = r \nonumber \\
+H_{1} & : & \boldsymbol{R} \boldsymbol{\beta} \neq r \nonumber
+\end{eqnarray}
+
+\item Under the null:
+\begin{eqnarray}
+\sqrt{n}(\widehat{\boldsymbol{\beta}}_{UR} - \boldsymbol{\beta}) & \rightarrow^{D} & \text{Normal}\left(0, \widehat{\text{Var}(\widehat{\boldsymbol{\beta}}_{UR})}\right) \nonumber \\
+R \sqrt{n}(\widehat{\boldsymbol{\beta}}_{UR} - \boldsymbol{\beta}) =  & \rightarrow^{D} & \text{Normal}(0, \boldsymbol{R}\widehat{\text{Var}(\widehat{\boldsymbol{\beta}}_{UR})} \boldsymbol{R}^{'})\nonumber
+\end{eqnarray}
+\end{itemize}
+
+\end{frame}
+\end{document}

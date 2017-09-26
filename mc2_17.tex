@@ -1,0 +1,664 @@
+\documentclass{beamer}
+
+%\usepackage[table]{xcolor}
+\mode<presentation> {
+  \usetheme{Boadilla}
+%  \usetheme{Pittsburgh}
+%\usefonttheme[2]{sans}
+\renewcommand{\familydefault}{cmss}
+%\usepackage{lmodern}
+%\usepackage[T1]{fontenc}
+%\usepackage{palatino}
+%\usepackage{cmbright}
+  \setbeamercovered{transparent}
+\useinnertheme{rectangles}
+}
+%\usepackage{normalem}{ulem}
+%\usepackage{colortbl, textcomp}
+\setbeamercolor{normal text}{fg=black}
+\setbeamercolor{structure}{fg= black}
+\definecolor{trial}{cmyk}{1,0,0, 0}
+\definecolor{trial2}{cmyk}{0.00,0,1, 0}
+\definecolor{darkgreen}{rgb}{0,.4, 0.1}
+\newtheorem{prop}{Proposition}
+\newtheorem{defn}{Definition}
+\newtheorem{cor}{Corollary}
+\newtheorem{lem}{Lemma}
+
+\beamertemplatesolidbackgroundcolor{white}  \setbeamercolor{alerted
+text}{fg=red}
+\usepackage{multirow}
+
+\setbeamertemplate{caption}[numbered]\newcounter{mylastframe}
+
+%\begin{beamerboxesrounded}[upper=uppercol,lower=lowercol,shadow=true]{Block}
+%$A = B$.
+%\end{beamerboxesrounded}}
+\renewcommand{\familydefault}{cmss}
+\usepackage[all]{xy}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+%\usepackage{palatino}
+%\usepackage{eulervm}
+\usecolortheme{lily}
+%\usepackage[latin1]{inputenc}
+
+\title[Methodology III] % (optional, nur bei langen Titeln nötig)
+{Political Methodology III: Model Based Inference}
+
+\author{Justin Grimmer}
+\institute[Stanford University]{Associate Professor\\Department of Political Science \\  Stanford University}
+\vspace{0.3in}
+
+\date{April 5th, 2017}
+
+\begin{document}
+\begin{frame}
+\titlepage
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Statistical Inference}
+
+
+\begin{itemize}
+\item[-] Model based inference:
+\item[-] \alert{Assume}: data generated via distributional process
+\item[-] Defines a likelihood function: parameter values $\rightarrow$ likelihood of parameters, given data
+\item[-] Derive estimators that identify values that \alert{maximize} likelihood
+\end{itemize}
+
+General Likelihood Theory $\rightarrow$ Example $\rightarrow$ General Theory $\rightarrow$ Example
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Likelihood Inference, the Basics}
+Suppose that we collect a random sample of realizations from iid RVs\pause
+\begin{eqnarray}
+\invisible<1>{\boldsymbol{y} & = & (y_{1}, y_{2}, \hdots, y_{n} ) \nonumber } \pause
+\end{eqnarray}
+\invisible<1-2>{Suppose that the distributions have (unobserved) true parameter $\theta_{0}$, Therefore, } \pause
+\begin{eqnarray}
+\invisible<1-3>{f(\boldsymbol{y}| \theta_{0} ) & = & \prod_{i=1}^{n} f(y_{i} | \theta_{0}) \nonumber } \pause
+\end{eqnarray}
+
+
+\invisible<1-4>{We're going to be interested in making an inference about $\theta_{0}$ using the observed data.  }
+
+
+
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Likelihood Inference, the Basics}
+
+Assume we know the correct functional form for $f$--$M^{*}$ \pause \\
+
+
+\invisible<1>{Define the \alert{likelihood} function $L(\theta|\boldsymbol{y} )$ as, } \pause
+\begin{eqnarray}
+\invisible<1-2>{L(\theta|\boldsymbol{y}) & = &   \prod_{i=1}^{n} f(y_{i} | \theta)} \pause  \nonumber
+\end{eqnarray}
+
+\begin{itemize}
+\invisible<1-3>{\item[-] $L(\theta|\boldsymbol{y}): \underbrace{\Theta}_{\text{parameter space}} \rightarrow \Re $} \pause
+\invisible<1-4>{\item[-] Idea: values of $\theta \in \Theta$ will be \alert{more likely} if they make the observed data a higher probability}
+\end{itemize}
+
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Likelihood Inference, the Basic}
+
+
+If assumptions hold, then: \pause
+\begin{itemize}
+\invisible<1>{\item[-] $L(\theta|\boldsymbol{y})$ encodes all information about likely values of $\theta$, given data} \pause
+\invisible<1-2>{\item[-] Use $L(\theta|\boldsymbol{y})$ to find \alert{most likely} value of $\theta$ and uncertainty about that estimate} \pause
+\end{itemize}
+
+\invisible<1-3>{Likelihood is a \alert{relative} concept.}\pause\invisible<1-4>{ We can compare \alert{within} models.}\pause\invisible<1-5>{  But not across \alert{models}} \\ \pause
+\invisible<1-6>{We also are only able to infer most likely value \alert{given modeling assumptions} }
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Example: Bernoulli Trials}
+
+Suppose that we observe a sample of independentally and identically distributed observations that are Bernoulli distributed, \pause
+\begin{eqnarray}
+\invisible<1>{Y_{i} \sim \text{Bernoulli}(\pi) \nonumber } \pause
+\end{eqnarray}
+\begin{itemize}
+\invisible<1-2>{\item[-] Recall } \pause
+\end{itemize}
+\begin{eqnarray}
+\invisible<1-3>{\text{Bernoulli}(\pi) & = & \pi^{y_{i}}(1- \pi)^{1-y_{i}} \nonumber } \pause
+\end{eqnarray}
+\begin{itemize}
+\invisible<1-4>{\item[-] $\boldsymbol{y} = (y_{1}, y_{2}, \hdots, y_{n} ) $} \pause
+\invisible<1-5>{\item[-] $y_{i} = 1$ or $y_{i} = 0$ }
+\end{itemize}
+
+
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Example: Bernoulli Trials}
+\pause
+\begin{eqnarray}
+\invisible<1>{L(\pi|\boldsymbol{y}) &  =  & f(\boldsymbol{y}|\pi) \nonumber } \pause \\
+\invisible<1-2>{& = & \prod_{i=1}^{n} f(y_{i} | \pi ) \nonumber } \pause\\
+\invisible<1-3>{& = & \prod_{i=1}^{n}\pi^{y_{i} } (1- \pi)^{1- y_{i} } \nonumber} \pause \\
+\invisible<1-4>{& = & \pi^{\sum_{i=1}^{n} y_{i} } (1- \pi) ^{n - \sum_{i=1}^{n} y_{i} }} \pause \nonumber
+\end{eqnarray}
+\invisible<1-5>{We'll work with the natural logarithm of the likelihood, } \pause
+\begin{eqnarray}
+\invisible<1-6>{\log L(\pi|\boldsymbol{y}) \equiv l(\pi|\boldsymbol{y}) & = & \sum_{i=1}^{n} y_{i} \log \pi  + (n - \sum_{i=1}^{n} y_{i} ) \log (1- \pi)  \nonumber } \pause
+\end{eqnarray}
+
+\invisible<1-7>{For a fixed set of observations, what does this look like?}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Example: Bernoulli Trials: Simulated Example with $\pi=0.6$}
+\begin{center}
+\only<1>{\scalebox{0.5}{\includegraphics{lik1.pdf}}}
+\only<2>{\scalebox{0.5}{\includegraphics{lik2.pdf}}}
+\end{center}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Example: Bernoulli Trials}
+
+
+Look for estimator that optimizes (log)-likelihood \pause \\
+
+\small
+\invisible<1>{Previous plot: optimize by looking for stationary points} \pause
+\begin{eqnarray}
+\invisible<1-2>{l(\pi|\boldsymbol{y}) & = & \sum_{i=1}^{n} y_{i} \log \pi  + (n - \sum_{i=1}^{n} y_{i} ) \log (1- \pi)  \nonumber \\} \pause
+\invisible<1-3>{\underbrace{\frac{\partial l(\pi|\boldsymbol{y})} {\partial \pi }}_{\text{Score Function}}& = & \frac{\sum_{i=1}^{n} y_{i} }{\pi}  - \frac{ (n - \sum_{i=1}^{n} y_{i} ) } { 1 - \pi }\nonumber \\} \pause
+\invisible<1-4>{0 & = & \frac{\sum_{i=1}^{n} y_{i} }{\pi^{*} }  - \frac{ (n - \sum_{i=1}^{n} y_{i} ) } { 1 - \pi^{*}  }\nonumber \\} \pause
+\invisible<1-5>{\frac{ (n - \sum_{i=1}^{n} y_{i} ) } { 1 - \pi^{*}  } & = & \frac{\sum_{i=1}^{n} y_{i} }{\pi^{*} } \nonumber \\} \pause
+\invisible<1-6>{(n - \sum_{i=1}^{n} y_{i} ) \pi^{*}  & = & (1 - \pi^{*}  ) \sum_{i=1}^{n} y_{i} \nonumber \\} \pause
+\invisible<1-7>{\pi^{*}  n & = & \sum_{i=1}^{n} y_{i} \nonumber \\} \pause
+\invisible<1-8>{\pi^{*}   &= & \overline{y} \nonumber }
+\end{eqnarray}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Uncertainty About Mode}
+$\pi^{*} = \overline{y}$ maximizes $L(\pi|\boldsymbol{y})$. \pause \invisible<1>{How much uncertainty is there about this maximum?} \pause \\
+
+\begin{columns}[]
+\column{0.55\textwidth}
+\invisible<1>{\only<1-2>{\scalebox{0.5}{\includegraphics{lik3.pdf}}} }
+\only<3>{\scalebox{0.5}{\includegraphics{lik4.pdf}}}
+\only<4-5>{\scalebox{0.5}{\includegraphics{lik5.pdf}}}
+\pause \pause
+
+
+\column{0.45\textwidth}
+\invisible<1-4>{\alert{Second derivative} captures this \alert{curvature} }
+
+\end{columns}
+\end{frame}
+
+
+\begin{frame}
+
+The \alert{Fisher Information} measures the information that $\boldsymbol{y}$ conveys about the parameter $\boldsymbol{\theta}$.  Define it using the two equivalent definitions:
+
+\begin{defn}
+The \alert{Fisher Information} for a log-likelihood $l(\theta|\boldsymbol{Y})$ is
+
+\begin{eqnarray}
+I(\theta) & = & -E\left[\left(\frac{\partial l(\theta|\boldsymbol{Y})}{\partial \theta }\right)^2 | \theta \right] \nonumber \\
+& = & -E\left[\left(\frac{\partial^2 l(\theta|\boldsymbol{Y})}{\partial \theta \partial \theta }\right) | \theta \right] \nonumber
+\end{eqnarray}
+The \alert{observed Fisher information} for a sample of $n$ observations is given by
+
+\begin{eqnarray}
+I_{n}(\theta) & = & - \frac{\partial^2}{\partial \theta^2} l(\theta|\boldsymbol{y} ) \nonumber
+\end{eqnarray}
+
+
+\end{defn}
+
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Uncertainty About Mode}
+
+Information let's us know how much we learn about $\theta$ from our sample $\boldsymbol{y}$ \pause
+
+\begin{itemize}
+\invisible<1>{\item[-] If $I_{n}(\theta)$ is big at MLE, more information.  Or more concentrated around mode} \pause
+\invisible<1-2>{\item[-] If $I_{n}(\theta)$ is small at MLE, less information. Or less concentrated around the mode}
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Uncertainty About Mode}
+
+Inverting the information provides the asymptotic variance for the maximum likelihood estimator (under some regulatory conditions we will discuss later)
+
+\begin{eqnarray}
+\text{Variance} (\theta^{*}) & = & \frac{1}{I_{n}(\theta^{*})} \nonumber \\
+\text{Standard Error}(\theta^{*}) & = & \sqrt{\frac{1}{I_{n}(\theta^{*})}} \nonumber
+\end{eqnarray}
+
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Example: Bernoulli Trials}
+Calculating second derivate for Bernoulli example: \pause
+\begin{eqnarray}
+\invisible<1>{\frac{\partial^2 l(\pi|\boldsymbol{y})}{\partial \pi ^2} = -\frac{\partial^2}{\partial \pi^2} l(\pi|\boldsymbol{Y} ) & = & \frac{\sum_{i=1}^{n} Y_{i} }{\pi^2} + \frac{n - \sum_{i=1}^{n}Y_{i} }{(1-\pi)^2} \nonumber \\} \pause
+\invisible<1-2>{I_{n}(\pi^{*}) & = & \frac{n}{\overline{y} (1- \overline{y}) } \nonumber } \pause
+\end{eqnarray}
+
+\begin{itemize}
+\invisible<1-3>{\item[-] The bigger the $n$, the more \alert{curved} at the mode.  } \pause
+\invisible<1-4>{\item[-] Calculating the variance } \pause
+\begin{eqnarray}
+\invisible<1-5>{Var(\pi^{*} ) & = & 1/I_{n}(\pi^{*}) \nonumber \\} \pause
+\invisible<1-6>{& = & \frac{\overline{y}(1-\overline{y}) }{n} \nonumber } \pause
+\end{eqnarray}
+\end{itemize}
+
+
+\begin{itemize}
+\invisible<1-7>{\item[-] \alert{Curvature} determines sampling distribution of maximum likelihood estimator}
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Properties of Maximum Likelihood Estimators}
+
+Likelihoods are summary estimators\pause\invisible<1>{: throw away data if you believe assumptions\\} \pause
+\invisible<1-2>{\alert{Maximum likelihood} estimator: point that maximizes likelihood} \pause \\
+\invisible<1-3>{\alert{Large sample properties} given the correct \alert{distributional} family is known} \pause
+\begin{itemize}
+\invisible<1-4>{\item[1)] \alert{Consistent}: As the sample size gets large, the mle converges on true value} \pause
+\invisible<1-5>{\item[2)] \alert{Convergence in Distribution} As the sample size gets large, the mle becomes normally distributed, with mean at the true value and variance inverted information at maximum likelihood estimator} \pause
+\invisible<1-6>{\item[3)] \alert{Asymptotic Efficiency}: MLE has the smallest variance for ``well-behaved" estimator (Cramer-Rao Lower Bound obtained)}\pause
+\end{itemize}
+
+
+\end{frame}
+
+
+\begin{frame}
+
+Small Sample Properties given correct distributional family is known \pause
+\begin{itemize}
+\invisible<1>{\item[1)] Equivariance: if $\widehat{\theta}$ is the MLE for $\theta$ and $g:\Theta \rightarrow \Re$ is a one-to-one function.  Then $g(\widehat{\theta})$ is the MLE of $g(\theta)$.  } \pause
+\invisible<1-2>{\item[2)] NO GUARANTEE OF UNBIASEDNESS!!!}\pause
+\end{itemize}
+\invisible<1-3>{\alert{Large sample properties} given incorrect model } \pause
+\begin{itemize}
+\invisible<1-4>{\item[1)] The MLE gets as ``close" as possible to the true answer}
+\end{itemize}
+
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Properties of Maximum Likelihood Estimators}
+
+\pause
+\invisible<1>{\begin{defn}
+\alert{Consistent} Let $\widehat{\theta}_{n}$ be an estimator for $\theta$, with sample size $n$.  Then $\widehat{\theta}_{n}$ converges in probability to $\theta$ if, for all $\epsilon>0$,
+\begin{eqnarray}
+\lim_{n \rightarrow \infty} P(|\widehat{\theta}_{n} - \theta|> \epsilon) & \rightarrow &  0 \nonumber
+\end{eqnarray}
+\end{defn}} \pause
+
+\invisible<1-2>{\begin{prop}
+\alert{MLE is consistent}: Assume $y_{1}, y_{2}, \hdots, y_{n}$ are simple random samples from  $p(y|\theta_{0})$.
+Define $\theta^{*}_{n}$ as the mle estimator with sample size $n$. \\
+ Then, as $n\rightarrow \infty$, $\theta^{*}_{n} \rightarrow \theta_{0}$ (in probability)
+\end{prop} }
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Properties of Maximum Likelihood Estimators}
+Simulated example with $\pi = 0.6$ and increasing $n$
+\pause
+
+\invisible<1>{Distribution of $|\pi^{*} - 0.6|$} \pause
+
+\invisible<1-2>{\scalebox{0.45}{\includegraphics{consistentview.pdf}}}
+\end{frame}
+
+
+\begin{frame}
+
+
+\begin{defn}
+$\widehat{\theta}_{n}$, with cdf $F_{n}(x)$,  converges in distribution to random variable $Y$ with cdf $F(x)$ if
+\begin{eqnarray}
+\lim_{n\rightarrow \infty} |F_{n} (x) - F(x) | = 0 \nonumber
+\end{eqnarray}
+For all $x \in \Re$ where $F(x)$ is continuous.   \pause
+\end{defn}
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Properties of Maximum Likelihood Estimators}
+
+\pause
+
+\invisible<1>{\begin{prop}
+Suppose that $y_{1}, y_{2}, \hdots, y_{n}$ are simple random samples from $p(y|\theta_{0})$.  Define $\theta^{*}$ as the MLE.  Then as $n \rightarrow \infty$ } \pause ,
+\begin{eqnarray}
+\invisible<1-2>{p(\theta^{*}) & \rightarrow^{d} & \text{Normal}(\theta_{0}, \frac{1}{I_{n}(\theta_{0})} ) \nonumber } \pause \\
+\invisible<1-3>{p(\theta^{*} ) & \rightarrow^{d} & \text{Normal}(\theta_{0}, \frac{1}{I_{n} (\theta^{*})})} \nonumber
+\end{eqnarray}
+
+\end{prop}
+\pause
+\begin{itemize}
+\invisible<1-4>{\item[-] MLE central limit theorem} \pause
+\invisible<1-5>{\item[-] As we have more observations, the MLE converges, \alert{in distribution} to a normal distribution}
+\end{itemize}
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Central Limit Theorem for Maximum Likelihood Estimators}
+
+\begin{columns}[]
+\column{0.65\textwidth}
+\only<1>{\scalebox{0.45}{\includegraphics{clt1.pdf}}}
+\only<2>{\scalebox{0.45}{\includegraphics{clt2.pdf}}}
+\only<3>{\scalebox{0.45}{\includegraphics{clt3.pdf}}}
+\only<4>{\scalebox{0.45}{\includegraphics{clt4.pdf}}}
+\only<5>{\scalebox{0.45}{\includegraphics{clt5.pdf}}}
+\only<6>{\scalebox{0.45}{\includegraphics{clt6.pdf}}}
+\only<7>{\scalebox{0.45}{\includegraphics{clt7.pdf}}}
+\only<8>{\scalebox{0.45}{\includegraphics{clt8.pdf}}}
+\only<9>{\scalebox{0.45}{\includegraphics{clt9.pdf}}}
+\only<10>{\scalebox{0.45}{\includegraphics{clt10.pdf}}}
+\column{0.35\textwidth}
+Example: \\
+$\pi=0.6$\\
+Increasing $n$
+
+\end{columns}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Returning to Our Examples}
+
+
+Summary: $\theta^{*}$ is an MLE and $\theta_{0}$ is the true value and we know the right distributional family
+\begin{itemize}
+\item[1)] As $n \rightarrow \infty$,  $\theta^{*}_{n} \rightarrow \theta_{0}$
+\item[2)] As $n \rightarrow \infty$, $p(\theta^{*}) \rightarrow \text{Normal}(\theta_{0}, \frac{1}{I(\theta_{0})})$
+\end{itemize}
+where $I(\theta_{0} ) =  - \frac{\partial^2}{\partial \pi^2} l(\theta_{0}|y) $ or curvature of log-likelihood at true value of $\theta_{0}$
+
+\end{frame}
+
+\begin{frame}
+\huge
+Two-parameter MLE
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Multivariate Normal Distribution}
+
+Suppose that we have a vector of random variables,
+\begin{eqnarray}
+\boldsymbol{X} & = & (X_{1}, X_{2}, \hdots, X_{k} ) \nonumber
+\end{eqnarray}
+
+Then we'll say that $X \sim \text{Multivariate Normal} (\boldsymbol{\mu}, \boldsymbol{\Sigma})$ where,
+\begin{eqnarray}
+\boldsymbol{\mu} & = & (\mu_{1}, \mu_{2}, \hdots, \mu_{k}) \nonumber \\
+\boldsymbol{\Sigma} & = & \begin{pmatrix}
+\sigma^2_{1} &  Cov(X_{1}, X_{2} ) & Cov(X_{1}, X_{3} ) & \hdots & Cov(X_{1}, X_{n} ) \\
+Cov(X_{1}, X_{2}) & \sigma^2_{2} & Cov(X_{2}, X_{3} ) & \hdots & Cov(X_{2} , X_{n} ) \\
+\vdots & \vdots & \vdots  &\ddots & \vdots \\
+Cov(X_{1}, X_{k}) & Cov(X_{2}, X_{k} ) & Cov(X_{3}, X_{k} ) & \hdots & \sigma^2_{k} \\
+\end{pmatrix} \nonumber
+\end{eqnarray}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Multivariate Normal Distribution}
+
+\begin{eqnarray}
+f(\boldsymbol{x}) & = & \frac{1}{ (2\pi)^{k/2} |\boldsymbol{\Sigma}|^{1/2}} \exp\left(-\frac{1}{2} (\boldsymbol{x} - \boldsymbol{\mu} )^{'} \boldsymbol{\Sigma}^{-1} (\boldsymbol{x} - \boldsymbol{\mu} ) \right) \nonumber
+\end{eqnarray}
+
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Multivariate Version}
+
+Suppose that we simple random samples $\boldsymbol{y}_{1}, \boldsymbol{y}_{2}, \hdots, \boldsymbol{y}_{n}$ from multivariate distribution $p(\boldsymbol{y} | \boldsymbol{\theta}_{0})$.\pause  \invisible<1>{ Define $\boldsymbol{\theta}^{*}= (\theta_{1}^{*}, \theta_{2}^{*}, \theta_{k}^{*} ) $ as vector valued MLE.} \pause \invisible<1-2>{ Then as $n \rightarrow \infty$, } \pause
+\begin{eqnarray}
+\invisible<1-3>{p(\boldsymbol{\theta}^{*} ) &  \rightarrow^{d} & \text{Multivariate Normal} (\boldsymbol{\theta}_{0}, I_{n} (\boldsymbol{\theta}_{0})^{-1} ) \nonumber } \pause
+\end{eqnarray}
+
+\invisible<1-4>{Where $I(\boldsymbol{\theta}_{0})$ is the \alert{observed Fisher Information Matrix}, (Negative Hessian) or } \pause
+\invisible<1-5>{\begin{eqnarray}
+I_{n}(\boldsymbol{\theta}_{0} ) & = &  - \begin{pmatrix}
+\frac{\partial^{2} l(\boldsymbol{\theta}_{0}) }{\partial \theta_{1}^{2} } & \frac{\partial^{2} l(\boldsymbol{\theta}_{0} )}{\partial \theta_{1} \partial \theta_{2}  }& \hdots & \frac{\partial^{2} l(\boldsymbol{\theta}_{0}) }{\partial \theta_{1} \partial \theta_{k}  } \\
+\frac{\partial^{2} l(\boldsymbol{\theta}_{0} )}{\partial \theta_{1} \partial \theta_{2}  } & \frac{\partial^{2} l(\boldsymbol{\theta}_{0}) }{\partial \theta_{2}^{2} }& \hdots & \frac{\partial^{2} l(\boldsymbol{\theta}_{0}) }{\partial \theta_{2} \partial \theta_{k}  }\\
+\vdots & \vdots &\ddots  & \vdots \\
+\frac{\partial^{2} l(\boldsymbol{\theta}_{0}) }{\partial \theta_{k} \partial \theta_{1}  } & \frac{\partial^{2} l(\boldsymbol{\theta}_{0}) }{\partial \theta_{k} \partial \theta_{2}  } & \hdots & \frac{\partial^{2} l(\boldsymbol{\theta}_{0}) }{\partial \theta_{k}^{2}} \\
+\end{pmatrix}
+\nonumber
+\end{eqnarray} } \pause
+
+\invisible<1-6>{Inverting the Fisher-information matrix provides \alert{Variance-Covariance Matrix} }
+
+\end{frame}
+
+
+
+
+
+\begin{frame}
+\frametitle{Maximum Likelihood Estimation, Normal Distribution}
+Example 2: \\
+\pause
+
+\invisible<1>{Suppose that we draw an independent and identically distributed random sample of $n$ observations from a normal distribution,} \pause
+\begin{eqnarray}
+\invisible<1-2>{Y_{i} & \sim & \text{Normal}(\mu, \sigma^2) \nonumber \\} \pause
+\invisible<1-3>{\boldsymbol{y} & = & (y_{1}, y_{2}, \hdots, y_{n} ) \nonumber } \pause
+\end{eqnarray}
+
+
+
+
+\invisible<1-4>{Our task:} \pause
+\begin{itemize}
+\invisible<1-5>{\item[-] Obtain likelihood (summary estimator)} \pause
+\invisible<1-6>{\item[-] Derive maximum likelihood estimators for $\mu$ and $\sigma^2$} \pause
+\invisible<1-7>{\item[-] Characterize sampling distribution }
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Maximum Likelihood Estimation, Normal Distribution}
+\pause
+\begin{eqnarray}
+\invisible<1>{L(\mu, \sigma^2 | \boldsymbol{y} ) &  = & \prod_{i=1}^{n} f(y_{i}|\mu, \sigma^2) \nonumber \\} \pause
+ \invisible<1-2>{&= &  \prod_{i=1}^{N} \frac{\exp[ - \frac{ (y_{i} - \mu)^2 }{2\sigma^2} ]}{\sqrt{2 \pi \sigma^2}} \nonumber \\} \pause
+ \invisible<1-3>{& = & \frac{\exp[ -\sum_{i=1}^{n} \frac{(y_{i} - \mu)^2}{2\sigma^2} ]}{ (2\pi)^{n/2} \sigma^{2n/2} } \nonumber } \pause
+ \end{eqnarray}
+
+\invisible<1-4>{Taking the logarithm, we have } \pause
+\begin{eqnarray}
+\invisible<1-5>{l(\mu, \sigma^2|\boldsymbol{y} ) & = & -\sum_{i=1}^{n} \frac{(y_{i} - \mu)^2}{2\sigma^2} - \frac{n}{2} log(2 \pi) - \frac{n}{2} \log (\sigma^2)   \nonumber \\} \pause
+\invisible<1-6>{&= & -\sum_{i=1}^{n} \frac{(y_{i} - \mu)^2}{2\sigma^2}- \frac{n}{2} \log (\sigma^2) + \alert{c} \nonumber }
+\end{eqnarray}
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Maximum Likelihood Estimation, Normal Distribution}
+
+Let's find $\mu^{*}$ and $(\sigma^{2})^{*}$ that maximizes log-likelihood.
+
+\begin{eqnarray}
+l(\mu, \sigma^2|\boldsymbol{y} ) & = &  -\sum_{i=1}^{n} \frac{(y_{i} - \mu)^2}{2\sigma^2} - \frac{n}{2} \log (\sigma^2) + \alert{c} \nonumber \\
+\frac{\partial l(\mu, \sigma^2)|\boldsymbol{y} )}{\partial \mu }  & = & -\sum_{i=1}^{n} \frac{2(y_{i} - \mu)}{2\sigma^2}  \nonumber \\
+\frac{\partial l(\mu, \sigma^2)|\boldsymbol{y})}{\partial \sigma^2} & = &  -\frac{n}{2\sigma^2}  + \frac{1}{2\sigma^4} \sum_{i=1}^{n} (Y_{i} - \mu)^2 \nonumber
+\end{eqnarray}
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Maximum Likelihood Estimation, Normal Distribution}
+
+
+\begin{eqnarray}
+0 & = & -\sum_{i=1}^{n} \frac{2(y_{i} - \mu^{*})}{2\sigma^2}  \nonumber \\
+0 & = &  -\frac{n}{2\sigma^2 }  + \frac{1}{2\sigma^4} \sum_{i=1}^{n} (y_{i} - \mu^{*})^2 \nonumber
+\end{eqnarray}
+
+Solving for $\mu$ and $\sigma^2$ yields,
+\begin{eqnarray}
+\mu^{*} & = & \frac{\sum_{i=1}^{n} y_{i} }{n} \nonumber \\
+\sigma^{2} & = & \frac{1}{n} \sum_{i=1}^{n} (y_{i} - \overline{y})^2 \nonumber
+\end{eqnarray}
+
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Maximum Likelihood Estimation, Normal Distribution}
+
+Multivariate analogy: observed Fisher information \alert{matrix} (Negative Hessian) (Negative matrix of second derivatives) \pause \\
+\invisible<1>{$
+I_{n} (\mu^{*}, \widehat{\sigma}^2)  =
+- \begin{pmatrix}
+\frac{\partial^{2} l(\mu, \sigma^2|\boldsymbol{y} )}{\partial \mu^{2}} & \frac{\partial^{2} l(\mu, \sigma^2|\boldsymbol{y} )}{\partial \sigma^{2} \partial \mu} \\
+\frac{\partial^{2} l(\mu, \sigma^2|\boldsymbol{y} )}{\partial \sigma^{2} \partial \mu} & \frac{\partial^{2} l(\mu, \sigma^2|\boldsymbol{y} )}{\partial^{2} \sigma^{2}} \nonumber
+\end{pmatrix}
+$} \pause
+
+
+
+
+\invisible<1-2>{Taking derivatives and evaluating at MLE's yields}  \pause
+\invisible<1-3>{\begin{eqnarray}
+I_{n} (\mu^{*}, \widehat{\sigma}^2) & = & - \begin{pmatrix} \frac{n}{\widehat{\sigma}^2} & 0 \\
+0 & \frac{n}{(\widehat{\sigma}^2)^2} \nonumber \\
+\end{pmatrix} \nonumber } \pause
+\end{eqnarray}
+
+
+
+\invisible<1-4>{Therefore, as $n\rightarrow \infty $, we have that } \pause
+\invisible<1-5>{\begin{eqnarray}
+p(\mu, \sigma^2) & \rightarrow^{d}& \text{Multivariate Normal}\left( \left(\overline{y}, \frac{1}{n} \sum_{i=1}^{n} (y_{i} - \overline{y})^2  \right) , \begin{pmatrix} \frac{\widehat{\sigma}^2}{n} & 0 \\
+0 & \frac{(\widehat{\sigma}^2)^2}{n}\\
+\end{pmatrix} \right) \nonumber
+\end{eqnarray}
+}\pause
+
+\invisible<1-6>{Because normal distribution $\Rightarrow$ that mle of $\mu$ and $\sigma^2$ are \alert{independent}!} \pause
+\invisible<1-7>{\alert{This is an asymptotic result}: results will vary with small sample sizes}
+
+\end{frame}
+
+
+\begin{frame}
+
+Up next:
+
+\begin{itemize}
+\item[1)] Linear regression in maximum likelihood
+\item[2)] Logit/Probit
+\item[3)] Numerical optimization
+
+\end{itemize}
+
+
+\end{frame}
+
+
+
+\end{document}

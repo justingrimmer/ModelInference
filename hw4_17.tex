@@ -1,0 +1,136 @@
+\documentclass[letterpaper,12pt]{article}
+%\usepackage{amsmath,epsfig,setspace,multirow,url,fancyhdr}
+%\usepackage{graphicx}
+%\usepackage{setspace}
+\usepackage{lscape,enumitem}
+\usepackage{arabtex}
+\usepackage{rotating}
+%%\usepackage{times}
+%\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}
+%\usepackage{endnotes}
+%\clubpenalty=10000 \widowpenalty=10000
+%\hyphenation{}
+%\renewcommand{\bibitem}{\vskip6pt\par\hangindent\parindent\hskip-\parindent}
+% === graphic packages ===
+\usepackage{graphicx,textcomp}
+% === bibliography package ===
+\usepackage{natbib}
+% === margin and formatting ===
+%\usepackage[compact]{titlesec}
+%\usepackage{fullpage}
+\usepackage{vmargin}
+\setpapersize{USletter}
+\topmargin=0in
+\usepackage{color}
+% === math packages ===
+\usepackage[reqno]{amsmath}
+%\usepackage[pdftex]{hyperref}
+\usepackage{amsthm}
+\usepackage{amssymb,enumerate}
+\usepackage[all]{xy}
+\usepackage{lscape}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\newtheorem{com}{Comment}
+\newtheorem{lem} {Lemma}
+\newtheorem{prop}{Proposition}
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{cor}{Corollary}
+\newtheorem{obs}{Observation}
+\newtheorem{ass}{Assumption}
+ \numberwithin{equation}{section}
+ \numberwithin{equation}{section}
+% === dcolumn package ===
+\usepackage{dcolumn}
+\newcolumntype{.}{D{.}{.}{-1}}
+\newcolumntype{d}[1]{D{.}{.}{#1}}
+% === additional packages ===
+\usepackage{url}
+\newcommand{\Sref}[1]{Section~\ref{#1}}
+\newcommand{\mean}{\text{mean}}
+\usepackage{color,setspace}
+\definecolor{spot}{rgb}{0.6,0,0}
+
+\title{POL 350C, Homework 4}
+
+\date{April 21st, 2016}
+\begin{document}
+\maketitle
+
+\noindent Assigned: 4/27/2017\\
+Due: 5/4/2017\\
+
+In this problem set we're going to analyze candidate choice and the use of political language using the models we've developed in class.
+
+\section{Candidate Choice}
+In this problem we're going to analyze preferences for Republican presidential candidates in May 2015. (They weren't asking about Trump back then, so the included candidates are Bush, Cruz, Huckabee, and Paul).  The data are contained in {\tt ChoiceData.RData} and includes the following variables
+
+\begin{itemize}
+\item[1)] {\tt fav}: the most preferred canddate for the respondent
+\item[2)] {\tt gay}: is 1 if the respondent agrees with the statement ``Homosexuality should be accepted by society." It's 0 if they agree with the statement ``Homosexuality should be discouraged by society."
+\item[3)] {\tt trade}: is 1 if the respondent thinks free trade agreement are a good thing, and trade is 0 if the respondent thinks free trade agreements are a bad thing
+\end{itemize}
+
+Using this data set, answer the following questions
+\begin{itemize}
+\item[a)] Calculate the rate of support for the candidates.  Using a cross-tab, show how candidate choice covaries with the values of {\tt gay}. In a separate cross-tab show how candidate choice covariates with  {\tt trade}.  What do you notice?
+\item[b)] Using {\tt mlogit} estimate a model of candidate choice as a function of respondent's view on {\tt gay} and {\tt trade}.  Report the coefficients and standard errors.
+\item[c)] Using the maximum likelihood estimates for the coefficients from (b), report the estimated ``effect" of favoring free trade agreements across candidate choice, averaging over all respondents and leaving the respondent's value of {\tt gay} unchanged.  Report a 95\% confidence interval for this estimated
+\item[d)] Suppose Huckabee and Paul drop out of the race.  What is the predicted vote margin for Cruz and Bush after the candidates drop out?
+\end{itemize}
+
+
+
+\section{Analysis of Political Language}
+Politicians use carefully crafted language to criticize opponents and to garner support from constituents.  This was particularly apparent during the battle to pass the Affordable Care Act.  In this problem we're going to analyze the number of time members of the House used the phrases ``Obamacare"---a deregatory label for the legislation and ``government takeover" a description of the government's larger role in health care after the ACA's passage.
+
+
+In the data set {\tt SpeechDat.RData} we have the following variables:
+\begin{itemize}
+\item[1)] Year : year of press release (either 2009 or 2010, be sure to include this as a factor)
+\item[2)] ICPSR: a unique identifier for the legislator
+\item[3)] obamcare: number of times ``obamacare" appears in legislators' press releases
+\item[4)] govTakeover: number of times ``government takeover" appears in legislators' press releases
+\item[5)] dem: An indicator vector that equals 1 if the legislator is a Democrat
+\item[6)] dw\_nom: a one-dimensional measure of legislator ideology.  Negative values are more liberal, positive values are conservative.
+\end{itemize}
+
+
+
+\begin{itemize}
+\item[a)] Suppose that we assume the number of times ``obamacare" appeares in legislators' press releases is distributed according to a Poisson distribution. $\text{Obamacare}_{i} \sim \text{Poisson}(\lambda)$.   (Note, we're assuming there is only one rate parameter)
+\begin{itemize}
+\item[i)] Calculate the maximum likelihood estimate of the rate obamacare is used, $\lambda$, and provide it along with a measure of the standard error (using a method described in class).
+\item[ii)] Using the maximum likelihood estimate, compare the observed incidence of ``obamacare" to the predictions from a poisson distribution with rate parameter equal to the maximum likelihood estimate.  What do you notice?
+\end{itemize}
+\item[b)] Now suppose that we want to model the rate ``obamacare" appears in legislators' press releases as a function of legislator characteristics.  Specifically, we want to use a Poisson regression to model the count of obamacare as a function of: {\tt dem}, {\tt dw\_nom}, and {\tt Year} (which again, we want to include as a dummary variable for each year).
+\begin{itemize}
+\item[i)] Write out the likelihood and log-likelihood for the $\boldsymbol{\beta}$ vector.
+\item[ii)] In {\tt R} write a function to evaluate the log-likelihood for a vector of regression coefficients $\boldsymbol{\beta}$ given a set of counts and covariates.
+\item[iii)] Using your function from (ii), use {\tt optim} to obtaim maximum likelihood estimate of the regression coefficients and standard errors for those coefficients.  Report the coefficients and standard errors in a table.
+\end{itemize}
+\item[c)] Using those maximum likelihood estimates, we are interested in exploring two relationships:
+\begin{itemize}
+\item[1)] Differences between Democrats and Republicans
+\begin{itemize}
+\item[i)] Obtain the median DW-Nominate score among Democrats and the median DW-Nominate score among Republicans.
+\item[ii)] Using those obtained values, compare the rate the median Democrat uses the phrase Obamcare to the rate the median Republican uses the phrase Obamacare.  Calculate a separate difference in 2009 and 2010.
+\item[iii)] Using the multivariate normal based-simulation, calculate uncertainty for this difference.  How much larger is the rate for Republicans?
+\end{itemize}
+\item[2)]  Differences across the ideological spectrum
+\begin{itemize}
+\item[i)] Using the data plot the count of the number of times obamacare is used against the DW-Nominate score.
+\item[ii)] Now using the model, plot the expected rate obamacare is used across the ideological spectrum.  Use simulation to obtain 95-percent confidence intervals for the relationship.
+\item[iii)] Finally, suppose we're interested in the probability a legislator uses the word ``obamacare" at least once.  Calculate the probability a legislator uses obamacare at least once across the ideological spectrum and obtain 95-percent confidence intervals for that probability.  Hint: recall that if $Y_{i} \in \{0, 1, \hdots, \}$ then $P(Y_{i}\geq 1) = 1 - P(Y_{i} = 0 )$
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+
+
+
+
+
+
+\end{document}

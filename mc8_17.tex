@@ -1,0 +1,759 @@
+\documentclass{beamer}
+
+%\usepackage[table]{xcolor}
+\mode<presentation> {
+  \usetheme{Boadilla}
+%  \usetheme{Pittsburgh}
+%\usefonttheme[2]{sans}
+\renewcommand{\familydefault}{cmss}
+%\usepackage{lmodern}
+%\usepackage[T1]{fontenc}
+%\usepackage{palatino}
+%\usepackage{cmbright}
+  \setbeamercovered{transparent}
+\useinnertheme{rectangles}
+}
+%\usepackage{normalem}{ulem}
+%\usepackage{colortbl, textcomp}
+\setbeamercolor{normal text}{fg=black}
+\setbeamercolor{structure}{fg= black}
+\definecolor{trial}{cmyk}{1,0,0, 0}
+\definecolor{trial2}{cmyk}{0.00,0,1, 0}
+\definecolor{darkgreen}{rgb}{0,.4, 0.1}
+\newtheorem{prop}{Proposition}
+\newtheorem{defn}{Definition}
+\newtheorem{cor}{Corollary}
+\newtheorem{lem}{Lemma}
+
+\newcommand\indep{\protect\mathpalette{\protect\independenT}{\perp}}
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
+
+\usefonttheme{professionalfonts} % using non standard fonts for beamer
+\usefonttheme{serif}
+
+\beamertemplatesolidbackgroundcolor{white}  \setbeamercolor{alerted
+text}{fg=red}
+\usepackage{multirow}
+
+\setbeamertemplate{caption}[numbered]\newcounter{mylastframe}
+
+%\begin{beamerboxesrounded}[upper=uppercol,lower=lowercol,shadow=true]{Block}
+%$A = B$.
+%\end{beamerboxesrounded}}
+\renewcommand{\familydefault}{cmss}
+\usepackage[all]{xy}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+%\usepackage{palatino}
+%\usepackage{eulervm}
+\usecolortheme{lily}
+%\usepackage[latin1]{inputenc}
+
+\title[Methodology III] % (optional, nur bei langen Titeln nötig)
+{Political Methodology III: Model Based Inference}
+
+\author{Justin Grimmer}
+\institute[Stanford University]{Associate Professor\\Department of Political Science \\  Stanford University}
+\vspace{0.3in}
+
+\date{April 25th, 2017}
+
+\begin{document}
+\begin{frame}
+\titlepage
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Model Based Inference}
+
+\begin{itemize}
+\item[1)] Likelihood inference
+\item[2)] Logit/Probit
+\item[3)] Ordered Probit
+\item[4)] Choice Models:
+\begin{itemize}
+\item[-] Multinomial Probit
+\begin{itemize}
+\item[a)] DGP
+\item[b)] No IIA, But No Likelihood
+\item[c)] Quantities of Interest
+\item[d)] Interpretation
+\end{itemize}
+\end{itemize}
+\item[-] Count Models
+\begin{itemize}
+\item[-] Poisson Regression
+\begin{itemize}
+\item[-] DGP
+\item[-] Quantities of Interest
+\item[-] Interpretation
+\end{itemize}
+\item[-] Negative Binomial Regression
+\begin{itemize}
+\item[-] DGP
+\item[-] Quantities of Interest
+\item[-] Interpetation
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Multinomial Distribution, Covariances}
+
+Recall:
+$\boldsymbol{Y}_{i} \sim \text{Multinomial}(1, \boldsymbol{\pi})$.  \pause  \\
+\invisible<1>{Write $\boldsymbol{Y}_{i} = (0, 0, 1, 0, \hdots, 0)$ (equivalent to other formulation)\\} \pause
+
+\invisible<1-2>{Now, suppose we take two draws.  Call
+$\tilde{\boldsymbol{Y}} \ = \ \boldsymbol{Y}_{1} + \boldsymbol{Y}_{2}$.  \\
+$\tilde{\boldsymbol{Y}} \ \sim \ \text{Multinomial}(2, \boldsymbol{\pi})$ \\}\pause
+
+\invisible<1-3>{\begin{eqnarray}
+\text{Cov}(\tilde{Y}_{j}, \tilde{Y}_{k}) & = & E[\tilde{Y}_{j}\tilde{Y}_{k}] - E[Y_{j}]E[Y_{k}] \nonumber \\
+                         & = & 2 \pi_{j} \pi_{k}  - 2^{2} \pi_{j} \pi_{k} \nonumber \\
+                         & = & - 2 \pi_{j} \pi_{k} \nonumber \\} \pause
+\invisible<1-4>{\text{Cov}(Y_{1j} + Y_{2j}, Y_{1k} + Y_{2k} ) & = & \text{Cov}(Y_{1j}, Y_{1k}) + \underbrace{\text{Cov}(Y_{1j}, Y_{2k})}_{0} \nonumber \\
+&+ &  \text{Cov}(Y_{2j} , Y_{2k}) +\underbrace{\text{Cov}(Y_{2j}, Y_{1k})}_{0}    \nonumber              }\pause
+\end{eqnarray}
+
+\invisible<1-5>{Both outcomes can never occur $\leadsto$  negative covariance, because trials are independent}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Relaxing Independence, Inducing Positive Covariance}
+
+
+Suppose we take two trials again, but \pause
+\begin{eqnarray}
+\invisible<1>{Y_{1} & \sim & \text{Multinomial}(1, \boldsymbol{\pi}_{1}) \nonumber \\
+Y_{2}|Y_{1} & \sim & \text{Multinomial}(1, \boldsymbol{\pi}_{\boldsymbol{Y}_{1}}   ) \nonumber}\pause
+\end{eqnarray}
+\invisible<1-2>{Probabilities in second stage dependent on draw from first stage
+
+In this case:} \pause
+\begin{eqnarray}
+\invisible<1-3>{f(Y_{1}, Y_{2} ) & = & f(Y_{1}) f(Y_{2}| Y_{1} ) \nonumber \\
+                 & = & \prod_{i=1}^{J} \left(\pi_{j}  \times \prod_{k=1}^{J} \pi_{kj}^{Y_{2k}} \right)^{Y_{1j}} \nonumber }
+\end{eqnarray}
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Relaxing Independence, Inducing Positive Covariance}
+
+\begin{eqnarray}
+f(Y_{1}, Y_{2} ) & = & f(Y_{1}) f(Y_{2}| Y_{1} ) \nonumber \\
+                 & = & \prod_{i=1}^{J} \left(\pi_{j}  \times \prod_{k=1}^{J} \pi_{kj}^{Y_{2k}} \right)^{Y_{1j}} \nonumber
+\end{eqnarray}
+\pause
+\invisible<1>{We can then calculate:} \pause
+
+\begin{eqnarray}
+\invisible<1-2>{E[Y_{1j}] & = &  \pi_{j} \nonumber \\} \pause
+\invisible<1-3>{E[Y_{2k}] & =  & \sum_{m=1}^{J} \pi_{m} \pi_{km} \nonumber \\} \pause
+\invisible<1-4>{E[Y_{1j}Y_{2k}] & = & \pi_{j} \pi_{kj}  \nonumber \\} \pause
+\invisible<1-5>{\text{Cov}(Y_{1j}, Y_{2k} ) & = & \pi_{j} \pi_{kj}  - \pi_{j} \sum_{m=1}^{J} \pi_{m} \pi_{km} \nonumber } \pause
+\end{eqnarray}
+
+\invisible<1-6>{Positive if $\pi_{kj} > \sum_{m=1}^{J} \pi_{m} \pi_{km}$}
+
+
+
+\end{frame}
+
+\begin{frame}
+
+\footnotesize
+
+\begin{semiverbatim}
+
+first<- apply(rmultinom(100000, prob = probs, size = 1), 2, which.max)
+
+
+probs<- rep(1/3, 3)
+
+probs2<- matrix(NA, nrow = 3, ncol = 3)
+
+probs2[c(1,3),]<- rep(1/3, 3)
+
+probs2[c(2),]<- c(0.8, 0.1, 0.1)
+
+draws2<- c()
+
+for(z in 1:100000)\{
+
+  draws2[z]<- which.max(rmultinom(1, prob = probs2[first[z],], size = 1))
+
+  \}
+
+first1<- ifelse(first==1, 1, 0)
+
+first2<- ifelse(first==2, 1, 0)
+
+first3<- ifelse(first==3, 1, 0)
+
+second1<- ifelse(draws2==1, 1, 0)
+
+
+$>$ cov(first2, second1)
+
+[1] 0.1035916
+
+avg\_probs$<$- apply(probs2, 2, mean)
+
+part1<- 1/3$*$avg\_probs[1]
+
+part2<- 1/3$*$probs2[2,1]
+
+$>$ part2 - part1
+
+[1] 0.1037037
+
+ \end{semiverbatim}
+
+\end{frame}
+
+
+
+
+
+
+%%%%%%%%% frame %%%%%%%%%
+\begin{frame}
+\frametitle{Revisiting The IIA Assumption}
+\begin{itemize}
+  \item IIA (Trump, Cruz, and Sanders)
+\medskip
+\pause
+  \item Formally: MNL assumes $\epsilon_{ij}$ is i.i.d.  $\epsilon_{ij} \indep \epsilon_{ik}$ for $j\neq k$
+\medskip
+\pause
+  \item This implies that unobserved factors affecting $Y_{ij}^\ast$
+    are unrelated to those affecting $Y_{ik}^\ast$
+\medskip
+\pause
+  \item When is this assumption plausible?
+\pause
+\bigskip
+  \item Example: Multiparty election with parties R, L1 and L2.
+\medskip
+\pause
+  \item Do voters' unobserved ideological preferences affect Pr($Y_i=$L1) independently
+    of their effect on Pr($Y_i=$L2)? \pause Probably not.
+\end{itemize}
+\end{frame}
+
+
+
+%%%%%%%%% frame %%%%%%%%%
+\begin{frame}
+\frametitle{Multinomial Probit Model}
+\begin{itemize}
+ \item How can we relax the IIA assumption?
+\medskip
+\pause
+  \item Instead of assuming $\epsilon_{ij}$ to be i.i.d. across alternatives $j$,
+    we allow $\epsilon_{ij}$ to be correlated across $j$
+    within each voter $i$
+\medskip
+\pause
+ \item \alert{Multinomial probit model (MNP)}: \\
+   $$ Y_i^\ast \ = \ X_i^{'} \beta + \epsilon_i \quad \text{where}
+   \quad \left\{ \begin{array}{l} \boldsymbol{\epsilon}_i \sim_{\text{iid}} \text{MVN}(0, \Sigma_{J}) \\
+         Y_i^\ast = [Y_{i1}^\ast \ \cdots \ Y_{iJ}^\ast]^{'} \\
+         X_i = \left[ X_{i1} \ \cdots \ X_{iJ}\right]^{'} \end{array}\right. $$
+
+\medskip
+\pause
+  \item Restrictions on the model for identifiability:
+\pause
+    \begin{itemize}
+      \item The (absolute) \alert{level} of $Y_i^\ast$ shouldn't matter \\ \pause
+      $\longrightarrow$ Subtract the 1st equation from
+       all the other equations and work with a system of $J-1$
+       equations with $\tilde\epsilon_i \sim_{\text{iid}} \text{MVN} (0, \tilde\Sigma_{J-1})$
+\pause
+      \item The \alert{scale} of $Y_i^\ast$ also shouldn't matter \\ \pause
+      $\longrightarrow$ $\tilde\Sigma_{(1,1)} = 1$
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+%%%%%%%%% frame %%%%%%%%%
+\begin{frame}
+\frametitle{Limitations of Multinomial Probit}
+\begin{itemize}
+  \item MNP has no closed-form expression for the \alert{likelihood}:
+{\footnotesize
+      $$ \hspace{-.2in} \pi_{ij} = \int_{-\infty}^{-\ddot{X}_{1j}^\top \beta}
+        \cdots \int_{-\infty}^{-\ddot{X}_{Jj}^\top\beta}
+        \phi(\ddot{\epsilon}_{1j},...,\ddot{\epsilon}_{Jj})
+        d\ddot{\epsilon}_{1j} \cdots d\ddot{\epsilon}_{Jj}
+        \ \text{where} \ \left\{ \begin{array}{ccl}
+          \ddot{X}_{kl} & = & X_{ik} - X_{il} \\
+         \ddot{\epsilon}_{kl} & = & \epsilon_{ik} - \epsilon_{il} \end{array} \right.
+        $$
+}
+ \item This makes its estimation computationally costly when $J$ large
+ \item Must use numerical approximation (quadratures) or simulation
+ methods (maximum simulated likelihood or MCMC)
+\medskip
+\pause
+ \item Moreover, \# of parameters in $\Sigma_J$ increases as $J$ gets large,
+ but data contain little information about $\Sigma_J$:
+ \medskip
+ {\small
+ \begin{center}
+ \begin{tabular}{l|ccccc} \hline
+ $J$ & 3 & 4 & 5 & 6 & 7 \\ \hline
+ \# of elements in $\Sigma_J$ & 6 & 10 & 15 & 21 & 28 \\
+ \# of parameters identified & 2 & 5 & 9 & 14 & 20 \\ \hline
+ \end{tabular}
+ \end{center}
+ }
+\bigskip
+\pause
+\item Consequently, MNP is only feasible when $J$ is small
+
+\medskip
+\pause
+\item {\tt MNP} in {\tt R}
+\item Alternative solutions: Nested logit
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Even When You Choose Not To Decide, You Still Have Made a Choice}
+
+Lacy and Burden (1999) \pause \\
+\invisible<1>{Multinomial Probit Model:\\} \pause
+\invisible<1-2>{Three Choices: Bush, Perot, and Clinton\\
+Four Choices: Bush, Perot, Clinton, and Abstention\\} \pause
+\invisible<1-3>{What happens if Perot doesn't run?} \pause
+
+\invisible<1-4>{\begin{tabular}{cccc}
+\hline
+		& Actual & 3-choice & 4-choice \\
+\hline
+Bush    & 32.0   & 45.7     & 38.4     \\
+Clinton & 48.6   & 54.3     & 61.6     \\
+Abstention & 20.9 & -       & 23.7    \\
+\hline
+\end{tabular}}\pause
+
+
+\invisible<1-5>{Perot stole from Clinton!}
+
+\end{frame}
+
+
+\begin{frame}
+
+\huge
+
+Event Count Models
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Event Count Outcomes}
+
+\begin{itemize}
+\item[-] Outcome: number of times an event occurs
+\begin{eqnarray}
+Y_{i} & \in & \{0, 1, 2, 3, \hdots, \} \nonumber
+\end{eqnarray}
+\item[-] Examples:
+\begin{itemize}
+\item[1)] Number of militarized disputes a country is involved in
+\item[2)] Number of times a phrase is used
+\item[3)] Number of messages into a Congressional office
+\item[4)] Number of votes cast for a particular candidate
+\end{itemize}
+\item[-] Goal:
+\begin{itemize}
+\item[-] Model the \alert{rate} at which events occur
+\item[-] Understand how an intervention (e.g. country becoming a democracy) affects rate
+\item[-] Predict number of future events
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Deriving the Poisson Distribution}
+
+Suppose that events occur
+\begin{itemize}
+\item[1)] Continuously (no simultaneous events)
+\item[2)] Independently (occurrence of one event has no effect on occurrence of other event)
+\item[3)] With constant probability
+\end{itemize}
+
+\alert{Poisson Distribution}
+
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Poisson Distribution}
+
+\begin{defn}
+Suppose $Y$ is a random variable that takes on values $Y \in \{0, 1, 2, \hdots, \}$ and that $P(Y = y) = p(y)$ is,
+\begin{eqnarray}
+p(y) & = & e^{-\lambda} \frac{\lambda^{y}}{y!} \nonumber
+\end{eqnarray}
+for $y \in \{0, 1, \hdots, \}$ and $0$ otherwise.  Then we will say that $Y$ follows a \alert{Poisson} distribution with \alert{rate} parameter $\lambda$.  \\
+\begin{eqnarray}
+Y & \sim & \text{Poisson}(\lambda) \nonumber
+\end{eqnarray}
+
+\end{defn}
+
+
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Poisson Distribution}
+
+
+\only<1>{\scalebox{0.55}{\includegraphics{PoissonExamp.pdf}}}
+
+\only<2->{
+
+Suppose $Y \sim \text{Poisson}(\lambda)$. Then:
+\begin{eqnarray}
+\text{E}[Y] & = & \lambda \nonumber \\
+\text{Var}(Y) & = & \lambda \nonumber
+\end{eqnarray}
+If $Y\sim$ Poisson($\lambda$) then the \alert{wait time} between events, $W \sim$Exponential($\frac{1}{\lambda})$
+
+}
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Poisson Distribution: Modeling Number of International Incidents}
+
+Suppose we observe $N$ observations with
+\begin{eqnarray}
+Y_{i} & \sim_{\text{iid}} & \text{Poisson}(\lambda)\nonumber
+\end{eqnarray}
+
+Then:
+\begin{eqnarray}
+L(\lambda| \boldsymbol{Y}) & = & f(\boldsymbol{Y}| \boldsymbol{\lambda} ) \nonumber \\
+                           & = & \prod_{i=1}^{N} f(Y_{i}|\lambda) \nonumber \\
+                          &  = & \prod_{i=1}^{N} e^{-\lambda} \frac{\lambda^{Y_{i}}}{Y_{i}!}\nonumber
+\end{eqnarray}
+
+
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Poisson Distribution: Modeling Number of International Incidents}
+
+\begin{eqnarray}
+L(\boldsymbol{\lambda} | \boldsymbol{Y} ) & = & \prod_{i=1}^{N} e^{-\lambda} \frac{\lambda^{Y_{i}} } { Y_{i}!} \nonumber \\
+\log L(\boldsymbol{\lambda} | \boldsymbol{Y} )  & = & \sum_{i=1}^{N} \left(-\lambda + Y_{i} \log \lambda + \alert{\log Y_{i}!}\right) \nonumber \\
+& = & -N \lambda + \sum_{i=1}^{N} Y_{i} \log \lambda + c\nonumber
+\end{eqnarray}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Poisson Distribution: Modeling Number of International Incidents}
+
+Differentiate, set equal to zero and solve:
+\begin{eqnarray}
+\frac{\partial \ell(\boldsymbol{\lambda}| \boldsymbol{Y})}{\partial \lambda } & = & - N + \sum_{i=1}^{N} \frac{Y_{i} }{\lambda} \nonumber \\
+0 & = & - N + \sum_{i=1}^{N} \frac{Y_{i} }{\lambda^{*}} \nonumber \\
+\lambda^{*} & = & \frac{\sum_{i=1}^{N} Y_{i} }{N} \nonumber
+\end{eqnarray}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Poisson Distribution: Modeling Number of International Incidents}
+
+Uncertainty: inverse of negative expected hessian
+\begin{eqnarray}
+\frac{\partial^2 \ell(\boldsymbol{\lambda}| \boldsymbol{Y})}{\partial \lambda \partial \lambda }  & = & - \left(\frac{\sum_{i=1}^{N} E[Y_{i}] }{\lambda^2}\right)^{-1} \nonumber \\
+& = & \left(\frac{ N \lambda  }{\lambda^2}\right)^{-1} \nonumber \\
+& = & \left(\frac{N }{\lambda}\right)^{-1} \nonumber \\
+& = & \frac{\bar{Y}}{N} \text{ evaluated at MLE } \nonumber
+\end{eqnarray}
+
+Asymptotically,
+
+\begin{eqnarray}
+\lambda^{*}  & \longrightarrow^{D} & \text{Normal}(\bar{Y}, \frac{\bar{Y}}{N}) \nonumber
+\end{eqnarray}
+
+\end{frame}
+
+\begin{frame}
+
+\huge
+
+Modeling the rate with covariates
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Poisson Regression}
+\begin{eqnarray}
+Y_{i} \sim \text{Poisson}(\lambda_{i}) \nonumber \\
+\lambda_{i} &  = & \exp(\boldsymbol{X}_{i}^{'} \boldsymbol{\beta}) \nonumber
+\end{eqnarray}
+
+This implies:
+
+\begin{eqnarray}
+L(\boldsymbol{\beta}| \boldsymbol{X}_{i}, \boldsymbol{Y}) & = & f(\boldsymbol{Y}| \boldsymbol{X}, \boldsymbol{Y}) \nonumber \\
+& = & \prod_{i=1}^{N} f(Y_{i} | \boldsymbol{X}_{i}, \boldsymbol{\beta}) \nonumber \\
+& = & \prod_{i=1}^{N} \exp\left\{ - \exp(\boldsymbol{X}_{i}^{'} \boldsymbol{\beta})\right\} \frac{\exp(\boldsymbol{X}_{i}^{'} \boldsymbol{\beta})^{Y_{i}}}{Y_{i}!} \nonumber
+\end{eqnarray}
+
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Poisson Regression}
+
+\begin{eqnarray}
+L(\boldsymbol{\beta}| \boldsymbol{X}_{i}, \boldsymbol{Y}) & = & \prod_{i=1}^{N} \exp\left\{ - \exp(\boldsymbol{X}_{i}^{'} \boldsymbol{\beta})\right\} \frac{\exp(\boldsymbol{X}_{i}^{'} \boldsymbol{\beta})^{Y_{i}}}{Y_{i}!} \nonumber \\
+\log L(\boldsymbol{\beta}| \boldsymbol{X}_{i}, \boldsymbol{Y}) & = & \sum_{i=1}^{N} \left( - \exp(\boldsymbol{X}_{i}^{'}\boldsymbol{\beta}) + Y_{i}\boldsymbol{X}_{i}\boldsymbol{\beta}  -\alert{ \log Y_{i}  }   \right) \nonumber
+\end{eqnarray}
+
+Score:  $s(\boldsymbol{\beta} | Y_{i}, \boldsymbol{X}_{i}) = $
+\begin{small}
+\begin{eqnarray}
+&& \nonumber \\
+\left( (Y_{i}- \exp(\boldsymbol{X}_{i}^{'} \boldsymbol{\beta}) ), (Y_{i}- \exp(\boldsymbol{X}_{i}^{'} \boldsymbol{\beta}) )X_{i1} , \hdots, (Y_{i}- \exp(\boldsymbol{X}_{i}^{'} \boldsymbol{\beta}) )X_{iK}     \right) &&\nonumber
+\end{eqnarray}
+\end{small}
+
+Hessian:
+\begin{eqnarray}
+\frac{\partial^{2} \ell (\boldsymbol{\beta} | \boldsymbol{Y}, \boldsymbol{X} )}{\partial \boldsymbol{\beta} \boldsymbol{\beta}} & = & - \exp(\boldsymbol{X}_{i}^{'} \boldsymbol{\beta}) \boldsymbol{X}_{i} \boldsymbol{X}_{i}^{'} \nonumber
+\end{eqnarray}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Poisson Regression}
+
+$\boldsymbol{\beta}^{*} = $ numeric optimization\\ \pause
+
+\invisible<1>{$\boldsymbol{\beta}^{*} \longrightarrow^{D} \text{Multivariate Normal}(\boldsymbol{\beta}, I(\boldsymbol{\beta}^{*})^{-1}) $\\} \pause
+
+\invisible<1-2>{Quantities of Interest:} \pause
+\begin{itemize}
+\invisible<1-3>{\item[1)] Expected Rate of Events, given characteristics:\\$\text{E}[Y|\tilde{\boldsymbol{X}}]$ } \pause
+\invisible<1-4>{\item[2)] Probability of Event at $\tilde{\boldsymbol{X}}$\\
+Pr($Y_{i} = y| \tilde{\boldsymbol{X}})$} \pause
+\invisible<1-5>{\item[3)] Treatment effect of intervention $T_{i}$
+$\text{E}\left[\text{E}[Y|T_{i} = 1, \boldsymbol{X}_{i}] - \text{E}[Y|T_{i} = 0 , \boldsymbol{X}_{i}]\right] $\\} \pause
+\invisible<1-6>{\item[4)] Instantaneous change in $X_{ik}$:\\
+$\frac{\partial E[Y|\boldsymbol{X}]}{\partial X_{ik}}  = \exp(\boldsymbol{X}_{i}^{'}\boldsymbol{\beta})\beta_{k} $} \pause
+\end{itemize}
+
+\invisible<1-7>{Uncertainty estimation:} \pause
+\begin{itemize}
+\invisible<1-8>{\item[1)] Bootstrap
+\item[2)] Delta Method
+\item[3)] Simulation}
+\end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}[fragile]
+\frametitle{Example: Democracy and War Involvement}
+Benoit (1996):
+\begin{itemize}
+ \item $Y_i$: \# of involvement in international wars, 1960--80
+ \item $X_i$: democracy (Freedom House score), population, military capacity, economic interdependence
+\end{itemize}
+\pause
+\vspace{-1.75\baselineskip}
+\begin{columns}
+\column{0.25\textwidth}
+\begin{center}
+\includegraphics[height=.7\textheight]{war-hist.pdf}
+\end{center}
+\pause
+\column{0.375\textwidth}
+{\scriptsize
+\quad \qquad Coefficients:
+\begin{verbatim}
+               Est. s.e.
+    (Int.)    -3.97 1.62 *
+    fh73      -0.06 0.04
+    lpopln70   0.62 0.30 *
+    lmilwp70   1.29 0.45 **
+    ecintdep  -1.28 1.11
+
+               z    p
+              -2.45 0.014
+              -1.49 0.136
+               2.07 0.039
+               2.85 0.004
+              -1.16 0.247
+\end{verbatim}
+}
+\pause
+\column{0.4\textwidth}
+\begin{center}
+\includegraphics[height=.7\textheight]{war-pred-po.pdf}
+\end{center}
+
+\end{columns}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Overdispersion in Poisson Model}
+
+  \begin{itemize}
+  \item The Poisson model assumes $\text{E}(Y_i\mid X_i) = \text{Var}(Y_i\mid X_i)$
+  \item But for many count data, $\text{E}(Y_i\mid X_i) < \text{V}(Y_i\mid X_i)$
+\pause
+  \item Potential sources of overdispersion:
+    \begin{enumerate}
+    \item unobserved heterogeneity
+    \item clustering
+    \item contagion or diffusion
+    \item (classical) measurement error
+    \end{enumerate}
+
+\pause
+  \item Underdispersion could occur, but rare
+
+\medskip
+\pause
+  \item One solution to this is to modify the Poisson model by assuming:
+    $$ \text{E}(Y_i\mid X_i) = \lambda_i = \exp(X_i^\top\beta) \quad \text{and} \quad
+    \text{Var}(Y_i\mid X_i) = V_i = \alert{\sigma^2}\lambda_i $$
+  \item This is called the \alert{overdispersed Poisson regression} model
+\pause
+  \item When $\sigma^2 > 0$, this corresponds to  the
+   negative binomial regression model
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Example: Social Network Survey Data}
+
+\begin{center}
+  \includegraphics[scale=0.65]{HowManyData.pdf}\\
+  \includegraphics[scale=0.65]{HowManyModel.pdf}
+\end{center}
+\flushright(Zheng, et al., 2006 {\it JASA})
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Negative Binomial Distribution}
+
+Suppose $Y_{i} \in \{0, 1, 2, \hdots, \}$.  If $Y_{i}$ has pmf
+\begin{eqnarray}
+p(y_{i}) & = & \frac{\Gamma\left(\frac{\lambda}{\sigma^2 -1} + y_{i} \right)}{y_{i}! \Gamma\left(\frac{\lambda}{\sigma^2 -1}  \right) } \left(\frac{\sigma^2 - 1}{\sigma^2}\right)^{y_{i}} \left(\sigma^2\right)^{\frac{-\lambda}{\sigma^2 - 1}} \nonumber
+\end{eqnarray}
+
+Then we will say
+\begin{eqnarray}
+Y_{i} & \sim & \text{NegBin}(\lambda, \sigma^2)\nonumber \\
+E[Y_{i}] &= & \lambda \nonumber \\
+\text{Var}(Y_{i}) & = & \lambda \sigma^2 \nonumber
+\end{eqnarray}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Negative Binomial Regression}
+Suppose:
+\begin{eqnarray}
+Y_{i} & \sim & \text{Negative Binomial}(\lambda_{i}, \sigma^2)\nonumber \\
+\lambda_{i} & = & \exp(\boldsymbol{X}_{i}^{'}\boldsymbol{\beta}) \nonumber
+\end{eqnarray}
+
+This implies a likelihood of:
+\begin{eqnarray}
+L(\boldsymbol{\beta}|\boldsymbol{X}, \boldsymbol{Y}) & = & f(\boldsymbol{Y}| \boldsymbol{X}, \boldsymbol{\beta}) \nonumber \\
+& = & \prod_{i=1}^{N} f(Y_{i}| \boldsymbol{X}_{i}, \boldsymbol{\beta}) \nonumber \\
+& = & \prod_{i=1}^{N} \frac{\Gamma\left(\frac{\lambda_{i}}{\sigma^2 -1} + y_{i} \right)}{y_{i}! \Gamma\left(\frac{\lambda_{i} }{\sigma^2 -1}  \right) } \left(\frac{\sigma^2 - 1}{\sigma^2}\right)^{y_{i}} \left(\sigma^2\right)^{\frac{-\lambda_{i}}{\sigma^2 - 1}} \nonumber
+\end{eqnarray}
+
+Optimize numerically.  Usual theorems about asymptotic distributions apply.
+\end{frame}
+
+\begin{frame}
+\frametitle{Negative Binomial Regression}
+
+Negative Binomial Regression:
+\begin{itemize}
+\item[1)] Variance is sometimes:
+\begin{eqnarray}
+\text{Var}(Y_{i}| \boldsymbol{X}_{i}) & = & \lambda_{i}(1 + \sigma^2 \lambda_{i})\nonumber
+\end{eqnarray}
+\item[2)] Run in {\tt R} using
+\end{itemize}
+
+\begin{semiverbatim}
+library(MASS)
+
+out<- glm.nb(Y$\sim$X)
+
+\end{semiverbatim}
+
+\end{frame}
+
+
+\begin{frame}
+
+\huge
+Clustering and Survival analysis
+
+\end{frame}
+
+
+\end{document}

@@ -1,0 +1,124 @@
+\documentclass[letterpaper,12pt]{article}
+%\usepackage{amsmath,epsfig,setspace,multirow,url,fancyhdr}
+%\usepackage{graphicx}
+%\usepackage{setspace}
+\usepackage{lscape,enumitem}
+\usepackage{arabtex}
+\usepackage{rotating}
+%%\usepackage{times}
+%\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}
+%\usepackage{endnotes}
+%\clubpenalty=10000 \widowpenalty=10000
+%\hyphenation{}
+%\renewcommand{\bibitem}{\vskip6pt\par\hangindent\parindent\hskip-\parindent}
+% === graphic packages ===
+\usepackage{graphicx,textcomp}
+% === bibliography package ===
+\usepackage{natbib}
+% === margin and formatting ===
+%\usepackage[compact]{titlesec}
+%\usepackage{fullpage}
+\usepackage{vmargin}
+\setpapersize{USletter}
+\topmargin=0in
+\usepackage{color}
+% === math packages ===
+\usepackage[reqno]{amsmath}
+%\usepackage[pdftex]{hyperref}
+\usepackage{amsthm}
+\usepackage{amssymb,enumerate}
+\usepackage[all]{xy}
+\usepackage{lscape}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\newtheorem{com}{Comment}
+\newtheorem{lem} {Lemma}
+\newtheorem{prop}{Proposition}
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{cor}{Corollary}
+\newtheorem{obs}{Observation}
+\newtheorem{ass}{Assumption}
+ \numberwithin{equation}{section}
+ \numberwithin{equation}{section}
+% === dcolumn package ===
+\usepackage{dcolumn}
+\newcolumntype{.}{D{.}{.}{-1}}
+\newcolumntype{d}[1]{D{.}{.}{#1}}
+% === additional packages ===
+\usepackage{url}
+\newcommand{\Sref}[1]{Section~\ref{#1}}
+\newcommand{\mean}{\text{mean}}
+\usepackage{color,setspace}
+\definecolor{spot}{rgb}{0.6,0,0}
+
+\title{POL 450C, Homework 3}
+
+\date{April 20th, 2017}
+\begin{document}
+\maketitle
+
+\noindent Assigned: 4/20/2016\\
+Due: 4/27/2016\\
+
+In this problem set we're going to analyze American's propensity for supporting budget reduction using the data set in {\tt ANES.RData}.  In particular, we're interested in analyzing an originally 7-pt scale on support for budget deficit reduction as a 3-pt scale.  The three levels are:
+
+\begin{eqnarray}
+Y_{i} & = & \left\{\begin{array}{cl} 1 & \text{If respondent favors reducing budget deficit } \\
+ 2 &  \text{If respondent does not lean either way } \\
+ 3 &  \text{If respondent opposes reducing budget deficit }\\
+ \end{array}\right. \nonumber
+\end{eqnarray}
+
+
+We have the following independent variables
+\begin{itemize}
+\item[] $X_{i1} = $ Republican (0/1)
+\item[] $X_{i2} = $ Democrat (0/1)
+\item[] $X_{i3} = $ Family income, thousands
+\end{itemize}
+
+We will use an ordered probit model to infer the relationship between family income and support for deficit reduction, conditional on partisan identification.
+
+\begin{itemize}
+\item[1)] Call the coefficients $\boldsymbol{\beta}$ and the cutoffs $\boldsymbol{\Psi} = (\psi_{1}, \psi_{2})$. Write the data generating process for the ordered probit, the likelihood for the coefficients $\boldsymbol{\beta}$ and the cutoffs $\boldsymbol{\Psi}$ and the log-likelihood.
+\item[2)] This question asks you to think more carefully about the cutoff values.
+\begin{itemize}
+\item[a)] State in words an interpretation of the cut off values $\boldsymbol{\Psi}$.
+\item[b)] In class we stated that the ordered probit generalizes the probit, this question helps you see why. Suppose you have two levels: $Y_{i} $ is either equal to 1 or 2.  Show that the ordered probit with two levels is equivalent to a probit regression with a dichotomous dependent variable.
+\end{itemize}
+\item[3)] From the {\tt MASS} library use {\tt polr} to obtain maximum likelihood estimates of  deficit-reduction preferences on $\boldsymbol{X}_{i} $ and the cutoff values $\boldsymbol{\Psi}$.  Report the maximum likelihood estimates of the coefficeints and cut-off values and the accompanying standard errors for these estimates.
+\item[4)] Using the maximum likelihood estimates of $\boldsymbol{\beta}$ and $\boldsymbol{\Psi}$ we will calculate predicted probabilities for all three levels of support for deficit reduction across the range observed values of family income for Republicans, Democrats, and Independents and then generate 95-percent confidence intervals for the predicted probabilities. To obtain the estimates and 95-percent confidence intervals we will use both the bootstrap and simulation from the multivariate normal.  We walk through both procedures in this question.
+\begin{itemize}
+\item[a)] Bootstrap:
+\begin{itemize}
+\item[-] For 10,000 iterations
+\begin{itemize}
+\item[i)] Sample $N$ observations, with replacement
+\item[ii)] Use {\tt polr} to fit an ordered probit on the sample
+\item[iii)] Using the estimates from this iteration, calculate the predicted probabilities for each level of support for deficit reduction, for a sythetic respondent who is a Republican, Democrat, and Independent, varying the level of income from the minimum to the maximum in the sample.   To be specific, for Republicans you will calculate the predicted probability $Y_{i} = 1$, $Y_{i} = 2$ and $Y_{i} = 3$ for all observed levels of family income.  Store the predicted probabilities for each level and party group (this will be easiest if you create a separate matrix for Democrats, Republicans, and Independents; or create an array).
+\end{itemize}
+\item[-] Create three plots (one for Republicans, Democrats, and Independents) and present the average probability for each level of deficit reduction support againt family income.  Present the 95-percent confidence intervals for the calculated predictions (hint: you could draw lines connecting the top and bottom of the confidence intervals, or use {\tt arrows} to draw the confidence band at each point, or some other preferred method).  Use a {\tt rug} to show where there are observed data for Republicans, Democrats, and Independents.
+\end{itemize}
+\item[b)] Multivariate Normal:
+\begin{itemize}
+\item[-] Draw 10,000 realizations of
+\begin{small}
+\begin{eqnarray}
+(\boldsymbol{\beta}, \boldsymbol{\Psi} )^{t} &\sim &  \text{Multivariate Normal} \left(\left(\boldsymbol{\beta}^{*}, \boldsymbol{\Psi}^{*} \right), I_{N} (\boldsymbol{\beta}^{*}, \boldsymbol{\Psi}^{*} )^{-1}\right)  \nonumber
+\end{eqnarray}
+\end{small}
+where $\boldsymbol{\beta}$ is a vector of regression coefficients and $\boldsymbol{\Psi} = (\psi_{1}, \psi_{2}, \hdots, \psi_{J})$ is a vector of cutoff values.
+\item[-] For each realization,$\left(\boldsymbol{\beta}, \boldsymbol{\Psi}\right)^{t}$ calculate the predicted probabilities for each level of deficit reduction and party ID varying income levels.  Create plots that include average predicted probabilities and 95-percent confidence intervals.  Include a {\tt rug} to show where there are data to support the inference.
+\end{itemize}
+\end{itemize}
+\item[5)] Interpret the plots.  What do you notice about the relationship between income and support for deficit reduction?
+\item[6)] Fit the same model using a linear model and create a plot describing the relationship and 95-percent confidence intervals.  What differences (if any) do you note? Compare the coefficients of the ordered probit and linear regression in a table.
+\end{itemize}
+
+
+
+
+
+
+\end{document}

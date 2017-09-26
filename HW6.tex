@@ -1,0 +1,185 @@
+\documentclass[letterpaper,12pt]{article}
+%\usepackage{amsmath,epsfig,setspace,multirow,url,fancyhdr}
+%\usepackage{graphicx}
+%\usepackage{setspace}
+\usepackage{lscape,enumitem}
+\usepackage{arabtex}
+\usepackage{rotating}
+%%\usepackage{times}
+%\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}
+%\usepackage{endnotes}
+%\clubpenalty=10000 \widowpenalty=10000
+%\hyphenation{}
+%\renewcommand{\bibitem}{\vskip6pt\par\hangindent\parindent\hskip-\parindent}
+% === graphic packages ===
+\usepackage{graphicx,textcomp}
+% === bibliography package ===
+\usepackage{natbib}
+% === margin and formatting ===
+%\usepackage[compact]{titlesec}
+%\usepackage{fullpage}
+\usepackage{vmargin}
+\setpapersize{USletter}
+\topmargin=0in
+\usepackage{color}
+% === math packages ===
+\usepackage[reqno]{amsmath}
+%\usepackage[pdftex]{hyperref}
+\usepackage{amsthm}
+\usepackage{amssymb,enumerate}
+\usepackage[all]{xy}
+\usepackage{lscape}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\newtheorem{com}{Comment}
+\newtheorem{lem} {Lemma}
+\newtheorem{prop}{Proposition}
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{cor}{Corollary}
+\newtheorem{obs}{Observation}
+\newtheorem{ass}{Assumption}
+ \numberwithin{equation}{section}
+ \numberwithin{equation}{section}
+% === dcolumn package ===
+\usepackage{dcolumn}
+\newcolumntype{.}{D{.}{.}{-1}}
+\newcolumntype{d}[1]{D{.}{.}{#1}}
+% === additional packages ===
+\usepackage{url}
+\newcommand{\Sref}[1]{Section~\ref{#1}}
+\newcommand{\mean}{\text{mean}}
+\usepackage{color,setspace}
+\definecolor{spot}{rgb}{0.6,0,0}
+
+\title{POL 450C, Homework 6}
+
+\date{May 22, 2017}
+\begin{document}
+\maketitle
+
+\noindent Assigned: 5/22/2017\\
+Due: 6/2/2017\\
+
+In this problem set we're going to learn more about principal component analysis, by analyzing political speech, and regularized regression, by analyzing student drinking data.  
+
+
+
+\section*{Problem 1: When Will PCA Be Useful?}
+Your friend notices you looking at the slides about principal component analysis (PCA).   Your friend casually remarks that the variance of the eigenvalues of the variance-covariance matrix is a useful heuristic for knowing if PCA can be fruitfully applied in some setting.  Your friend goes on to explain that as the variance of the eigenvalues goes up, the more useful PCA will be.     \\
+
+Let's formalize your friend's suggestion. Suppose we have centered data $N \times J$ $\boldsymbol{X}$, which has variance-covariance matrix $\boldsymbol{\Sigma} = \frac{\boldsymbol{X}^{'}\boldsymbol{X}}{N}$.  And suppose that $\boldsymbol{\Sigma}$ has eigenvalues $\lambda_{1}\geq \lambda_{2}\geq \hdots \geq \lambda_{J}>0$. Then we calculate the variance of the eigenvalues as 
+\begin{eqnarray}
+\sigma^{2} & = & \frac{1}{J} \sum_{j=1}^{J}(\lambda_{j} - \bar{\lambda})^{2} \nonumber 
+\end{eqnarray}
+
+where $\bar{\lambda}$ is $\frac{1}{J} \sum_{i=1}^{J} \lambda_{i}$. Your friend is saying that as $\sigma^{2}$ gets bigger, a low-dimensional embedding via PCA will provide a better summary of our data.   \\
+
+In order to examine your friend's advice consider the following two scenarios. \\
+
+Consider the following two data generating processes and suppose that the variance of the data is fixed across both.  \\
+
+
+Scenario 1: 5 principal components generated the data, with the remaining components comprising a very small amount of noise.  Call the variance of the eigenvalues in this scenario $\sigma^2_{1}$\\
+
+Scenario 2: 1 principal component generated the data, with the remaining components comprising a very small amount of noise.  Call the variance of the eigenvalues in this scenario $\sigma^2_{2}$\\
+
+
+Compare $\sigma_{1}^2$ and $\sigma_{2}^2$ to assess your friend's claim.  
+
+
+\section*{Problem 2: PCA Applied to A Document Term Matrix}
+
+We're going to analyze Machiavelli's \emph{The Prince} using principal component analysis.  I have included the texts in mach.zip and the \emph{document term matrix} in {\tt mach.csv}.  Each row of {\tt mach.csv} corresponds to a subset of the manuscript.  
+
+\begin{itemize}
+\item[a)] We are going to work with a standardized version of the dtm, $\boldsymbol{X}$.  For each row $\boldsymbol{x}_{i}$ we are going to create $\boldsymbol{x}_{i}^{*}$, 
+\begin{eqnarray}
+\boldsymbol{x}_{i}^{*} & =& \frac{\boldsymbol{x}_{i} }{\sum_{j=1}^{500} x_{ij} } \nonumber 
+\end{eqnarray}
+
+Create this normalized document term matrix and call it $\boldsymbol{X}^{*} $
+\item[b)] Find the principal components using {\tt prcomp} in {\tt R}.  This creates an object that has the principal components {\tt obj\$rotation}, the eigenvalues {\tt obj\$sdev}, and the scores {\tt obj\$x} (the location of each observation on each principal component)
+\item[c)] Using your data set, confirm the relationship between {\tt prcomp} and singular value decomposition using {\tt svd} in {\tt R}. Specifically, show that the right-singular values $\boldsymbol{V}^{'}$ correspond to the eigenvectors from {\tt prcomp}. 
+\item[d)] Create a plot that shows the percentage of variance each dimension explains.  Using this plot, are you able to identify a clear ``elbow" in the data? 
+\item[e)] Let's compare the estimate of the reconstruction error in (d) to the estimate of the reconstruction error that comes from cross validation.  To perform the cross validation we will perform the following steps:
+\begin{itemize}
+\item[i)] Being sure to set a seed, assign each document (each row in the dtm) to a fold using {\tt sample}
+\item[ii)] Write a {\tt for} loop with the following steps
+\begin{itemize}
+\item[1)] Select the training data
+\item[2)] Select the test data
+\item[3)] Apply {\tt prcomp} to the training data
+\item[4)] Using the principal components from (3), calculate the scores for the test data on each of the first 100 principal components.  To do this, suppose we have test observation $\boldsymbol{x}_i^{*}$ and principal component $\boldsymbol{w}_j$.  The score will then be:
+\begin{eqnarray}
+\text{z}_{ij} &= & (\boldsymbol{x}_{i}^{*})^{'}\boldsymbol{w}_{j} \nonumber 
+\end{eqnarray} 
+\item[5)] Using the scores, create 100 approximations for each observation, increasing the number of included principal components for each approximation.  Recall that if we have $M$ principal components in an approximation, $\tilde{x}_{i}^{M}$ our formula is $\tilde{x}_{i}^{M} = \sum_{m=1}^{M} z_{im} \boldsymbol{w}_{m}$.  
+\item[6)] Now, calculate the out of sample reconstruction error for each observation and each approxiation.  (This should result a 100x 1 vector and you can store all of the reconstruction errors in an N x 100 matrix)
+\end{itemize}
+\end{itemize}
+Compare the out of sample reconstruction error and the reconstruction error reported by the eigenvalues.  What do you notice?
+\item[e)] Our last step is to label the first principal component (and by extension the first dimension).  The score for observation $i$ the first dimension is $z_{i1} = (\boldsymbol{x}_{i}^{*})^{'}\boldsymbol{w}_{1}$.  This implies that values of $\boldsymbol{w}_{1}$ with larger magnitude affect the score on the first dimension more.  Using this insight, what are the 20 largest magnitude words for the first dimension?  What might this imply about this score?  
+\end{itemize}
+
+
+\section{Problem 3: Student Drinking}
+
+
+\noindent In the next two problems we're going to use machine learning to predict student's drinking habits.  The data come from a public health study of Portugese students.  You can read more about the variables (and their interpretation) here: \\
+
+http://archive.ics.uci.edu/ml/datasets/STUDENT+ALCOHOL+CONSUMPTION\# . 
+
+\noindent We're going to model the sum of weekday and weekend drinking activity.    \\
+
+\noindent The data are stored in {\tt StudentDrinking.RData} on canvas.  The dependent variable is, {\tt alcohol}, which is a measure of alcohol consumption.  The bigger {\tt alcohol} is, the more students drink.  The covariates are stored in {\tt X}.  
+
+\section{Comparing Coefficients from OLS, LASSO, Ridge, and Elastic Net}
+
+We first want to explore the behavior of OLS, LASSO, and Ridge applied to the data.  
+
+\begin{itemize}
+\item[i)] Fit a linear regression of alcohol on the covariates in the included data
+\item[ii)] Using {\tt cv.glmnet} fit a LASSO regression of alcohol on the covariates
+\item[iii)] Using {\tt cv.glmnet} fit a Ridge regression of alcohol on the covariates
+\item[iv)] Using {\tt cv.glmnet} fit an elastic-net regression of alcohol on the covariates, with $\alpha = 0.5$.  Explain what $\alpha = 0.5$ implies about the model you're fitting.  
+\item[v)] Using your models from (i-iv) let's examine the behavior of the coefficient on {\tt male} as $\lambda$ increases
+\begin{itemize}
+\item[a)] Suppose {\tt glmnet.obj} contains the results from applying {\tt cv.glmnet}.  To obtain the coefficient values for the sequence of $\lambda$ values tested in {\tt cv.glmnet}, we use the coefficient function {\tt coef(glmnet.obj, s = glmnet.obj\$lambda)}.  Use this function to obtain a matrix of coefficients for the models used in (ii-iv).  
+\item[b)] Using the matrix for each method, plot the coefficient on {\tt male} against the value of $\lambda$ from the models in ii-iv.  Include the coefficient from OLS as a flat line.  What do you notice as $\lambda$ increases?  
+\end{itemize} 
+\end{itemize}
+
+\section{Problem 4: Cross-Validation, Super Learning and Ensembles}
+
+We're going to assess the performance of five models, an unweighted average, and a super-learning average of the methods.
+
+\begin{itemize}
+\item[i)] First, set the first 20 rows to the side for use as the validation set.
+\item[ii)] We'll first estimate the (unconstrained) super learner weights.  
+\begin{itemize}
+\item[a)] On the training data (all but the first 20 rows) perform ten fold cross validation, including (1) linear regression, (2) LASSO, (3) Ridge, (4) Elastic-Net, and (5) Random Forest.  Obtain 5 predictions for each observation in the training set, one from each observation
+\item[b)] Regress the dependent variable on the out of sample prediction, (without including an intercept).
+\item[c)] Store those weights as $\boldsymbol{w}$
+\end{itemize}
+\item[iii)] Now, fit all 5 models from (ii)-(a) to the entire training data set and predict the drinking level from the vallidation set (the data put off to the side).
+\item[iv)]   Obtain two ensemble predictions.  
+\begin{itemize}
+\item[a)] Take the unweighted average of the predictions from the methods
+\item[b)] Take the weighted average, using the weights $\boldsymbol{w}$.
+\end{itemize}
+\item[v)] You should have 7 predictions. Store those in a matrix and report the correlation between the predictions
+\item[vi)] Using the average absolute difference as a loss function assess the performance of each method.  Which method performs best?  Which performs the worst? 
+
+\noindent The average absolute difference for method $k$ is defined as 
+\begin{eqnarray}
+L(\boldsymbol{Y}, \widehat{\boldsymbol{Y}}_{k}) & = & \sum_{i=1}^{N_{\text{validation}}} \frac{|Y_{i} - \widehat{Y}_{ik}| }{ N_{\text{validation}} }\nonumber 
+\end{eqnarray}
+where $N_{\text{validation}}$ refers to the number of observations in the validation set $\widehat{\boldsymbol{Y}}_{k}$ refers to the predictions from the $k^{\text{th}}$ method, 
+
+
+\end{itemize}
+
+
+
+\end{document}

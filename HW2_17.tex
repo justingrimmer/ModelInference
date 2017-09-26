@@ -1,0 +1,479 @@
+\documentclass[letterpaper,12pt]{article}
+%\usepackage{amsmath,epsfig,setspace,multirow,url,fancyhdr}
+%\usepackage{graphicx}
+%\usepackage{setspace}
+\usepackage{lscape,enumitem}
+\usepackage{arabtex}
+\usepackage{rotating}
+\usepackage{bm}
+%%\usepackage{times}
+%\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}
+%\usepackage{endnotes}
+%\clubpenalty=10000 \widowpenalty=10000
+%\hyphenation{}
+%\renewcommand{\bibitem}{\vskip6pt\par\hangindent\parindent\hskip-\parindent}
+% === graphic packages ===
+\usepackage{graphicx,textcomp}
+% === bibliography package ===
+\usepackage{natbib}
+% === margin and formatting ===
+%\usepackage[compact]{titlesec}
+%\usepackage{fullpage}
+\usepackage{vmargin}
+\setpapersize{USletter}
+\topmargin=0in
+\usepackage{color}
+% === math packages ===
+\usepackage[reqno]{amsmath}
+%\usepackage[pdftex]{hyperref}
+\usepackage{amsthm}
+\usepackage{amssymb,enumerate}
+\usepackage[all]{xy}
+\usepackage{lscape}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\newtheorem{com}{Comment}
+\newtheorem{lem} {Lemma}
+\newtheorem{prop}{Proposition}
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{cor}{Corollary}
+\newtheorem{obs}{Observation}
+\newtheorem{ass}{Assumption}
+ \numberwithin{equation}{section}
+ \numberwithin{equation}{section}
+% === dcolumn package ===
+\usepackage{dcolumn}
+\newcolumntype{.}{D{.}{.}{-1}}
+\newcolumntype{d}[1]{D{.}{.}{#1}}
+% === additional packages ===
+\usepackage{url}
+\newcommand{\Sref}[1]{Section~\ref{#1}}
+\newcommand{\mean}{\text{mean}}
+\usepackage{color,setspace}
+\definecolor{spot}{rgb}{0.6,0,0}
+\DeclareMathOperator*{\E}{\mathbb{E}}
+\usepackage{listings}
+\lstset{ %
+  language=R,                     % the language of the code
+  basicstyle=\footnotesize,       % the size of the fonts that are used for the code
+  numbers=left,                   % where to put the line-numbers
+  numberstyle=\tiny\color{gray},  % the style that is used for the line-numbers
+  stepnumber=1,                   % the step between two line-numbers. If it's 1, each line
+                                  % will be numbered
+  numbersep=5pt,                  % how far the line-numbers are from the code
+  backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+  showspaces=false,               % show spaces adding particular underscores
+  showstringspaces=false,         % underline spaces within strings
+  showtabs=false,                 % show tabs within strings adding particular underscores
+  frame=single,                   % adds a frame around the code
+  rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
+  tabsize=2,                      % sets default tabsize to 2 spaces
+  captionpos=b,                   % sets the caption-position to bottom
+  breaklines=true,                % sets automatic line breaking
+  breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+  title=\lstname,                 % show the filename of files included with \lstinputlisting;
+                                  % also try caption instead of title
+  keywordstyle=\color{blue},      % keyword style
+  stringstyle=\color{red},      % string literal style
+  escapeinside={\%*}{*)},         % if you want to add a comment within your code
+  morekeywords={*,...}            % if you want to add more keywords to the set
+} 
+
+
+% === set this to 1 if want to print solutions
+\newcommand{\solutions}{1}
+
+\title{POL 450C, Homework 2 \\ Solutions} 
+
+\date{April 13th, 2017}
+\begin{document}
+\maketitle
+
+\noindent Assigned: 4/13/2017\\
+Due: 4/20/2017\\
+
+
+\noindent For this homework assignment we're going to work with one survey from Franco, Grimmer, and Whang (2017).  Specifically, we're going to analyze survey results from September 27, 1991, when George HW Bush made a legislative appeal to reduce nuclear weapons as part of a peace deal with the soviets. The data are in the Homework 2 folder and contain:
+
+\begin{itemize}
+\item[1)] $Y_{i} $ = Approval (0/1)
+\item[2)] $X_{i1} = $Treat (interviewed pre/post speech)
+\item[3)] $X_{i2} = $Age of respondent
+\item[4)] $X_{i3} = $ Education of respondent
+\item[5)] $X_{i4} = $Income of respondent
+\end{itemize}
+
+We're going to model Approval as a function of treatment status, age, education, income and an intercept $\boldsymbol{X}_{i}= (1, X_{i1}, X_{i2}, X_{i3}, X_{i4})$
+
+\section{Logistic Regression}
+Suppose:
+\begin{eqnarray}
+Y_{i} & \sim & \text{Bernoulli}(\pi_{i})\nonumber \\
+\pi_{i} & = & \text{logistic}(\boldsymbol{X}_{i}^{'}\boldsymbol{\beta}) \nonumber
+\end{eqnarray}
+
+\begin{itemize}
+\item[a)] Write out the log-likelihood, derive the score function, and derive the Hessian
+
+\if\solutions1
+{\color{red}
+\begin{align*}
+  L(\bm \beta)
+  &= \prod_{i=1}^n \left[ \text{logistic}(\bm X_i \bm \beta)^{Y_i} \left(1 - \text{logistic}(\bm X_i \bm \beta)\right)^{1 - Y_i} \right]
+  \\
+  \implies \ell(\bm \beta)
+  &= \sum_{i=1}^n \left[  Y_i \log\text{logistic}(\bm X_i \bm \beta) + (1 - Y_i)\log\left(1 - \text{logistic}(\bm X_i \bm \beta)\right) \right]
+  \\
+  &= \sum_{i=1}^n \left[ - Y_i \log\left(1 + \exp(-\bm X_i \bm \beta)\right) - (1 - Y_i)\log\left(1 + \exp(\bm X_i \bm \beta)\right) \right]
+  \\
+  \implies \frac{\partial \ell(\bm \beta \mid Y_i)}{\partial \beta_k}
+  &= \frac{\partial }{\partial \beta_k} \left[ - Y_i \log\left(1 + \exp(-\bm X_i \bm \beta)\right) - (1 - Y_i)\log\left(1 + \exp(\bm X_i \bm \beta)\right) \right]
+  \\
+  &= \left[ Y_i \frac{\exp(-\bm X_i \bm \beta)}{1 + \exp(-\bm X_i \bm \beta)} - (1 - Y_i) \frac{\exp(\bm X_i \bm \beta)}{1 + \exp(\bm X_i \bm \beta)}\right] X_{ik}
+  \\
+  &= \left[ Y_i \frac{1}{1 + \exp(\bm X_i \bm \beta)} - (1 - Y_i) \frac{1}{1 + \exp(-\bm X_i \bm \beta)}\right] X_{ik}
+  \\
+  \implies \frac{\partial^2 \ell(\bm \beta \mid Y_i)}{\partial \beta_j \beta_k}
+  &= \frac{\partial}{\partial \beta_j} \left[ Y_i \frac{1}{1 + \exp(\bm X_i \bm \beta)} - (1 - Y_i) \frac{1}{1 + \exp(-\bm X_i \bm \beta)}\right] X_{ik}
+  \\
+  &= -\left[ Y_i \frac{\exp(\bm X_i \bm \beta)}{(1 + \exp(\bm X_i \bm \beta))^2} + (1 - Y_i) \frac{\exp(-\bm X_i \bm \beta)}{(1 + \exp(-\bm X_i \bm \beta))^2}\right] X_{ik} X_{ij}
+\end{align*}
+}
+\fi
+
+
+\item[b)] In {\tt R},use optim to obtain the maximum likelihood estimate of $\boldsymbol{\beta}$, given a set of binary responses $Y$ and covariates $\boldsymbol{X}$.
+\if\solutions1
+{\color{red}
+
+\begin{verbatim}
+> load('Gallup1991.RData')
+> d = gallup[complete.cases(gallup), ] 
+> X = cbind(rep(1, nrow(d)), d[,2:ncol(d)]) 
+> colnames(X)[1] <- '(Constant)' 
+> Y = d[,1] 
+
+## logistic function
+> logistic <- function(value){
+  solve <- -1/(1+exp(-value))
+  return(solve1)
+	}
+
+## log likelihood
+>lik <- function(params, X, Y){
+	beta <- params
+	ytilde <- X%*%beta
+	yprob <- logistic(ytilde)
+	out <- (Y%*%log(yprob) + (1-Y)%*%log(1-yprob))
+	return(out)
+}
+
+## Optim
+> start <- rnorm(5)
+> out <- optim(start, lik, Y=Y, X=X, method = "BFGS", hessian = T, control = list(fnscale=-1))
+\end{verbatim}
+}
+\fi
+\item[c)]  Using your function from (b) calculate the maximum likelihood estimates using the data. Report the coefficients and standard errors in a table.
+\if\solutions1
+{\color{red}
+\begin{table}[h]
+\centering
+\caption{Estimates from optim}
+\begin{tabular}{|l|c|c|}
+\hline
+          & \multicolumn{1}{l|}{estimate} & \multicolumn{1}{l|}{SE} \\ \hline
+Intercept & 1.296                         & 0.424                   \\ \hline
+treatment & 0.09                          & 0.265                   \\ \hline
+age       & -0.0099                       & 0.0046                  \\ \hline
+education & -0.03                         & 0.0569                  \\ \hline
+income    & 0.0865                        & 0.0516                  \\ \hline
+\end{tabular}
+\end{table}
+}
+\fi
+
+\item[d)]  Using those estimates, calculate the first difference for each respondent.  (Hint: calculate the expected value for each respondent, given their characteristics.  Then calcuate the expected value in for the counterfactual value of treatment.  Then take a difference)
+
+\if\solutions1
+{\color{red}
+
+\begin{verbatim}
+coef <- out$par
+X.treat = X.control = X
+X.treat[,2] = 1
+X.control[,2] = 0
+fd = plogis(X.treat %*% coef) - plogis(X.control %*% coef)
+mean(fd)
+[1] 0.0168
+\end{verbatim}
+The results seem to predcit a small positive treatment effect. 
+}
+\fi
+
+\item[e)] Interpret the differences: what do the coefficients from the logistic regression convey?  What do the first differences suggest? What is the average first difference?
+\if\solutions1
+{\color{red}
+The coefficients from the logistic regression convey that the mean approval rating is high, treatment and income are likely to increase approval rating, and age and education are likely to decrease approval rating. The average first difference is 0.017 or 1.7\%, suggesting that this is not a very large treatment effect.
+}
+\fi
+\end{itemize}
+
+
+
+\section{Score Function}
+
+Suppose $Y_{i} \sim \text{Normal}(\mu_{i}, \sigma^2)$ and \\
+$\mu_{i} = \beta_{0} + \beta_{1} X_{i1} $
+
+\begin{itemize}
+\item[-] Write out the likelihood and log-likelihood equation for this bivariate regression
+\if \solutions1
+{\color{red}
+\begin{align*}
+  L(\bm \beta, \sigma^2)
+  &= \prod_{i=1}^n \left[ \frac{1}{\sqrt{2 \pi \sigma^2}} \exp\left(- \frac{(\beta_0 + \beta_1 X_i - y_i)^2}{2 \sigma^2} \right) \right]
+  \\
+  \implies \ell(\bm \beta, \sigma^2)
+  &=  -\frac{n}{2}\log 2\pi \sigma^2 - \sum_{i=1}^n \frac{(\beta_0 + \beta_1 x_i - y_i)^2}{2 \sigma^2}
+\end{align*}
+}
+\fi
+
+\item[-] Derive the score function $s(\beta, \sigma^2)$ (please describe the steps)
+\if \solutions1
+{\color{red}
+\begin{align*}
+  \frac{\partial}{\partial \beta_0} \ell(Y_i \mid \bm \beta, \sigma^2)
+  &= \frac{\partial}{\partial \beta_0} \left[-\frac{1}{2} \log 2\pi\sigma^2 - \frac{(\beta_0 + \beta_1 x_i - y_i)^2}{2 \sigma^2} \right]
+  \\
+  &=  - \frac{\beta_0 + \beta_1 x_i - y_i}{\sigma^2}
+  \\
+  \frac{\partial}{\partial \beta_1} \ell(Y_i \mid \bm \beta, \sigma^2)
+  &= - \frac{x_i (\beta_0 + \beta_1 x_i - y_i)}{\sigma^2}
+  \\
+  \frac{\partial}{\partial \sigma^2} \ell(Y_i \mid \bm \beta, \sigma^2)
+  &=  \frac{\partial}{\partial \sigma^2} \left[-\frac{1}{2} \log 2\pi - \frac{1}{2}\log \sigma^2 - \frac{(\beta_0 + \beta_1 x_i - y_i)^2}{2 \sigma^2} \right]
+  \\
+  &= - \frac{1}{2 \sigma^2} + \frac{(\beta_0 + \beta_1 x_i - y_i)^2}{2 \sigma^4}
+  \\
+  \implies s(Y_i \mid \bm \beta, \sigma^2)
+  &=
+  \left\{
+  - \frac{\beta_0 + \beta_1 x_i - y_i}{\sigma^2} ,
+  - \frac{x_i (\beta_0 + \beta_1 x_i - y_i)}{\sigma^2} ,
+  - \frac{1}{2 \sigma^2} + \frac{(\beta_0 + \beta_1 x_i - y_i)^2}{2 \sigma^4}
+  \right\}
+\end{align*}
+}
+\fi
+\item[-] Prove that E[$s(\beta ,\sigma^2)] = 0$ for the bivarate regression.
+\if \solutions1
+{\color{red}
+\begin{align*}
+  \E\left[- \frac{\beta_0 + \beta_1 x_i - y_i}{\sigma^2} \right]
+  &= - \frac{\beta_0 + \beta_1 x_i - \E_{Y_i}[y_i]}{\sigma^2} \\
+  &= - \frac{\beta_0 + \beta_1 x_i - \beta_0 - \beta_1 x_i}{\sigma^2} \\
+  &= 0 \\
+  \E\left[- \frac{x_i(\beta_0 + \beta_1 x_i - y_i)}{\sigma^2} \right]
+  &= - \frac{x_i(\beta_0 + \beta_1 x_i - \E_{Y_i}[y_i])}{\sigma^2} \\
+  &= - \frac{x_i(\beta_0 + \beta_1 x_i - \beta_0 - \beta_1 x_i)}{\sigma^2} \\
+  &= 0 \\
+  \E\left[- \frac{1}{2 \sigma^2} + \frac{(\beta_0 + \beta_1 x_i - y_i)^2}{2 \sigma^4} \right]
+  &= - \frac{1}{2 \sigma^2} + \frac{\E\left[(\beta_0 + \beta_1 x_i - y_i)^2\right]}{2 \sigma^4}
+  \\
+  &= - \frac{1}{2 \sigma^2} + \frac{\sigma^2}{2 \sigma^4}
+  \\
+  &= - \frac{1}{2 \sigma^2} + \frac{1}{2 \sigma^2}
+  \\
+  &= 0
+\end{align*}
+}
+\fi
+\item[-] Use simulation to show that the  E[$s(\beta, \sigma^2)] = 0$.  (Hint: repeat the data generating process and calculate the score for each value.  The average of the score should be zero)
+\if \solutions1
+{\color{red}
+\begin{verbatim}
+score_func = function(beta, sigma, X, Y) {
+  v = matrix(NA, nrow = 3, ncol = length(X))
+  v[1,] = - (beta[1] + beta[2]*X - Y) / sigma^2
+  v[2,] = - (beta[1] + beta[2]*X - Y) * X / sigma^2
+  v[3,] = -1/(2 * sigma^2) + (beta[1] + beta[2]*X - Y)^2 / (2 * sigma^4)
+  return(v)
+}
+
+beta0 <- .7
+beta1 <-.9
+sigma2 <- 1.993
+
+X.2 = runif(1e4, -2, 2)
+Y.2 = beta0 + beta1 * X.2 + rnorm(1e4, 0, sigma2)
+rowMeans(score_func(c(beta0, beta1), sigma2, X.2, Y.2))
+## [1] 3.1e-03 -3.9e-03 -6.5e-05
+\end{verbatim}
+}
+\fi
+\end{itemize}
+
+
+
+
+\section{Robit regression (Using a t-distribution instead of normal/logistic) }
+Suppose
+\begin{eqnarray}
+Y_{i} & \sim & \text{Bernoulli}(\pi_{i}) \nonumber \\
+\pi_{i} & = & \mathcal{T}(\boldsymbol{X}_{i}^{'}\boldsymbol{\beta}, 8) \nonumber
+\end{eqnarray}
+Where $\mathcal{T}(\cdot, 8)$ refers to the cumulative t-distribution 8 degrees of freedom
+\begin{itemize}
+\item[a)] Write out the likelihood and log-likelihood
+\if\solutions1
+{\color{red}
+\begin{align*}
+  L(\bm \beta)
+  &= \prod_{i=1}^n \left[ \mathcal{T}(\bm X_i \bm \beta)^{Y_i} \left(1 - \mathcal{T}(\bm X_i \bm \beta) \right)^{1 - Y_i}  \right]
+  \\
+  \implies \ell(\bm \beta)
+  &= \sum_{i=1}^n \left[ Y_i \log\mathcal{T}(\bm X_i \bm \beta) + (1 - Y_i)\log\left(1 - \mathcal{T}(\bm X_i \bm \beta) \right)\right]
+\end{align*}
+}
+\fi
+\item[b)] Using your answer from a, write a function in {\tt R} using {\tt optim} to evaluate the log-likelihood of different values of $\beta$
+\if \solutions1
+{\color{red}
+\begin{verbatim}
+> rob_like <- function(params, X, Y, df){
++   beta <- params
++   y.tilde <- X%*%beta
++   y.prob <- pt(y.tilde, df = df) 
++   out <- Y%*%log(y.prob) + (1-Y)%*%log((1-y.prob))
++   return(out)
++ }
+> 
+> start <- rnorm(5)
+> 
+> out2 <- optim(start, rob_like, X=X, Y=Y, df = 8, method = 'BFGS', hessian = T, control = list(fnscale=-1))
+> 
+\end{verbatim}
+}
+\fi
+
+\item[c)] Use that function in optim to obtain maximum likelihood estimates for $\boldsymbol{\beta}$ and the variance-covariance matrix using the data from Problem 1.
+\if \solutions1
+{\color{red}
+\begin{verbatim}
+> coefs <- out2$par
+> varcov <- round(solve(-out2$hessian), digits = 3)
+> varcov
+       [,1]   [,2]   [,3]   [,4]   [,5]
+[1,]  0.073 -0.003 -0.001 -0.006 -0.002
+[2,] -0.003  0.028  0.000  0.000  0.000
+[3,] -0.001  0.000  0.000  0.000  0.000
+[4,] -0.006  0.000  0.000  0.001 -0.001
+[5,] -0.002  0.000  0.000 -0.001  0.001
+> ses <- round(sqrt(diag(solve(-out2$hessian))), digits = 3)
+> t <- cbind(round(coefs, digits = 3), ses)
+> rownames(t) <- c("Intercept", "Treatment", "Age", "Education", "Income")
+> colnames(t) <- c("Coeffs", "SES")
+> t
+          Coeffs   SES
+Intercept  0.831 0.270
+Treatment  0.058 0.169
+Age       -0.006 0.003
+Education -0.020 0.036
+Income     0.055 0.033
+\end{verbatim}
+}
+\fi
+
+\item[d)] Compare the results from the t-distribution to the results from the logistic regression.  What differences do you note? What happens as you increase the degrees of freedom?
+\if \solutions1
+{\color{red}
+\begin{verbatim}
+> logitc <- logit$coefficients
+> probitc <- probit$coefficients
+> tab2 <- cbind(round(logitc, digits =3), 
+round(probitc, digits = 3), round(coefs, digits =3))
+> colnames(tab2) <- c("Logit", "Probit", "Robit")
+> tab2
+             Logit Probit  Robit(df=8)
+(Intercept)  1.297  0.796  0.831
+treat        0.090  0.053  0.058
+age         -0.010 -0.006 -0.006
+education   -0.031 -0.019 -0.020
+income       0.087  0.051  0.055
+
+# df = 20
+> max.beta.20 <- optim(start, fn = rob_like, X=X, Y=Y, 
+                     df = 20, method = 'BFGS', 	control=list(fnscale = -1), hessian = T)
+
+> # df = 50
+> max.beta.50 <- optim(guesses, fn = rob_like, X=X, Y=Y, 
+                     df = 50, method = 'BFGS', 		control=list(fnscale = -1), hessian = T)
+
+> # df = 100
+> max.beta.100 <- optim(guesses, fn = rob_like, X=X, Y=Y, 
+                      df = 100, method = 'BFGS', control=list(fnscale = -1), hessian = T)
+
+> # df = 250
+> max.beta.250 <- optim(guesses, fn = rob_like, X=X, Y=Y, 
+                      df = 250, method = 'BFGS', control=list(fnscale = -1), hessian = T)
+\end{verbatim}
+\begin{table}[ht]
+\tiny
+\centering
+\begin{tabular}{rrrrrrrr}
+  \hline
+ & Logistic Regression & T dist, df=8 & T dist, df=10 & T dist, df=20 & T dist, df=50 & T dist, df=100 & T dist, df=200 \\ 
+  \hline
+Intercept & 1.30 & 0.83 & 0.82 & 0.81 & 0.80 & 0.80 & 0.80 \\ 
+  Treatment & 0.09 & 0.058 & 0.06 & 0.05 & 0.05 & 0.05 & 0.05 \\ 
+  Age & -0.01 & -0.01 & -0.01 & -0.01 & -0.01 & -0.01 & -0.01 \\ 
+  Education & -0.03 & -0.02 & -0.02 & -0.02 & -0.02 & -0.02 & -0.02 \\ 
+  Income & 0.09 & 0.07 & 0.06 & 0.05 & 0.05 & 0.05 & 0.05 \\ 
+   \hline
+\end{tabular}
+\end{table}
+The results are broadly similar, but with larger coeﬃcients on the logit. That is because the logistic link puts more of its density near 0, so larger coﬃcients are required to produce the same change in magnitude of the CDF. As the degrees of freedom of the robit link are increased, it will converge to the probit link.
+}
+\fi
+
+\end{itemize}
+
+
+
+\section{[Bonus] Proving the Relationship Between the Hessian and Information Matrix}
+
+\noindent Instructor note: this is a challenging problem.  I'd love to talk about it in class and work through it together/give hints. Please start it early!
+
+
+Suppose random variable $Y_{i}$ has sampling density $f(y|\boldsymbol{\theta})$ where $\boldsymbol{\theta} = (\theta_{1}, \theta_{2}, \hdots, \theta_{K})$.  We want to make an inference about $\boldsymbol{\theta}$ Define $L(\boldsymbol{\theta}|\boldsymbol{Y})$ to be the likelihood and $\log L(\boldsymbol{\theta}|\boldsymbol{Y}) \equiv l(\boldsymbol{\theta}|\boldsymbol{Y})$
+
+Define entry $I_{jk}(\boldsymbol{\theta})$ of the information matrix to be:
+\begin{eqnarray}
+I_{jk} & = & \text{E}[\frac{\partial \ell(\boldsymbol{\theta}|\boldsymbol{Y}) }{\partial \theta_{j}} \frac{\partial \ell(\boldsymbol{\theta}|\boldsymbol{Y}) }{\partial \theta_{k}}] \label{e:info1}
+\end{eqnarray}
+
+We are going to show that:
+\begin{eqnarray}
+I_{jk} & = & - E[\frac{\partial^2 \ell(\boldsymbol{\theta}|\boldsymbol{Y}) }{\partial \theta_{j} \partial \theta_{k} }] \label{e:info2}
+\end{eqnarray}
+For all $i$ and $j$
+
+Recall that $I_{N}(\boldsymbol{\theta}) = N I(\boldsymbol{\theta})$, so it will suffice to work with a single observation.
+\begin{itemize}
+\item[1)] Calculate $\frac{\partial \ell(\boldsymbol{\theta}|\boldsymbol{Y}) }{\partial \theta_{j}} $ and $ \frac{\partial \ell(\boldsymbol{\theta}|\boldsymbol{Y}) }{\partial \theta_{k}}$.  Take their product and calculate their expected value.  We're going to show that Equation \ref{e:info2}) is equal to this.  (Hint: You'll have an expression that involves the sampling density and partial derivatives of $f$)
+\item[2)] Take the second derivatives of the log likelihood.  You should have an expression that involves partial derivatives, the sampling density, and second derivatives.
+\item[3)] Now, take the expected value of the expression in (2) and multiply by -1.  It should  equal the expression in (1).  (Hint: take as a given that
+$E[\frac{\frac{\partial^2 f(Y|\boldsymbol{\theta} )}{\partial \theta_{j} \partial \theta_{k}}}{f(Y|\boldsymbol{\theta})}] = 0 $
+)
+\end{itemize}
+
+
+
+
+
+
+
+\end{document}

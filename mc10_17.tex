@@ -1,0 +1,1045 @@
+\documentclass{beamer}
+
+%\usepackage[table]{xcolor}
+\mode<presentation> {
+  \usetheme{Boadilla}
+%  \usetheme{Pittsburgh}
+%\usefonttheme[2]{sans}
+\renewcommand{\familydefault}{cmss}
+%\usepackage{lmodern}
+%\usepackage[T1]{fontenc}
+%\usepackage{palatino}
+%\usepackage{cmbright}
+  \setbeamercovered{transparent}
+\useinnertheme{rectangles}
+}
+%\usepackage{normalem}{ulem}
+%\usepackage{colortbl, textcomp}
+\setbeamercolor{normal text}{fg=black}
+\setbeamercolor{structure}{fg= black}
+\definecolor{trial}{cmyk}{1,0,0, 0}
+\definecolor{trial2}{cmyk}{0.00,0,1, 0}
+\definecolor{darkgreen}{rgb}{0,.4, 0.1}
+\newtheorem{prop}{Proposition}
+\newtheorem{defn}{Definition}
+\newtheorem{cor}{Corollary}
+\newtheorem{lem}{Lemma}
+
+\newcommand\indep{\protect\mathpalette{\protect\independenT}{\perp}}
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
+
+\usefonttheme{professionalfonts} % using non standard fonts for beamer
+\usefonttheme{serif}
+
+\beamertemplatesolidbackgroundcolor{white}  \setbeamercolor{alerted
+text}{fg=red}
+\usepackage{multirow}
+
+\setbeamertemplate{caption}[numbered]\newcounter{mylastframe}
+
+%\begin{beamerboxesrounded}[upper=uppercol,lower=lowercol,shadow=true]{Block}
+%$A = B$.
+%\end{beamerboxesrounded}}
+\renewcommand{\familydefault}{cmss}
+\usepackage[all]{xy}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+%\usepackage{palatino}
+%\usepackage{eulervm}
+\usecolortheme{lily}
+%\usepackage[latin1]{inputenc}
+
+\title[Methodology III] % (optional, nur bei langen Titeln nötig)
+{Political Methodology III: Model Based Inference}
+
+\author{Justin Grimmer}
+\institute[Stanford University]{Associate Professor\\Department of Political Science \\  Stanford University}
+\vspace{0.3in}
+
+\date{May 3rd, 2017}
+
+\begin{document}
+\begin{frame}
+\titlepage
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Model Based Inference}
+
+\begin{itemize}
+\item[1)] Likelihood inference
+\item[2)] Logit/Probit
+\item[3)] Ordered Probit
+\item[4)] Choice Models:
+\item[5)] Count Models
+\item[6)] Survival Models
+\item[7)] Hypothesis Tests + Model Checking in Likelihood
+\begin{itemize}
+\item[-] Likelihood Ratios, Wald, and Score tests
+\item[-] Model Checking: analysis of residuals, hat values, etc.
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+
+
+
+
+\frame{
+
+  \frametitle{What is Survival Analysis?}
+
+  \begin{itemize}
+  \item Analyze the length of time spent in a given state
+  \item $Y_i \in [0, \infty)$: Duration, ``time to an event''
+  \item Suppose $Y_{i}$ has density $f(y)$.
+\pause
+\medskip
+  \item Example: Cabinet duration
+    \begin{itemize}
+      \item Are cabinets more likely to dissolve early or late?
+      \item What factors predict the length of time until dissolution?
+\pause
+\smallskip
+      \item King, Alt, Burns \& Laver (1990 AJPS) \dotfill Exponential model
+      \item Warwick \& Easton (1992 AJPS) \dotfill Weibull model
+      \item Warwick (1992 AJPS) \dotfill Cox PH model
+      \item Diermeier \& Stevenson (1999 AJPS) \dotfill Competing risks model
+    \end{itemize}
+\pause
+\medskip
+  \item One of the most sophisticated subfields of statistical modeling, developed
+    in multiple disciplines
+  \item We will only be able to scratch the surface
+ \end{itemize}
+
+}
+
+\frame{
+
+  \frametitle{Survival Function}
+
+  \begin{itemize}
+  \item \alert{Survival function}: Probability of surviving at least up to time $y$
+    $$S(y) \ \equiv \ \Pr(Y_i > y) \ = \ \int_{y}^{\infty} f(t)dt \ = \ 1 - \int_{0}^{y} f(t)dt \ = \  1-F(y)$$
+  \item How likely am I to live at least $y$ years?
+\pause
+\medskip
+  \item Properties:
+    \begin{itemize}
+      \addtolength{\itemsep}{0.25\baselineskip}
+    \item $S(0) = 1$ and $S(\infty) = 0$; monotonically decreasing
+\pause
+\smallskip
+    \item Area under $S(y)$ is the average survival time:
+      \begin{eqnarray}
+      \text{E}(Y_i) & = &  \int_{0}^{\infty} y f(y) dy  \nonumber \\
+      & = & y \left(F(y)|^{\infty}_{0}\right)  - \int_{0}^{\infty} F(y) dy \nonumber \\
+      & = & \int_{0}^{\infty} (1- F(y)) dy \nonumber \\
+      & = & \int_{0}^{\infty} S(y)dy \nonumber
+      \end{eqnarray}
+\pause
+\vspace{-.75\baselineskip}
+  \end{itemize}
+  \end{itemize}
+}
+
+\begin{frame}
+\frametitle{Survival Function}
+
+\begin{itemize}
+   \item One-to-one relationships with density and probability:
+    \begin{eqnarray*}
+     & & f(y) \ = \ -\frac{d}{dy}S(y) \quad \text{and} \quad S(y) \ = \ \int_y^\infty f(t) dt \\
+     & & \Pr(y \le Y_i < y + h) \ = \ S(y)-S(y+h)
+    \end{eqnarray*}
+\end{itemize}
+
+\end{frame}
+
+
+\frame{
+\frametitle{Survival Function}
+\begin{center}
+\only<1|handout:0>{\includegraphics[height=.8\textheight]{hazardsurvival-1.pdf}}%
+\only<2|handout:0>{\includegraphics[height=.8\textheight]{hazardsurvival-2.pdf}}%
+\only<3|handout:1>{\includegraphics[height=.8\textheight]{hazardsurvival-3.pdf}}
+\end{center}
+}
+
+
+\frame{
+
+  \frametitle{Hazard Function}
+
+  \begin{itemize}
+  \item \alert{Hazard function}: Instantaneous rate of leaving a state at time
+    $t$ conditional on survival up to that time
+    $$ \lambda(y) \ \equiv \ \lim_{h \downarrow 0} \frac{\Pr(y \le Y_i < y + h \mid Y_i \ge y)}{h}
+    \ = \ \frac{f(y)}{S(y)} $$
+  \item ``Force of mortality'' --- what is the `risk' that I die at time $y$ given that I have lived up until $y$?
+  \item Difficult to directly interpret, but useful for model checking, etc.
+\medskip
+\pause
+    \item One-to-one relationship with survival function:
+      $$ \lambda(y) \ = \ - \frac{d}{dy} \log S(y)
+      \quad \text{and} \quad S(y) \ = \ \exp\left(-\int_0^y \lambda(t) dt \right)  $$
+  % \item \alert{Cumulative hazard function}:
+  %   \begin{eqnarray*}
+  %     \Lambda(y) & \equiv & \int_0^y \lambda(t) dt \ = \ -\log S(y)
+  %   \end{eqnarray*}
+  \end{itemize}
+
+}
+
+\frame{
+\frametitle{Hazard Function}
+\begin{center}
+\only<1|handout:0>{\includegraphics[height=.8\textheight]{hazardsurvival-3.pdf}}%
+\only<2|handout:1>{\includegraphics[height=.8\textheight]{hazardsurvival-4.pdf}}
+\end{center}
+}
+
+
+\frame{
+
+  \frametitle{Quantities of Interest}
+
+  \begin{itemize}
+  \addtolength{\itemsep}{0.25\baselineskip}
+  \item Shape of the survival curve
+\pause
+\medskip
+  \item \alert{Expected} (remaining) \alert{time to event} ($=$ life expectancy at age $y$):
+   $$ \mu(y) \ \equiv \ \text{E}(Y_i - y \mid Y_i > y)
+   \ = \ \frac{1}{S(y)} \int_y^\infty S(t) dt $$
+  \item Given that I'm alive at $y$, how much longer should I expect to live?
+\medskip
+\pause
+\item Predicted differences in the above
+\medskip
+\pause
+\item Causal effects on survival outcomes:
+  \begin{itemize}
+  \addtolength{\itemsep}{.25\baselineskip}
+  \item \alert{One-shot treatment} administered at the beginning of study period \\
+   --- needs conditional ignorability given observed pre-trial covariates
+  \item \alert{Time-varying treatment}, possibly given in response to covariates \\
+  --- needs ``sequential ignorability''
+  \end{itemize}
+  \end{itemize}
+
+}
+
+\frame{
+
+  \frametitle{Censoring}
+
+  \begin{itemize}
+
+  \item Observation is \alert{right-censored} when only the lower bound of
+    duration is known: $Y_i \in (c, \infty)$
+\pause
+\medskip
+  \item The \alert{independent censoring} assumption: Censored observations
+    do not systematically differ from complete observations in terms of hazard rates
+  \item A sufficient condition: $Y_i \indep C_i \mid X_i$ where $C_i =$ time to censoring
+  \item Either $Y_i$ or $C_i$ is actually observed
+
+\pause
+  \item Examples:
+    \begin{itemize}
+      \item Random attrition of study sample
+      \item Study begins and ends at exogenously fixed calendar dates
+      \item Study ends after fixed duration (type I censoring)
+      \item Study ends after a fixed number of failures (type II censoring)
+    \end{itemize}
+
+\pause
+\medskip
+\item Other types of censoring (left, interval) are less common
+
+ \end{itemize}
+
+}
+
+
+% \frame{
+% \frametitle{Typical Observation Schemes for Duration Analysis}
+% \begin{center}
+% \includegraphics[width=.8\textwidth]{censoring-1.pdf}
+% \end{center}
+% Q. Which observations are right/left/interval censored? \pause \\
+% A. 1 is not censored; 2--4 are {\it all censored}.
+
+% }
+
+% %\frame{
+% %\frametitle{Typical Observation Schemes for Duration Analysis}
+% %\begin{center}
+% %\includegraphics[width=.8\textwidth]{pics/censoring-3.pdf}
+% %\end{center}
+% %Q. Which observations are right/left/interval censored? \pause \\
+% %A. 1-2 are not censored; 3 is right censored; 4 is left censored.
+% %
+% %}
+
+% \frame{
+% \frametitle{Typical Observation Schemes for Duration Analysis}
+% \begin{center}
+% \includegraphics[width=.8\textwidth]{censoring-2.pdf}
+% \end{center}
+% Q. Which observations are right/left/interval censored? \pause \\
+% A. 1 is interval censored; 2--4 are right censored.
+
+% }
+
+
+\frame{
+
+\frametitle{Cabinet Duration Example: Censoring}
+King, Alt, Burns, and Laver (1990 AJPS):
+\begin{itemize}
+\item $Y_i$: Duration of parliamentary cabinets, $n=314$ \pause
+\begin{center}
+\includegraphics[scale=0.5]{cabinet.pdf}
+\end{center}
+\item Notice the ``bump''?
+\medskip \pause
+\item Some cabinets end their lives ``naturally''
+\item Others end because of constitutional interelection periods (CIEP)
+\medskip \pause
+\item King et al. treat CIEPs as censored observations
+\item But is this ``censoring'' independent?
+\end{itemize}
+}
+
+
+\section{Nonparametric Estimation of Survival Function}
+
+\frame{
+
+  \frametitle{Discrete Time Approximation}
+
+  \begin{itemize}
+  \item Time is continuous but we observe discrete time: $t_1 < t_2 < \cdots$
+\pause
+  \item Density function: $f(t_j) = \Pr(Y_i = t_j)$
+  \item Survival function: $S(t_j) = \Pr(Y_i \alert{>} t_j) = \sum_{\{k:\ t_k > t_j\}} f(t_k)$
+\pause
+  \item Hazard function: $\lambda(t_j) = \Pr(Y_i = t_j \mid Y_i \alert{\ge} t_j)  =  f(t_j)\big/ S(t_{\alert{j-1}})$
+  % \item Cumulative hazard function: $\Lambda(y)=\sum_{\{j:\ t_j \le y\}} \lambda(t_j)$
+\pause
+\medskip
+  \item Key relationships:
+   \begin{itemize}
+    \addtolength{\itemsep}{0.5\baselineskip}
+    \item $S(t_j) = \prod_{k=1}^j (1-\lambda(t_k))$
+\pause
+    \item $f(t_j) = S(t_{j-1}) - S(t_j) = \lambda(t_j)\prod_{k=1}^{j-1}(1-\lambda(t_k))$
+    \end{itemize}
+\medskip
+\pause
+\item Expected remaining time to event:
+  \begin{eqnarray*}
+  \mu(t_j) & = & \text{E}(Y_i - t_j\mid Y_i > t_j) \\
+  & = & \frac{1}{S(t_j)}\sum_{k=j+1}^\infty(t_k-t_j)f(t_k)
+  \ = \ \frac{1}{S(t_{j})}\sum_{k=j}^\infty (t_{k+1} - t_{k})S(t_{k})
+  \end{eqnarray*}
+\end{itemize}
+
+
+}
+
+\frame{
+
+  \frametitle{Estimating the Survival Curve Without a Model}
+
+  \begin{itemize}
+  \item Goal: Get the sense of what $S(t_j)$ looks like before introducing $X_i$
+\pause
+\medskip
+  \item Easy if no censoring; just count \# of units failing at each $t_j$
+  \item Censored observations make things a bit more complicated
+\pause
+\medskip
+  \item Setup:
+    \begin{itemize}
+      \addtolength{\itemsep}{0.25\baselineskip}
+      \item Observed failure times: $t_1 < t_2 < \cdots < t_J$
+      \item $d_j = $ \# of units that failed at time $t_j$
+      \item $m_j = $ \# of units censored at time $t_j$
+      \item $r_j = \sum_{k=j}^J (d_k + m_k)$ \\
+        \quad $ = $ \# of units \alert{at risk} at time $t_j$, i.e.,
+        those that have neither failed nor been censored
+        until right before $t_j$
+   \end{itemize}
+  \medskip
+\pause
+  \item A natural estimate for the hazard function will then be:
+    $$ \hat\lambda(t_j) \ = \ \widehat{\Pr}(Y_i = t_j \mid Y_i \geq t_j) \ = \ \frac{d_j}{r_j} $$
+  \item In fact, this is the MLE of $\lambda(t_j)$
+  \end{itemize}
+
+
+}
+
+\frame{
+
+  \frametitle{Kaplan-Meier Estimator}
+
+  \begin{itemize}
+  \item This leads to the \alert{Kaplan-Meier estimator}:
+$$\widehat{S}(t_j) \ = \ \prod_{k=j}^J(1-\hat\lambda(t_k)) \ = \ \prod_{k=j}^J \frac{r_k-d_k}{r_k}$$
+
+\pause
+\bigskip
+
+  \item Using the MLE derivation for $\hat\lambda(t_j)$, we obtain the Hessian-based
+    estimate of the asymptotic variance:
+
+    $$\widehat{\text{Var}(\widehat{S}(t_j))} \ = \ \widehat{S}^2(t_j)\sum_{k=j}^J\frac{d_k}{r_k(r_k-d_k)}$$
+
+  \end{itemize}
+
+}
+
+\frame{
+
+  \frametitle{Example: Time Until Commitment to IMF Article VIII}
+
+  \begin{center}
+    \includegraphics[scale=0.6]{Kaplan-Meier.pdf}
+  \end{center}
+  Simmons (2000 APSR)
+}
+
+\section{Parametric Regression Models}
+
+\frame{
+
+\frametitle{Exponential Regression Model}
+
+\begin{itemize}
+\item Suppose that failures occur according to a Poisson process \\
+(i.e. continuously, independently, and with constant probability)
+\item Then the ``time to an event'' follows the \alert{exponential} distribution
+\medskip
+\pause
+\item Model: $Y_i\mid X_i \sim_{\text{ind}} \text{Exponential}(\mu_i)$ where $\mu_i = \exp(X_i^{'} \beta)$
+
+\item Density: $f(y \mid \mu_i) = \frac{1}{\mu_i} \exp(-y/\mu_i)$
+
+\item Mean $\text{E}(Y_i \mid \mu_i) =\mu_i$ and Variance $\text{Var}(Y_i \mid \mu_i) = \mu_i^2$
+
+\item Survival function: $S(y) = \exp(-y/\mu_i)$
+
+\item Hazard function: $\lambda(y) = 1/\mu_i = \exp(-X_i^{'}\beta)$ \ (constant in $y$)
+
+\pause
+\medskip
+
+\item A common alternative parameterization: $\gamma_i \equiv 1/\mu_i$
+\item This changes nothing except that the sign of $\beta$ gets reversed
+
+\pause
+\medskip
+
+\item The \alert{constant hazard} assumption: $\lambda_i$ does not vary across time
+\end{itemize}
+
+}
+
+\frame{
+
+\frametitle{MLE for the Exponential Model with Censoring}
+
+\begin{itemize}
+\item Censoring indicator: $D_i = 1$ if censored
+\item $Y_i$ is the censoring time (rather than failure time) if $D_i = 1$
+\medskip
+\pause
+\item Likelihood function:
+  \begin{eqnarray*}
+    L_n(\beta \mid Y, X, D)
+    & = & \prod_{i=1}^n \underbrace{\left\{f(Y_i\mid \mu_i)\right\}^{1-D_i}}_{\text{uncensored}} \cdot
+        \underbrace{\left\{S(Y_i\mid \mu_i)\right\}^{D_i}}_{\text{censored}} \\
+    & = & \prod_{i=1}^n \left\{\frac{1}{\mu_i}\exp(-Y_i/\mu_i)\right\}^{1-D_i}
+        \left\{\exp(-Y_i/\mu_i)\right\}^{D_i} \\
+    & = & \prod_{i=1}^n \exp\left\{-(1-D_i)X_i^\top\beta\right\} \exp\left\{-\exp(-X_i^{'}\beta)Y_i\right\}
+  \end{eqnarray*}
+\pause
+\item Log-likelihood, score and Hessian can be calculated as usual
+\end{itemize}
+
+}
+
+
+\frame{
+
+\frametitle{Weibull Regression Model}
+
+\begin{itemize}
+\item The constant hazard assumption is often too restrictive
+\item The \alert{Weibull} model relaxes the assumption by introducing a ``shape'' parameter
+
+\pause
+\medskip
+
+\item Model: $Y_i\mid X_i \sim_{\text{ind}} \text{Weibull}(\mu_i, \alpha)$ where $\mu_i = \exp(X_i^{'}\beta)$ and $\alpha > 0$
+\item Density: $f(y\mid \mu_i,\alpha) = \frac{\alpha}{\mu_i^\alpha}y^{\alpha-1}\exp\{-(y/\mu_i)^\alpha\}$
+\item Reduces to the exponential model when $\alpha = 1$
+\item Survival function: $S(y) = \exp\{-(y/\mu_i)^\alpha\}$
+\item Hazard function: $\lambda(y) \ = \ \frac{\alpha}{\mu_i^\alpha}y^{\alpha-1}$
+
+\pause
+\medskip
+
+\item The \alert{monotonic hazard} assumption:
+  increasing (decreasing) if $\alpha > 1$ (if $\alpha < 1$)
+\medskip
+\item Other parametric regression models:
+    \begin{itemize}
+    \item Gompertz: Monotonic hazard
+    \item Log-normal, Log-logistic: Inverse U-shaped hazard
+    \end{itemize}
+\end{itemize}
+
+}
+
+\frame{
+ \frametitle{Cabinet Duration Example: Exponential or Weibull?}
+ King et al. (Exponential) vs. Warwick and Easton (Weibull)
+ \begin{itemize}
+ \item Comparing density functions:
+ \end{itemize}
+ \vspace{-\baselineskip}
+ \begin{center}
+  \includegraphics[width=.85\textwidth]{cabinet-density.pdf}
+\end{center}
+
+}
+
+\frame{
+ \frametitle{Cabinet Duration Example: Exponential or Weibull?}
+ King et al. (Exponential) vs. Warwick and Easton (Weibull)
+ \begin{itemize}
+ \item Comparing hazard functions:
+ \end{itemize}
+ \vspace{-\baselineskip}
+ \begin{center}
+ \includegraphics[width=.85\textwidth]{cabinet-hazard.pdf}
+ \end{center}
+}
+
+\section{Cox Proportional-Hazard Model}
+
+\frame{
+
+  \frametitle{Semi-Parametric Regression for Survival Data}
+
+  \begin{itemize}
+  \item Less restriction on the hazard function
+  \item Time-varying covariates to further model stochastic risks
+
+\pause
+\medskip
+  \item Note that both exponential and Weibull models are \alert{proportional hazard models}:
+\vspace{-.08in}
+  $$ \lambda(y\mid X_i) \ = \ \underbrace{\lambda_0(y)}_{\text{baseline\ hazard}} \exp(X_i^{'}\beta^\ast) $$
+  where $\lambda_0(y) \ = \ {\scriptsize \begin{cases} 1 & \text{(exponential)} \\ \alpha y^{\alpha-1} & \text{(Weibull)} \end{cases}}$ \ and \ $\beta^\ast = -\alpha\beta$
+
+\pause
+\bigskip
+  \item The \alert{Cox Proportional Hazard Model} generalizes this model:
+
+    $$\lambda(y\mid X_{i}(y)) \ = \ \lambda_0(y) \exp(X_i(y)^{'} \beta^\ast)$$
+    where
+    \begin{itemize}
+    \item $\lambda_0(y)$: Nonparametric baseline hazard common to all $i$ across $t$
+    \item $X_i(y)$: (Potentially) time-varying covariates
+    \end{itemize}
+    {\footnotesize (Note: We omit $\ast$ from hereon)}
+
+  \end{itemize}
+
+}
+
+
+\begin{frame}
+\frametitle{Example: Hazards Accommodated by the Cox Model}
+\begin{center}
+\includegraphics[width=.3\textwidth]{CoxHazard1.pdf}%
+\includegraphics[width=.3\textwidth]{CoxHazard2.pdf}%
+\includegraphics[width=.3\textwidth]{CoxHazard3.pdf}
+\end{center}
+\begin{itemize}
+\item The Cox PH model allows flexible shapes of hazard functions
+\medskip
+\item Suppose we have one binary predictor $x \in \{0,1\}$ to model $y$:
+\smallskip
+\begin{enumerate}
+\addtolength{\itemsep}{.25\baselineskip}
+\item $\lambda(y\mid x) \ = \ \lambda_0(y) \exp(x\beta)$ \hfill ------ no time-varying covariate
+\item $\lambda(y\mid x) \ = \ \lambda_0(y) \exp\left[x\beta_1 + xy\beta_2\right]$ \hfill ------ interaction with time trend
+\item $\lambda(y\mid x) \ = \ \lambda_0(y) \exp\left[x \beta_1 + x(1.5-y)\boldsymbol{1}\{y\leq 1.5\}\beta_2\right]$ \\
+      \flushright ------ allowing high initial risk
+\end{enumerate}
+\medskip
+{\footnotesize
+\item[] Note: In the figures, the \alert{relative risk} (RR) stands for:
+$$ RR \ = \  \frac{\lambda(y\mid x=1)}{\lambda(y\mid x=0)}
+      \ = \ \exp\left[g(y\mid x=1) - g(y\mid x=0)\right]$$
+}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Estimation of Cox Proportional Hazard Models}
+\small
+\vspace{-.5\baselineskip}
+\begin{itemize}
+  \item Joint MLE for $\lambda_0(y)$ and $\beta$ is difficult (because $\lambda_0(y)$ is nonparametric)
+  \item Instead, consider the \alert{partial likelihood function} which only contains
+    information about non-censored observations
+\pause
+  \item Because of the independent censoring assumption, this should give us
+    a consistent (although not efficient) estimate for $\beta$
+\pause
+\smallskip
+  \item For now, suppose that no two observations fail at the same time
+  \item This implies we can unambiguously index observations by $j$
+\pause
+\medskip
+  \item Under this assumption, the partial likelihood function turns out to be:
+  {\footnotesize
+    \begin{eqnarray*}
+   L_P(\beta) & = & \prod_{j=1}^J \frac{\exp(X_i(t_j)^\top\beta)}
+             {\sum_{k\in R(t_j)}\exp(X_{k}(t_j)^\top\beta)}
+    \end{eqnarray*}
+    where $R(t_j) = \text{risk set at time } t_j$
+    }
+\pause
+%\vspace{-.5\baselineskip}
+  \item Note that $\lambda_0(y)$ drops out of the partial likelihood
+\pause
+\smallskip
+  \item Take the log and maximize to obtain the estimate of $\beta$
+\end{itemize}
+\end{frame}
+
+
+
+
+
+
+
+\begin{frame}
+
+\huge
+
+Hypothesis Testing
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Simple Example: Antiobama Speech}
+
+We'll  use the speech data from the problem set, as follows:
+
+\begin{itemize}
+\item[-] $Y_{i} = 1 $ if representative says {\tt obamacare} or {\tt big government} during the year, 0 otherwise
+\item[-] $\boldsymbol{X}_{i} = (1, I(\text{Year} = 2010)_{i}, \text{Democrat}_{i}, \text{DW-Nom}_{i}) $
+\end{itemize}
+
+\begin{eqnarray}
+Y_{i}  &  \sim &   \text{Bernoulli}(\pi_{i}) \nonumber \\
+\pi_{i}     & = & \text{logit}^{-1}(\boldsymbol{X}_{i}^{'} \boldsymbol{\beta})  = \frac{1}{1 + \exp(-\boldsymbol{X}_{i}^{'} \boldsymbol{\beta}) } \nonumber
+\end{eqnarray}
+
+
+Which covariates do we include? $\leadsto$ depends on goal.  \\
+\begin{itemize}
+\item[-] Predictive goal $\leadsto$ replicate task
+\item[-] Model fitting $\leadsto$ do covariates increase likelihood? Can we drop them?
+\end{itemize}
+
+\end{frame}
+
+
+
+
+\subsection{Hypothesis Testing}
+
+\begin{frame}
+\frametitle{Hypothesis Testing --- Likelihood Ratio Test}
+\begin{itemize}[<+->]
+\item Null ($H_0$): $h_1(\boldsymbol{\beta}) = \cdots = h_Q(\boldsymbol{\beta}) = 0$ ($Q$ equality constraints)
+\item Alternative ($H_1$): No such constraints
+\medskip
+\item Let $\widehat{\boldsymbol{\beta}}_{R} = \widehat{\boldsymbol{\beta}}_{MLE\mid H_0}$ (restricted MLE) and
+$\widehat{\boldsymbol{\beta}}_{UR} = \widehat{\boldsymbol{\beta}}_{MLE}$ (original MLE)
+\item \alert{Likelihood ratio} (LR) test: If $H_0$ is true, $L(\widehat{\boldsymbol{\beta}}_R)$
+should be equal to $L(\widehat{\boldsymbol{\beta}}_{UR})$ except for sampling variability
+\item LR statistic:
+    $$ LR(Y) \ \equiv \ -2\log\frac{L(\widehat{\boldsymbol{\beta}}_{R})}{L(\widehat{\boldsymbol{\beta}}_{UR})}
+     \ = \ 2\left[\ell(\widehat{\boldsymbol{\beta}}_{UR}) - \ell(\widehat{\boldsymbol{\beta}}_{R})\right] $$
+\item We can show that $LR(Y) \stackrel{d}{\longrightarrow} \chi_Q^2$
+\item Works for testing any nested models \\
+    --- model under $H_0$ has to be a special case of model under $H_1$
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+
+\small
+\begin{semiverbatim}
+
+un\_rest\_reg<- glm(once$\sim$two\_10 + dem + dw\_nom,
+
+\hspace{0.15in} data = speech\_dat, family = binomial(link = logit))
+
+
+rest\_reg<- glm(once$\sim$1, family= binomial(link = logit))
+
+
+\#\#calculating the likelihood ratio
+
+log\_lik<- function(pars, X, Y)\{
+
+  \hspace{0.15in} y.tilde<- X\%*\%pars
+
+  \hspace{0.15in} probs<- plogis(y.tilde)
+
+  \hspace{0.15in} log\_out<- Y\%*\%log(probs) + (1-Y)\%*\%log(1 - probs)
+
+  \hspace{0.15in} return(log\_out)
+
+  \}
+
+ X<- cbind(1, two\_10, dem, speech\_dat\$dw\_nom)
+
+
+ un\_rest<- log\_lik(un\_rest\_reg\$coef, X, once)
+
+
+ rest<- log\_lik(rest\_reg\$coef, as.matrix(rep(1, nrow(X))), once)
+
+
+ > 2 * un\_rest - 2*rest
+
+\hspace{0.15in}        [,1]
+
+[1,] 433.996
+
+
+
+
+
+
+
+
+ \#\#get the same statistic automatically from glm
+
+ diff<- un\_rest\_reg\$null.deviance - un\_rest\_reg\$deviance
+
+ 1 - pchisq(diff, 3) \#\#very small!
+
+[1] 0
+
+\end{semiverbatim}
+
+
+
+\end{frame}
+
+\begin{frame}
+
+\begin{semiverbatim}
+ > 2 * un\_rest - 2*rest
+
+\hspace{0.15in}        [,1]
+
+[1,] 433.996
+
+ \#\#get the same statistic automatically from glm
+
+ diff<- un\_rest\_reg\$null.deviance - un\_rest\_reg\$deviance
+
+ 1 - pchisq(diff, 3) \#\#very small!
+
+[1] 0
+
+\end{semiverbatim}
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Hypothesis Testing --- Wald Test}
+\begin{itemize}[<+->]
+\item \alert{Wald test}: If true, the null $h_1(\boldsymbol{\beta})=\cdots =h_Q(\boldsymbol{\beta})=0$
+should approximately hold even if we substitute $\widehat{\boldsymbol{\beta}}_{UR}$ for $\boldsymbol{\beta}$
+\item Wald statistic: Use asymptotic distribution of $\widehat{\boldsymbol{\beta}}$ and representation of restrictions, properties of normal distribution to obtain form
+{\small
+    $$ W \ \equiv \ h(\widehat{\boldsymbol{\beta}}_{UR})^{'} \left[\left(\frac{\partial h(\boldsymbol{\beta})}
+    {\partial \boldsymbol{\beta}}\Bigl|_{\boldsymbol{\beta}=\widehat{\boldsymbol{\beta}}_{UR}} \right)^{'}
+    \widehat{\text{Var}(\widehat{\boldsymbol{\beta}}_{UR})}
+    \left(\frac{\partial h(\boldsymbol{\beta})}{\partial\boldsymbol{\beta}}\Bigl|_{\boldsymbol{\beta}=\widehat{\boldsymbol{\beta}}_{UR}}\right)\right]^{-1}
+    h(\widehat{\boldsymbol{\beta}}_{UR})$$
+}
+
+\item The ``meat'' $\simeq \widehat{\text{Var}(h(\widehat{\boldsymbol{\beta}}_{UR}))}$
+(\alert{Delta method} )
+\item Choose any $\widehat{\text{Var}(\widehat{\boldsymbol{\beta}}_{UR})}$ as appropriate (e.g. Huber-White)
+\item We can show that $W \stackrel{d}{\longrightarrow} \chi_Q^2$
+\bigskip
+\item An important special case: $Q=1$ and $H_0: \beta = 0$
+\item In this case, we can use the \alert{$z$ statistic}:
+{\small
+$$ z \ = \ W^{1/2} \ = \ \frac{\widehat{\boldsymbol{\beta}}_{UR}}{\text{s.e.}(\widehat{\boldsymbol{\beta}}_{UR})}
+ \ \stackrel{d}{\longrightarrow} \ \text{N}(0,1)$$
+}
+%where $s.e.(\widehat{\beta}_{UR})$ is the sqrt of the diagonal element of $\widehat{\text{Var}(\widehat{\beta}_{UR})}$
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+
+\small
+\begin{semiverbatim}
+
+> un\_rest\_reg\$coef\%*\%solve(vcov(un\_rest\_reg))\%*\%un\_rest\_reg\$coef
+
+         [,1]
+
+[1,] 225.2437
+
+
+> 1 - pchisq(225.2437, 3)
+
+[1] 0
+
+
+\end{semiverbatim}
+
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Hypothesis Testing --- Score Test}
+\begin{itemize}[<+->]
+\item At the unrestricted MLE $\hat\theta_{UR}$, $\sum_{i=1}^{N} s_{i} (\widehat{\boldsymbol{\beta}}_{UR})=s(\widehat{\boldsymbol{\beta}}) = 0$ by construction
+\item \alert{Score test}: If the null is true, $s(\widehat{\boldsymbol{\beta}}_{R})$
+  should also equal zero except for sampling variability
+\item Score statistic: Use asymptotic distribution and properties of normal distribution to  ``standardize" $s(\widehat{\boldsymbol{\beta}}_{R})$
+$$ LM \ = \ s(\widehat{\boldsymbol{\beta}}_{R})^{'} \widehat{\text{Var}(\widehat{\boldsymbol{\beta}}_{R})} s(\widehat{\boldsymbol{\beta}}_{R})
+\ \stackrel{d}{\longrightarrow} \ \chi_Q^2$$
+
+\item For $\widehat{\boldsymbol{\beta}}_{QMLE}$, the expression is more complicated
+\item Also known as the \alert{Lagrange multiplier} (LM) test due to an alternative derivation
+
+\end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}
+
+\small
+\begin{semiverbatim}
+
+ score\_func<- function(coef, X, Y)\{
+
+  \hspace{0.15in} y.tilde<- X\%*\%coef
+
+  \hspace{0.15in} probs<- plogis(y.tilde)
+
+ \hspace{0.15in}  out<- t(Y - probs)\%*\%X
+
+ \hspace{0.15in}  return(out)
+   \}
+
+
+
+> round(score\_func(un\_rest\_reg\$coef, X, once), 2)
+
+
+[1,] 0      0   0 0
+
+
+rest\_score<- score\_func(c(rest\_reg\$coef, 0, 0, 0), X, once)
+
+
+> round(rest\_score,2)
+
+[1,] 0 -6.30 -128.92 129.51
+
+\end{semiverbatim}
+\end{frame}
+
+
+\begin{frame}
+\small
+\begin{semiverbatim}
+
+ hess\_func<- function(coef, X, Y)\{
+
+   \hspace{0.15in}  y.tilde<- X\%*\%coef
+
+  \hspace{0.15in}   probs<- plogis(y.tilde)
+
+  \hspace{0.15in}   base<- matrix(0, nrow = len(coef), ncol = len(coef))
+
+   \hspace{0.15in}  for(z in 1:nrow(X))\{
+
+   \hspace{0.25in}    base<- base + probs[z]*(1 - probs[z])* X[z,]\%*\%t(X[z,])
+
+     \hspace{0.15in}  \}
+
+     \hspace{0.15in} return(base)
+
+   \}
+
+
+ rest\_hess<- solve(hess\_func(c(rest\_reg\$coef, 0, 0, 0), X, once))
+
+>rest\_score\%*\%rest\_hess\%*\%t(rest\_score)
+
+[1,] 395.0382
+
+> 1- pchisq(395, 3)
+
+[1] 0
+
+\end{semiverbatim}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Comparing The Three Tests}
+\vspace{-.2in}
+\begin{center}
+\includegraphics[width=\textwidth]{threetests.jpg}
+\end{center}
+\vspace{-.2in}
+\begin{itemize}
+\item All asymptotically equivalent
+\item But can be quite different in small samples
+\end{itemize}
+\pause
+{\small
+\begin{tabular}{cll}
+\hline\hline
+   & {\it Pros}                           & {\it Cons} \\
+\hline\hline
+LR & Most powerful (Neyman-Pearson) & Must compute both $\hat\theta_{UR}$ and $\hat\theta_{R}$ \\
+   &                                & Cannot be easily robustified \pause \\
+\hline
+W  & Only need $\hat\theta_{UR}$     & Not invariant to transformation \\
+   & Easily robustified by sandwich & (e.g. $\theta_1/\theta_2 = 1$ vs. $\theta_1=\theta_2$) \pause \\
+\hline
+LM & Only need $\hat\theta_{R}$      & $\hat\theta_{R}$ often difficult to estimate \\
+\hline\hline
+\end{tabular}
+}
+\end{frame}
+
+
+\begin{frame}
+
+\huge
+
+\begin{itemize}
+\item Model diagnostics
+\item AIC/BIC
+\item Cross Validation
+\item MLE, Cramer-Rao, and You
+\item Midterm
+\end{itemize}
+
+\end{frame}
+
+\end{document}
+
+
+\begin{frame}
+\frametitle{Example}
+
+
+
+
+
+
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Likelihood Ratio Test}
+
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Wald Test}
+
+
+
+\end{frame}
+
+
+
+\begin{frame}
+
+
+
+\end{frame}
+
+
+\begin{frame}
+
+
+\end{frame}
+
+
+
+
+\end{document}
+
+
+\item Suppose we have $Q$ restrictions for $p$ covariates.  Include this in matrix $\boldsymbol{R}$.  Under $H_{0}$ we have:
+
+\begin{eqnarray}
+H_{0} & : &  \boldsymbol{R} \boldsymbol{\beta}  = r \nonumber \\
+H_{1} & : & \boldsymbol{R} \boldsymbol{\beta} \neq r \nonumber
+\end{eqnarray}
+
+\item Under the null:
+\begin{eqnarray}
+\sqrt{n}(\widehat{\boldsymbol{\beta}}_{UR} - \boldsymbol{\beta}) & \rightarrow^{D} & \text{Normal}\left(0, \widehat{\text{Var}(\widehat{\boldsymbol{\beta}}_{UR})}\right) \nonumber \\
+R \sqrt{n}(\widehat{\boldsymbol{\beta}}_{UR} - \boldsymbol{\beta}) =  & \rightarrow^{D} & \text{Normal}(0, \boldsymbol{R}\widehat{\text{Var}(\widehat{\boldsymbol{\beta}}_{UR})} \boldsymbol{R}^{'})\nonumber
+\end{eqnarray}
+\end{itemize}
+
+\end{frame}
+\end{document}

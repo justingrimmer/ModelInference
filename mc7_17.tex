@@ -1,0 +1,919 @@
+\documentclass{beamer}
+
+%\usepackage[table]{xcolor}
+\mode<presentation> {
+  \usetheme{Boadilla}
+%  \usetheme{Pittsburgh}
+%\usefonttheme[2]{sans}
+\renewcommand{\familydefault}{cmss}
+%\usepackage{lmodern}
+%\usepackage[T1]{fontenc}
+%\usepackage{palatino}
+%\usepackage{cmbright}
+  \setbeamercovered{transparent}
+\useinnertheme{rectangles}
+}
+%\usepackage{normalem}{ulem}
+%\usepackage{colortbl, textcomp}
+\setbeamercolor{normal text}{fg=black}
+\setbeamercolor{structure}{fg= black}
+\definecolor{trial}{cmyk}{1,0,0, 0}
+\definecolor{trial2}{cmyk}{0.00,0,1, 0}
+\definecolor{darkgreen}{rgb}{0,.4, 0.1}
+\newtheorem{prop}{Proposition}
+\newtheorem{defn}{Definition}
+\newtheorem{cor}{Corollary}
+\newtheorem{lem}{Lemma}
+
+\newcommand\indep{\protect\mathpalette{\protect\independenT}{\perp}}
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
+
+\usefonttheme{professionalfonts} % using non standard fonts for beamer
+\usefonttheme{serif}
+
+\beamertemplatesolidbackgroundcolor{white}  \setbeamercolor{alerted
+text}{fg=red}
+\usepackage{multirow}
+
+\setbeamertemplate{caption}[numbered]\newcounter{mylastframe}
+
+%\begin{beamerboxesrounded}[upper=uppercol,lower=lowercol,shadow=true]{Block}
+%$A = B$.
+%\end{beamerboxesrounded}}
+\renewcommand{\familydefault}{cmss}
+\usepackage[all]{xy}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+%\usepackage{palatino}
+%\usepackage{eulervm}
+\usecolortheme{lily}
+%\usepackage[latin1]{inputenc}
+
+\title[Methodology III] % (optional, nur bei langen Titeln nötig)
+{Political Methodology III: Model Based Inference}
+
+\author{Justin Grimmer}
+\institute[Stanford University]{Associate Professor\\Department of Political Science \\  Stanford University}
+\vspace{0.3in}
+
+\date{April 24th, 2017}
+
+\begin{document}
+\begin{frame}
+\titlepage
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Model Based Inference}
+
+\begin{itemize}
+\item[1)] Likelihood inference
+\item[2)] Logit/Probit
+\item[3)] Ordered Probit
+\item[4)] Choice Models:
+\begin{itemize}
+\item[-] Multinomial Logit
+\begin{itemize}
+\item[a)] DGP
+\item[b)] IIA
+\item[c)] Optimization
+\item[d)] Quantities of Interest
+\item[e)] Interpretation
+\end{itemize}
+\item[-] Multinomial Probit
+\begin{itemize}
+\item[a)] DGP
+\item[b)] No IIA, But No Likelihood
+\item[c)] Quantities of Interest
+\item[d)] Interpretation
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Modeling Categorical Outcomes}
+Categorical outcome (a.k.a. discrete choice) variable:
+    $$ Y_i \ \in \ \{1, 2,..., J\}$$
+\pause
+Example: Multiparty elections
+\begin{itemize}
+\item Voters choose from more than two parties/candidates
+\item $1=$ Bush; $2=$ Clinton; $3=$ Perot
+\item $1=$ Trump; $2=$ Cruz; $3=$ Kasich; $4=$ Rubio; $5=$ Bush ...
+\end{itemize}
+\pause
+\medskip
+Possible research questions:
+  \begin{itemize}
+  \item How are candidate characteristics associated with
+    probability of voting? (e.g. past experience, campaign spending)
+  \item What kind of voters tend to choose Perot instead of Bush
+    or Clinton? (e.g. age, race, ideology)
+  \item How would vote shares have changed if Perot had not run?
+  \end{itemize}
+\medskip
+\pause
+Goal: Model probability of choosing $Y_i = j$ as function of predictors
+
+\end{frame}
+
+%%%%%%%%% frame %%%%%%%%%
+\begin{frame}
+\frametitle{Example: 1992 U.S. Presidential Election}
+Alvarez and Nagler (1995):
+\begin{itemize}
+\item $Y_i$: Vote choice in the 1992 U.S. presidential election \\
+($1 =$ Clinton, $2 = $ Bush, $3 = $ Perot)
+\end{itemize}
+\vspace{-\baselineskip}
+\begin{center}
+\includegraphics[width=.7\textwidth]{1992pres-hist}
+\end{center}
+\pause
+\vspace{-2\baselineskip}
+\begin{itemize}
+\item Two types of predictors:
+	\smallskip
+	\begin{itemize}
+	\addtolength{\itemsep}{.25\baselineskip}
+	\item Voter-specific ($V_i$): age, gender, education, party, opinions, etc.
+	\item Candidate-varying ($X_{ij}$): ideological distance between voter $i$ and candidate $j$
+	\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+
+
+
+\begin{frame}
+
+\begin{defn}
+Suppose we observe a trial, $i$, which might result in $J$ outcomes.  \\
+And that P$(\text{outcome } = i) = \pi_{i}$ \\
+$Y_{i} = j$  if outcome $j$ occurred and 0 otherwise.
+
+Then $Y_{i}$ follows a \alert{multinomial} distribution, with \\
+\begin{eqnarray}
+p(y_{i} ) & = & \pi_{1}^{I(y_{i}= 1) } \pi_{2}^{I(y_{i} = 2) } \hdots \pi_{J}^{I(y_{i} = J)} \nonumber \\
+p(y_{i} ) & = & \prod_{j=1}^{J} \pi_{j}^{I(y_{j} = j ) } \nonumber
+\end{eqnarray}
+Equivalently, we'll write
+\begin{eqnarray}
+Y_{i}  & \sim & \text{Multinomial}(1, \boldsymbol{\pi}) \nonumber \\
+Y_{i} & \sim & \text{Categorical}(\boldsymbol{\pi}) \nonumber
+\end{eqnarray}
+\end{defn}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Multinomial Distribution}
+
+\pause
+\begin{eqnarray}
+\invisible<1>{\text{E}[I(Y_{i} = j) ] & = & \pi_{j} \nonumber } \pause \\
+\invisible<1-2>{\text{E}[I(Y_{i} = J) ] & = & \pi_{J} = 1 - \pi_{1} - \pi_{2} - \hdots - \pi_{J-1} \nonumber} \pause  \\
+\invisible<1-3>{\text{Var}[I(Y_{i} = j) ] & = & \pi_{j}(1 - \pi_{j} ) \nonumber } \pause \\
+\invisible<1-4>{\text{Cov}(I(Y_{i} = j), I(Y_{i}= k) ]  & = & - \pi_{j} \pi_{k} \nonumber}
+\end{eqnarray}
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Vote Choice: Parameters of Multinomial Distribution}
+
+Suppose we make $N$ independent draws:
+\begin{eqnarray}
+Y_{i} & \sim_{\text{iid}} & \text{Multinomial}(1, \boldsymbol{\pi})  \nonumber
+\end{eqnarray}
+
+\pause
+
+\invisible<1>{Then:}
+\begin{eqnarray}
+\invisible<1>{L(\boldsymbol{\pi}| \boldsymbol{Y} ) & = & f(\boldsymbol{Y}|\boldsymbol{\pi}) \nonumber \\} \pause
+					\invisible<1-2>{				 & = & \prod_{i=1}^{N} f(Y_{i}|\boldsymbol{\pi}) \nonumber \\} \pause
+									 \invisible<1-3>{& = & \prod_{i=1}^{N}\prod_{j=1}^{J} \pi_{j}^{I(Y_{i} = j) } \nonumber }
+\end{eqnarray}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Vote Choice}
+
+Obtaining maximum-likelihood estimates:
+
+\begin{eqnarray}
+L(\boldsymbol{\pi}| \boldsymbol{Y} ) & = & \prod_{i=1}^{N}\prod_{j=1}^{J} \pi_{j}^{I(Y_{i}= j)} \nonumber \pause  \\
+\invisible<1>{\ell (\boldsymbol{\pi}| \boldsymbol{Y} ) & = & \sum_{i=1}^{N} \sum_{j=1}^{J} I(Y_{i}=j) \log \pi_{j} \nonumber } \pause
+\end{eqnarray}
+
+\invisible<1-2>{Include constraint that $\sum_{j=1}^{J} \pi_{j} = 1$ } \pause
+
+\begin{eqnarray}
+\invisible<1-3>{\ell (\boldsymbol{\pi}| \boldsymbol{Y} ) & = & \sum_{i=1}^{N} \sum_{j=1}^{J} I(Y_{i}=j) \log \pi_{j} + \lambda(\sum_{j=1}^{J} \pi_{j} - 1)  \nonumber }
+\end{eqnarray}
+
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Vote Choice}
+
+
+\begin{eqnarray}
+\ell(\boldsymbol{\pi}| \boldsymbol{Y} ) & = & \sum_{i=1}^{N} \sum_{j=1}^{J} I(Y_{i}=j) \log \pi_{j} + \lambda(\sum_{j=1}^{J} \pi_{j} - 1)  \nonumber  \\
+\frac{\partial \ell(\boldsymbol{\pi}| \boldsymbol{Y} )}{\partial \pi_{1}} & = & \frac{ \sum_{i=1}^{N} I(Y_{i}= 1) }{\pi_{1}} + \lambda \nonumber \\
+\frac{\partial \ell(\boldsymbol{\pi}| \boldsymbol{Y} )}{\partial \pi_{2}} & = & \frac{ \sum_{i=1}^{N} I(Y_{i}= 2)}{\pi_{2}} + \lambda \nonumber \\
+\frac{\partial \ell(\boldsymbol{\pi}| \boldsymbol{Y} )}{\partial \pi_{3}} & = & \frac{ \sum_{i=1}^{N} I(Y_{i}= 3)}{\pi_{3}} + \lambda \nonumber \\
+\vdots & \vdots & \vdots  \nonumber \\
+\frac{\partial \ell(\boldsymbol{\pi}| \boldsymbol{Y} )}{\partial \pi_{J}} & = & \frac{ \sum_{i=1}^{N} I(Y_{i}= J)}{\pi_{J}} + \lambda \nonumber \\
+\frac{\partial \ell(\boldsymbol{\pi}| \boldsymbol{Y} )}{\partial \lambda }& = & \sum_{j=1}^{J}\pi_{j} - 1 \nonumber
+\end{eqnarray}
+\end{frame}
+
+\begin{frame}
+\frametitle{Vote Choice}
+
+\huge
+Set equal to zero \\
+Solve for $\boldsymbol{\pi}^{*}  = (\pi_{1}^{*}, \pi_{2}^{*}, \hdots, \pi_{J}^{*} ) $
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Vote Choice}
+
+Note that:
+$\sum_{i=1}^{N} \sum_{j=1}^{J} I(y_{i}=j) = N $
+\pause
+\begin{eqnarray}
+\invisible<1>{\pi_{1}^{*} & = & \frac{ \sum_{i=1}^{N} I(Y_{i}=1) }{N} \nonumber \\} \pause
+\invisible<1-2>{\pi_{2}^{*} & = & \frac{\sum_{i=1}^{N} I(Y_{i}=2)}{N } \nonumber \\
+\pi_{3}^{*} & = & \frac{\sum_{i=1}^{N} I(Y_{i}=3)}{N } \nonumber \\
+\vdots & \vdots & \vdots \nonumber \\
+\pi_{J}^{*} & = & \frac{\sum_{i=1}^{N} I(Y_{i}=J)}{N } \nonumber }\pause
+\end{eqnarray}
+
+
+\invisible<1-3>{Maximum likelihood estimates$\leadsto$ Average proportion of time candidate is chosen}
+
+
+\end{frame}
+
+
+\begin{frame}
+
+\huge
+
+Three Candidate Choice
+
+
+
+\end{frame}
+
+
+
+
+\begin{frame}
+
+
+\begin{center}
+\only<1>{\scalebox{0.55}{\includegraphics{Simplex3d.pdf}}}
+\end{center}
+
+
+\end{frame}
+
+
+\begin{frame}
+
+\begin{tikzpicture}
+\node (empty) at (-8, 5) [] {} ;
+
+\node (figure) at (-7, 7) [] {\scalebox{0.55}{\includegraphics{TernaryPlot1.pdf}}};
+
+\invisible<1, 3->{\node (corner) at (-9.75, 4.3) [] {};
+\node (corner2) at (-11, 5) [] {};
+
+\draw[->, line width = 2pt]  (corner2) to [out = 180, in = 90] (corner) ;
+\node(corner1) at (-11, 6.25) [] {\scalebox{0.25}{\includegraphics{Corner2.pdf}}};
+}
+
+\invisible<1-2, 4->{\node (corner3) at (-6.65, 9.7) [] {};
+\node (corner4) at (-4.75, 10.2) [] {};
+
+\draw[->, line width = 2pt]  (corner4) to [out = 180, in = 90] (corner3) ;
+\node(corner_pic) at (-4, 10.25) [] {\scalebox{0.25}{\includegraphics{Corner1.pdf}}};
+}
+
+\invisible<1-3, 5->{\node (corner5) at (-3.7, 4.3) [] {};
+\node (corner6) at (-2.5, 5) [] {};
+
+\draw[->, line width = 2pt]  (corner6) to [out = 180, in = 90] (corner5) ;
+\node(corner_pic2) at (-2.5, 6.25) [] {\scalebox{0.25}{\includegraphics{Corner3.pdf}}};
+}
+
+
+\invisible<1-4>{\node (corner7) at (-6.7, 6.3) [] {};
+\node (corner8) at (-10.5, 10) [] {};
+
+\draw[->, line width = 2pt]  (corner8) to [out = 270, in = 90] (corner7) ;
+\node(corner_center) at (-10.5, 10.25) [] {\scalebox{0.25}{\includegraphics{Corner4.pdf}}};
+}
+
+\end{tikzpicture}
+\pause \pause \pause \pause
+
+\end{frame}
+
+
+\begin{frame}
+\huge
+Modeling Choices with Covariates
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Multinomial Logit Model}
+\begin{itemize}
+   \item Generalize the logit model to more than two choices
+\bigskip
+\pause
+   \item The \alert{multinomial logit model (MNL)}:
+    $$ \pi_{ij} \ = \ \Pr(Y_i = j\mid V_i) \ = \
+    \frac{\exp(V_{i}^{'}\delta_j)}{\sum_{k=1}^J \exp(V_{i}^{'}\delta_k)}, $$
+   where $V_i$ $=$ \alert{individual-specific characteristics} of unit $i$ (and an intercept)
+
+\bigskip
+\pause
+   \item Note that $\sum_{j=1}^J \pi_{ij} = 1$
+\medskip
+\pause
+   \item Need to set the \alert{base category} for identifiability:
+     $\delta_1 = 0$
+\medskip
+\pause
+   \item $\delta_j$ represents how characteristics of voter $i$ is
+     associated with probability of voting for candidate $j$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Multinomial Logit Model: Confirming the Generalization}
+
+
+Suppose $J = 2$ \pause
+
+\begin{eqnarray}
+ \invisible<1>{\pi_{i1}  & =  &  \Pr(Y_i = 1\mid V_i) \nonumber \\
+    & = & \frac{\exp(V_{i}^{'} \delta_1)}{\exp(V_{i}^{'} \delta_1) + \exp(V_{i}^{'} \delta_2)} \nonumber} \pause
+\end{eqnarray}
+\invisible<1-2>{Set $\delta_{2} = 0$ } \pause
+\begin{eqnarray}
+  \invisible<1-3>{\pi_{i1} & = & \frac{\exp(V_{i}^{'} \delta_1)}{\exp(V_{i}^{'} \delta_1) + 1} \nonumber \\
+  & = & \frac{1}{1 + \exp(-V_{i}^{'} \delta_{1} ) } \nonumber  }
+\end{eqnarray}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Conditional Logit Model}
+\begin{itemize}
+ \item We can also incorporate \alert{alternative-varying predictors}
+    $X_{ij}$
+\pause
+  \item The \alert{conditional logit (CL)} model:
+    $$ \pi_{ij} \ = \ \Pr(Y_i = j\mid X_{ij}) \ = \
+    \frac{\exp(X_{ij}^{'}\beta)}{\sum_{k=1}^J
+      \exp(X_{ik}^{'}\beta)} $$
+\pause
+  \item $\beta$ represents how characteristics of candidate $j$ for voter
+    $i$ are associated with voting probabilities
+\medskip
+\pause
+  \item $X_{ij}$ does not have to vary across voters (e.g. whether candidate $j$ is incumbent)
+  \item In that case we suppress the subscript to $X_j$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{MNL as a Special Case of CL}
+\begin{itemize}
+ \item MNL can be written using CL: Create a set of artificial alternative-varying regressors for each $V_i$:
+{\small
+   $$ X_{i1} \ = \ \left(\begin{array}{c} V_i \\ 0 \\ \vdots \\ 0 \end{array} \right), \quad
+   X_{i2} \ = \ \left(\begin{array}{c} 0 \\ V_i \\ \vdots \\ 0 \end{array} \right),\quad \cdots, \quad
+   X_{iJ} \ = \ \left(\begin{array}{c} 0 \\ 0 \\ \vdots \\ V_i \end{array} \right)$$
+}
+  \item Set the element of $\beta$ for $X_{ij}$ to $\delta_j$ and you get the MNL model
+  \item $\delta_1$ must be set to zero for identifiability
+\medskip
+\pause
+  \item Thus we can write both models (and their mixture) simply as CL:
+    $$ \pi_{ij} \ = \ \Pr(Y_i = j\mid X) \ = \
+    \frac{\exp(X_{ij}^{'}\beta)}{\sum_{k=1}^J
+      \exp(X_{ik}^{'}\beta)} $$
+  \item We use the names CL and MNL interchangeably from here on
+\end{itemize}
+\end{frame}
+
+%%%%%%%%% frame %%%%%%%%%
+\begin{frame}[fragile]
+\frametitle{Predictor Types and Data Formats}
+\small
+
+Discrete choice data usually come in one of the two formats:
+\begin{enumerate}
+\item Wide format: $N$ rows, $\text{\#}V + J\cdot\text{\#}X$ predictors
+\begin{verbatim}
+ choice women educ idist.Clinton idist.Bush idist.Perot
+   Bush     1    3        4.0804     0.1024      0.2601
+   Bush     1    4        4.0804     0.1024      0.2601
+Clinton     1    2        1.0404     1.7424      0.2401
+   Bush     0    6        0.0004     5.3824      2.2201
+Clinton     1    3        0.9604    11.0220      6.2001 ...
+\end{verbatim}
+
+\item Long format: $NJ$ rows, $\text{\#}V + \text{\#}X$ predictors
+\begin{verbatim}
+chid     alt choice women educ  idist
+   1    Bush   TRUE     1    3 0.1024
+   1 Clinton  FALSE     1    3 4.0804
+   1   Perot  FALSE     1    3 0.2601
+   2    Bush   TRUE     1    4 0.1024
+   2 Clinton  FALSE     1    4 4.0804
+   2   Perot  FALSE     1    4 0.2601 ...
+\end{verbatim}
+\end{enumerate}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Predictor Types and Data Formats}
+
+\begin{itemize}
+ \item Use {\tt reshape} to change between wide and long
+ \item Some estimation functions (e.g. {\tt mlogit}) can take both formats
+\end{itemize}
+
+
+\end{frame}
+
+
+%%%%%%%%% frame %%%%%%%%%
+\begin{frame}
+\frametitle{Latent Variable Interpretation}
+\begin{itemize}
+  \item Recall the \alert{random utility model}:
+    $$ Y_{ij}^\ast \ = \ X_{ij}^{'} \beta + \epsilon_{ij}, $$
+    where $ \left\{\begin{array}{ccl}
+      Y_{ij}^\ast & = & \text{latent utility from choosing $j$ for $i$} \\
+      \epsilon_{ij} & = & \text{stochastic component of the utility} \end{array} \right.$
+\medskip
+\pause
+  \item Assume that voter chooses the most preferred candidate, i.e.,
+    $$ Y_i = j \quad \text{if} \quad
+    Y_{ij}^\ast \geq Y_{ij^\prime}^\ast \quad \text{for any} \quad j^\prime \in \{1,...,J\}$$
+\vspace{-.5\baselineskip}
+\pause
+  \item Assuming $\epsilon_{ij} \sim_{\text{iid}}$ \alert{type I extreme value distribution},
+    this setup implies MNL (McFadden 1974)
+\medskip
+\pause
+{\small
+  \item Proof for $J=2$:
+\begin{eqnarray*}
+  \Pr(Y_i = 1\mid X) & = & \Pr(Y_{i1}^\ast \geq Y_{i2}^\ast \mid X)\\
+  & = & \Pr\left(\epsilon_{i2} - \epsilon_{i1} \leq
+  (X_{i1} - X_{i2})^{'}\beta\right) \\
+  & = & \frac{\exp\left((X_{i1}-X_{i2})^{'}\beta\right)}
+  {1 + \exp\left((X_{i1} - X_{i2})^{'}\beta\right)}
+  \ = \ \frac{\exp(X_{i1}^{'}\beta)}{\exp(X_{i1}^{'}\beta) + \exp(X_{i2}^{'}\beta)}
+\end{eqnarray*}
+}
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Independence of Irrelevant Alternatives}
+
+\begin{eqnarray}
+\frac{\pi_{i1} }{\pi_{i2}} \pause \invisible<1>{& = & \frac{\frac{\exp(X_{i1}^{'}\beta )}{\alert{\sum_{k=1}^{J} \exp(X_{ik} \beta ) }} }{ \frac{\exp(X_{i2}^{'}\beta )}{\alert{\sum_{k=1}^{J} \exp(X_{ik} \beta )}} }}\pause \invisible<1-2>{ =\frac{ \exp(X_{i1}^{'}\beta ) }{ \exp(X_{i2}^{'}\beta ) } \nonumber }\pause
+\end{eqnarray}
+
+
+\invisible<1-3>{\alert{Relative Risk}: does not depend on other choices \\} \pause
+\invisible<1-4>{\alert{Multinomial Choice}: series of pairwise comparisons}
+
+
+\end{frame}
+
+
+
+
+\begin{frame}
+
+
+\scalebox{0.45}{\includegraphics{VotersGuide.jpg}}
+
+
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Independence of Irrelevant Alternatives (Red Bus, Blue Bus)}
+
+Trump, Cruz, and Sanders remaining candidates \pause \invisible<1>{(God, help us)} \pause
+\begin{itemize}
+\invisible<1-2>{\item[-] 50\% support Sanders
+\item[-] 25\% support Trump
+\item[-] 25\% support Cruz } \pause
+\end{itemize}
+
+\invisible<1-3>{Cruz drops out, what happens to voters?} \pause
+\begin{itemize}
+\invisible<1-4>{\item[-] Intuitively: 50\% Sanders, 50\% Trump} \pause
+\invisible<1-5>{\item[-] Under model, Expected latent utilities are:
+\begin{eqnarray}
+\text{Sanders} & = & \log 2 \nonumber \\
+\text{Trump} & = & 0 \nonumber \\
+\text{Cruz} & = & 0 \nonumber \\} \pause
+\invisible<1-6>{\text{Pr(Sanders)} & = & \frac{\exp(\log 2) }{ \exp(\log 2) + \exp(0) + \exp(0)} = 2/(2 + 1 + 1) = 0.5 \nonumber }
+\end{eqnarray}
+
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Independence of Irrelevant Alternatives (Red Bus, Blue Bus)}
+
+ But then: \pause
+ \begin{eqnarray}
+\invisible<1>{\frac{\text{Pr(Sanders)}}{\text{Pr(Trump)}}  & = & \frac{\exp(\log 2) }{\exp(0)} = 2/1 \nonumber} \pause
+ \end{eqnarray}
+
+\invisible<1-2>{Or the model predicts voters choose Sanders $2:1 $ over Trump(!) resulting in (66\%,33\%) split}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{IIA and Your Work}
+
+\Large
+
+What to do? \pause
+\begin{itemize}
+\invisible<1>{\item[1)] Alternative models: Multinomial Probit,  Nested Logit} \pause
+\invisible<1-2>{\item[2)] Conditional on included covariates (other information on individual voters would limit the problem)} \pause
+\invisible<1-3>{\item[3)] Can overstate size of problem: estimation error (standard errors) often much larger than deviation}
+\end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Estimation and Inference}
+\begin{itemize}
+  \item Likelihood for a random sample of size $N$:
+  \begin{eqnarray}
+    \textstyle L(\boldsymbol{\beta} \mid Y, X) & = &  \prod_{i=1}^N \prod_{j=1}^J
+    \pi_{ij}^{I(Y_{i}=j) } \nonumber\\
+    &= & \prod_{i=1}^N \prod_{j=1}^J \left(\frac{\exp(X_{ij}^{'} \boldsymbol{\beta})   }{\sum_{k=1}^{J} \exp(X_{ik}^{'} \boldsymbol{\beta})  }\right)^{I(Y_{i} = j)}  \nonumber \\
+ \textstyle \log L(\boldsymbol{\beta}\mid Y, X)   & = & \sum_{i=1}^{N} \sum_{j=1}^{J} I(Y_{i} = j) \left(X_{ij}^{'}\boldsymbol{\beta}  - \log\left( \sum_{k=1}^{J} \exp(X_{ik}^{'} \boldsymbol{\beta})   \right) \right)\nonumber
+   \end{eqnarray}
+\end{itemize}
+\end{frame}
+
+
+
+
+
+\begin{frame}
+\frametitle{Estimation and Inference}
+\begin{itemize}
+  \item Score:
+    $$  \textstyle s(\boldsymbol{\beta}| Y_{i}, \boldsymbol{X}_{i}) \ = \  \sum_{j=1}^J I(Y_{i}=j)
+    \left(X_{ij} - \bar{X_i} \right), $$
+    where $\bar{X_i}$ is the weighted average of $X_i$,
+    i.e. $\bar{X_i} = \sum_{j=1}^J \pi_{ij}X_{ij}$
+\pause
+  \item Solve $\sum_{i=1}^{N} s(\boldsymbol{\beta}| Y_{i}, \boldsymbol{X}_{i}) = 0$ (numerically) to get $\boldsymbol{\beta}_{MLE}^{*}$
+  \item It can be shown that the log-likelihood is globally concave \\
+    $\Rightarrow$ guaranteed convergence to the true (not local) MLE
+\medskip
+
+\pause
+  \item Information:
+    $$ \textstyle I_{N} (\boldsymbol{\beta}) \ = \ -\text{E}[H(\boldsymbol{\beta})] \ = \
+    \sum_{i=1}^N \sum_{j=1}^J \pi_{ij}
+    \left(X_{ij} - \bar{X_i} \right)\left(X_{ij} - \bar{X_i} \right)^{'} $$
+
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Estimation and Inference}
+\begin{eqnarray}
+\boldsymbol{\beta}^{*}_{MLE} \longrightarrow^{D}
+    \text{Normal}\left(\boldsymbol{\beta}, I(\boldsymbol{\beta})^{-1}\right) \nonumber
+    \end{eqnarray}
+
+
+
+
+\end{frame}
+
+%%%%%%%%% frame %%%%%%%%%
+\begin{frame}
+\frametitle{Interpreting MNL/CL Coefficients}
+In MNL/CL, $\beta$ itself is not necessarily informative about the effect
+  of $X$
+\bigskip
+\pause
+\begin{enumerate}
+\item The coefficients are all with respect to the baseline
+  category
+\item[] $\longrightarrow$ Testing $\beta_j = 0$ does not generally make
+  sense \\
+(unless comparison to the baseline is the goal)
+
+\pause
+\medskip
+
+\item Changing $X_{ij}$ has impact on $\Pr(Y_i=k\mid X)$, $k \neq j$:
+\pause
+\smallskip
+	\begin{itemize}
+	\addtolength{\itemsep}{.25\baselineskip}
+	\item For individual-specific characteristics ($V_i$), even sign of $\delta_j$ may not agree with the direction of the change in response probability for $j$
+
+	\pause
+
+	\item For alternative-varying characteristics ($X_{ij}$), sign of $\beta$ does indicate the direction of the effect, but magnitude is hard to interpret
+
+	\end{itemize}
+\end{enumerate}
+
+\pause
+\bigskip
+Compute a quantity that has a clear substantive interpretation!
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%% frame %%%%%%%%%
+\begin{frame}
+\frametitle{Calculating Quantities of Interest}
+\small
+\vspace{-.5\baselineskip}
+\begin{enumerate}
+\item \alert{Choice probability}:
+$$ \pi_j(x) \ = \ \Pr(Y_i=j\mid X=x) $$
+e.g. How likely is a female college-educated conservative Republican voter to vote for Perot?
+\pause
+\item \alert{Predicted vote share}:
+$$ p_j(x_1) \ \equiv \ \text{E}\left[I\left(\pi_j(X_{i1}=x_1, X_{i2}) \geq \pi_k(X_{i1}=x_1, X_{i2})
+ \text{ for all } k\right) \right] $$
+where $X_{i1}$ is the predictor(s) of interest and $X_{i2}$ is all other predictors \\
+\smallskip
+e.g. What would Perot's vote share be if all voters supported abortion?
+\pause
+\item \alert{Average partial (treatment) effects}:
+$$ \tau_{jk} \ = \ \text{E}\left[\pi_j(T_{ik}=1, T_{i\ast}, W_i) - \pi_j(T_{ik}=0, T_{i\ast}, W_i) \right] $$
+where $T_{ik}$ is treatment on candidate $k$, $T_{i\ast}$ is treatment on others, $W_i$ is pre-treatment covariates
+	\begin{itemize}
+	\item ``Direct effect'' if $j=k$; ``indirect effect'' if $j\neq k$
+	\item If $T$ is individual-specific, $\tau_j = \text{E}[\pi_j(T_i=1,W_i)-\pi_j(T_i=0,W_i)]$
+	\end{itemize}
+\end{enumerate}
+\pause
+\vspace{-.5\baselineskip}
+\begin{itemize}
+\item Estimate by plugging in sample analogues (e.g. $\pi_j \to \hat\pi_j$, $\text{E} \to \frac{1}{n}\sum$)
+\end{itemize}
+
+\end{frame}
+
+%%%%%%%%% frame %%%%%%%%%
+\begin{frame}
+\frametitle{Example: 1992 U.S. Presidential Election}
+\begin{itemize}
+\item Model specification (Alvarez and Nagler 1995):
+$$ \pi_{ij} \ = \ \frac{\exp(X_{ij}^{'} \beta + V_i^{'} \delta_j)}
+ {\sum_{k=1}^J\exp(X_{ik}^{'} \beta + V_i^{'} \delta_k)} $$
+where
+\begin{eqnarray*}
+ X_{ij} & = & \left\{\text{ideological distance}\right\} \\
+ V_{i} & = & \left\{1, \text{issue opinions, party, gender, education, age, ...} \right\}
+\end{eqnarray*}
+\pause
+\item Estimated coefficients:
+\begin{eqnarray*}
+\hat\beta & = & -0.11 \ (0.02) \\
+\hat\delta & = & \left[\hat\delta_\text{Bush} \ \hat\delta_\text{Clinton}\right]
+ \ = \ \left[ {\scriptsize
+            \begin{array}{cc} 0.67 \ (0.94) & -0.41 \ (0.45) \\
+                              -0.52 \ (0.11) & -0.02 \ (0.12)  \\
+                              0.54 \ (0.23) & 0.30 \ (0.22) \\
+                               \vdots & \vdots \end{array} } \right]
+           {\scriptsize
+            \begin{array}{l} \text{(intercept)} \\
+                             \text{(support abortion)} \\
+                             \text{(female)} \\
+                             \qquad \vdots \end{array} }
+\end{eqnarray*}
+\end{itemize}
+\end{frame}
+
+%%%%%%%%% frame %%%%%%%%%
+\begin{frame}
+\frametitle{Example: 1992 U.S. Presidential Election}
+\begin{itemize}
+\item Estimated choice probabilities for a ``typical'' voter from South:
+\vspace{-1.5\baselineskip}
+\begin{center}
+\includegraphics[width=.6\textwidth]{predchoiceprob}
+\end{center}
+\vspace{-1.5\baselineskip}
+\pause
+\item Predicted vote shares if everyone opposed abortion:
+\vspace{-1.5\baselineskip}
+\begin{center}
+\includegraphics[width=.6\textwidth]{predvoteshare}
+\end{center}
+\vspace{-1.5\baselineskip}
+\end{itemize}
+\end{frame}
+
+%%%%%%%%% frame %%%%%%%%%
+\begin{frame}
+\frametitle{Revisiting The IIA Assumption}
+\begin{itemize}
+  \item IIA (Trump, Cruz, and Sanders)
+\medskip
+\pause
+  \item Formally: MNL assumes $\epsilon_{ij}$ is i.i.d.  $\epsilon_{ij} \indep \epsilon_{ik}$ for $j\neq k$
+\medskip
+\pause
+  \item This implies that unobserved factors affecting $Y_{ij}^\ast$
+    are unrelated to those affecting $Y_{ik}^\ast$
+\medskip
+\pause
+  \item When is this assumption plausible?
+\pause
+\bigskip
+  \item Example: Multiparty election with parties R, L1 and L2.
+\medskip
+\pause
+  \item Do voters' unobserved ideological preferences affect Pr($Y_i=$L1) independently
+    of their effect on Pr($Y_i=$L2)? \pause Probably not.
+\end{itemize}
+\end{frame}
+
+
+
+%%%%%%%%% frame %%%%%%%%%
+\begin{frame}
+\frametitle{Multinomial Probit Model}
+\begin{itemize}
+ \item How can we relax the IIA assumption?
+\medskip
+\pause
+  \item Instead of assuming $\epsilon_{ij}$ to be i.i.d. across alternatives $j$,
+    we allow $\epsilon_{ij}$ to be correlated across $j$
+    within each voter $i$
+\medskip
+\pause
+ \item \alert{Multinomial probit model (MNP)}: \\
+   $$ Y_i^\ast \ = \ X_i^{'} \beta + \epsilon_i \quad \text{where}
+   \quad \left\{ \begin{array}{l} \boldsymbol{\epsilon}_i \sim_{\text{iid}} \text{MVN}(0, \Sigma_{J}) \\
+         Y_i^\ast = [Y_{i1}^\ast \ \cdots \ Y_{iJ}^\ast]^{'} \\
+         X_i = \left[ X_{i1} \ \cdots \ X_{iJ}\right]^{'} \end{array}\right. $$
+
+\medskip
+\pause
+  \item Restrictions on the model for identifiability:
+\pause
+    \begin{itemize}
+      \item The (absolute) \alert{level} of $Y_i^\ast$ shouldn't matter \\ \pause
+      $\longrightarrow$ Subtract the 1st equation from
+       all the other equations and work with a system of $J-1$
+       equations with $\tilde\epsilon_i \sim_{\text{iid}} \text{MVN} (0, \tilde\Sigma_{J-1})$
+\pause
+      \item The \alert{scale} of $Y_i^\ast$ also shouldn't matter \\ \pause
+      $\longrightarrow$ $\tilde\Sigma_{(1,1)} = 1$
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+%%%%%%%%% frame %%%%%%%%%
+\begin{frame}
+\frametitle{Limitations of Multinomial Probit}
+\begin{itemize}
+  \item MNP has no closed-form expression for the \alert{likelihood}:
+{\footnotesize
+      $$ \hspace{-.2in} \pi_{ij} = \int_{-\infty}^{-\ddot{X}_{1j}^\top \beta}
+        \cdots \int_{-\infty}^{-\ddot{X}_{Jj}^\top\beta}
+        \phi(\ddot{\epsilon}_{1j},...,\ddot{\epsilon}_{Jj})
+        d\ddot{\epsilon}_{1j} \cdots d\ddot{\epsilon}_{Jj}
+        \ \text{where} \ \left\{ \begin{array}{ccl}
+          \ddot{X}_{kl} & = & X_{ik} - X_{il} \\
+         \ddot{\epsilon}_{kl} & = & \epsilon_{ik} - \epsilon_{il} \end{array} \right.
+        $$
+}
+ \item This makes its estimation computationally costly when $J$ large
+ \item Must use numerical approximation (quadratures) or simulation
+ methods (maximum simulated likelihood or MCMC)
+\medskip
+\pause
+ \item Moreover, \# of parameters in $\Sigma_J$ increases as $J$ gets large,
+ but data contain little information about $\Sigma_J$:
+ \medskip
+ {\small
+ \begin{center}
+ \begin{tabular}{l|ccccc} \hline
+ $J$ & 3 & 4 & 5 & 6 & 7 \\ \hline
+ \# of elements in $\Sigma_J$ & 6 & 10 & 15 & 21 & 28 \\
+ \# of parameters identified & 2 & 5 & 9 & 14 & 20 \\ \hline
+ \end{tabular}
+ \end{center}
+ }
+\bigskip
+\pause
+\item Consequently, MNP is only feasible when $J$ is small
+
+\medskip
+\pause
+\item {\tt MNP} in {\tt R}
+\item Alternative solutions: Nested logit
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Even When You Choose Not To Decide, You Still Have Made a Choice}
+
+Lacy and Burden (1999)\\
+Multinomial Probit Model:\\
+Three Choices: Bush, Perot, and Clinton\\
+Four Choices: Bush, Perot, Clinton, and Abstention\\
+What happens if Perot doesn't run?
+
+\begin{tabular}{cccc}
+\hline
+		& Actual & 3-choice & 4-choice \\
+\hline
+Bush    & 32.0   & 45.7     & 38.4     \\
+Clinton & 48.6   & 54.3     & 61.6     \\
+Abstention & 20.9 & -       & 23.7    \\
+\hline
+\end{tabular}
+
+
+Perot stole from Clinton!
+
+\end{frame}
+
+\begin{frame}
+
+\frametitle{Model Based Inference}
+
+\begin{itemize}
+\item[1)] Likelihood inference
+\item[2)] Logit/Probit
+\item[3)] Ordered Probit
+\alert{\item[4)] Choice Models: }
+\alert{\item[5)] Count Models (Poisson, Negative Binomial,...)}
+\end{itemize}
+
+\end{frame}
+
+
+\end{document}

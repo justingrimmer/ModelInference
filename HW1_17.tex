@@ -1,0 +1,119 @@
+\documentclass[letterpaper,12pt]{article}
+%\usepackage{amsmath,epsfig,setspace,multirow,url,fancyhdr}
+%\usepackage{graphicx}
+%\usepackage{setspace}
+\usepackage{lscape,enumitem}
+\usepackage{arabtex}
+\usepackage{rotating}
+%%\usepackage{times}
+%\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}
+%\usepackage{endnotes}
+%\clubpenalty=10000 \widowpenalty=10000
+%\hyphenation{}
+%\renewcommand{\bibitem}{\vskip6pt\par\hangindent\parindent\hskip-\parindent}
+% === graphic packages ===
+\usepackage{graphicx,textcomp}
+% === bibliography package ===
+\usepackage{natbib}
+% === margin and formatting ===
+%\usepackage[compact]{titlesec}
+%\usepackage{fullpage}
+\usepackage{vmargin}
+\setpapersize{USletter}
+\topmargin=0in
+\usepackage{color}
+% === math packages ===
+\usepackage[reqno]{amsmath}
+%\usepackage[pdftex]{hyperref}
+\usepackage{amsthm}
+\usepackage{amssymb,enumerate}
+\usepackage[all]{xy}
+\usepackage{lscape}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\newtheorem{com}{Comment}
+\newtheorem{lem} {Lemma}
+\newtheorem{prop}{Proposition}
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{cor}{Corollary}
+\newtheorem{obs}{Observation}
+\newtheorem{ass}{Assumption}
+ \numberwithin{equation}{section}
+ \numberwithin{equation}{section}
+% === dcolumn package ===
+\usepackage{dcolumn}
+\newcolumntype{.}{D{.}{.}{-1}}
+\newcolumntype{d}[1]{D{.}{.}{#1}}
+% === additional packages ===
+\usepackage{url}
+\newcommand{\Sref}[1]{Section~\ref{#1}}
+\newcommand{\mean}{\text{mean}}
+\usepackage{color,setspace}
+\definecolor{spot}{rgb}{0.6,0,0}
+
+\title{POL 350C, Homework 1}
+
+\date{April 5th, 2017}
+\begin{document}
+\maketitle
+
+\section{Likelihood Analysis Binomial Distribution}
+The file, {\tt senators.csv}---available on the canvas page for the course---counts the number of Republican senators currently serving in the Senate.  We are going to model the number of Republican senators in each state using a Binomial distribution.  Specifically, we will suppose that the number of senators in state $i$ $(i =1, 2, \hdots, 50)$, $Y_{i} \sim \text{Binomial}(\pi)$, with pmf 
+\begin{eqnarray}
+p(y) & = & {{2}\choose{y}} \pi^{y} (1- \pi)^{2 - y} \nonumber 
+\end{eqnarray}
+if $y \in \{0, 1, 2\}$ and $p(y) = 0$ otherwise.  We will suppose that the number of Republican senators in a state is an iid draw from this pmf.  
+
+Our goal is to make an inference about $\pi$.  
+
+\begin{itemize}
+\item[a)] Derive the likelihood $L(\pi | \boldsymbol{y})$ and then take the natural logarithm
+\item[b)] Plot the log-likelihood for all values of $\pi$ using the Senate data.  
+\item[c)] Derive the maximum likelihood estimator and report the maximum likelihood estimate for the Senate data
+\item[d)] Derive the Fisher information at the maximum likelihood estimate and report the information at the maximum likelihood estimate for the Senate data.  Note: you'll have to take expectations.  
+\item[e)] Using the maximum likelihood estimate we're going to assess the performance of our model using synthetic data.  Specifically, generate 1000 draws from a Binomial distribution with probability of a Republican senator given by the maximum likelihood estimate of $\pi$.  Compare the distribution of Republican senators from the synthetic data to the distristribution of Senate data.  What are the differences?  
+\end{itemize}
+
+
+\section{Exponential Distribution}
+The file {\tt wait\_times.csv} contains data on wait times.  We are going to model these data using an exponetial distribution.  Specifically, we will suppose that the wait time for observation $i$, $Y_{i} \sim \text{Exponential}(\lambda)$ with density $f(y)$, 
+\begin{eqnarray}
+f(y) & = & \lambda \exp ( - \lambda y ) \nonumber 
+\end{eqnarray}
+if $y\geq 0$ and $0$ otherwise.  We will suppose that $Y_{i}$ is an iid draw from this density.  
+
+Our goal is make an inference about $\lambda$
+
+\begin{itemize}
+\item[a)] Derive the likelihood and then take the natural logarithm
+\item[b)] Plot the log-likelihood for values of $\lambda \in [0, 20]$ using the data.
+\item[c)] Derive the maximum likelihood estimator and report the maximum likelihood estimate for the data.
+\item[d)] We want to assess the properties of the maximum likelihood estimator for $\lambda$.  Specifically, we are interested in determining whether the maximum likelihood estimator is an unbiased estimator for $\lambda$.  Develop a monte carlo study to assess this and report your findings.
+\item[e)] Derive the information at the maximum likelihood estimate and report the information at the maximum likelihood estimate for the Senate data.
+\item[f)] Take 1000 draws from an exponential distribution with rate parameter at the maximum likelihood estimate.  Compare the distribution of the synthetic data to the real data.  What differences do you note?
+\end{itemize}
+
+
+\section{Using the Normal Maximum Likelihood Estimates from Class}
+
+\begin{itemize}
+\item[a)] Prove that Pr(X = 0) = 0 when $X \sim$ Normal (0, 1)
+\item[b)] In class we derived the maximum likelihood estimators for the mean and variance of a univariate normal distribution.  Use those formulas and a monte carlo study to demonstrate:
+\begin{itemize}
+\item[i)] That the maximum likelihood estimator for the mean is unbiased and consistent
+\item[ii)] That the maximum likelihood estimator for the variance is biased, but consistent
+\end{itemize}
+\end{itemize}
+
+
+\section{Maximum Likelihood Estimation of the Uniform}
+Suppose $Y_{i} \sim \text{Uniform}[0, a]$.  We want to make an inference about $a$
+
+\begin{itemize}
+\item[a)] Derive the likelihood 
+\item[b)] Obtain the maximum likelihood estimator for $a$
+\item[c)] Is your maximum likelihood estimator for $a$ unbiased?
+\end{itemize}
+
+\end{document}
